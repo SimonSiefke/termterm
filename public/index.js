@@ -2,7 +2,7 @@ import { parseArray } from './parseArray.js'
 
 const $Output = document.getElementById('Output')
 
-const webSocket = new WebSocket('ws://localhost:5555')
+const webSocket = new WebSocket(`ws://${location.host}`)
 // TODO enable on prod
 webSocket.binaryType = 'arraybuffer'
 
