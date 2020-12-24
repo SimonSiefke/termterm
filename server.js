@@ -14,10 +14,6 @@ const createTerminal = () => {
 
   const readStream = new ReadStream(fd, { readable: true, writable: true })
 
-  // readStream.on('data', (data) => {
-  //   console.log({ data: data.toString() })
-  // })
-
   // setTimeout(() => {
   //   readStream.write('echo "hello world"\n')
   // }, 1250)
@@ -44,7 +40,9 @@ wss.on('connection', (socket) => {
     console.log({ data })
     readStream.write(data)
   })
-  socket.on('close', () => {})
+  socket.on('close', () => {
+    readStream.destroy()
+  })
 })
 
-server.listen(5555)
+server.listen(5555, 'localhost')
