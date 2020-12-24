@@ -17,6 +17,10 @@ const createTerminal = () => {
   // readStream.on('data', (data) => {
   //   console.log({ data: data.toString() })
   // })
+
+  setTimeout(() => {
+    readStream.write('echo "hello world"\n')
+  }, 1250)
   return readStream
 }
 

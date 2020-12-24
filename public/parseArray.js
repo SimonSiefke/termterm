@@ -45,6 +45,26 @@ export const parseArray = (
         break
       case State.AfterEscape2:
         switch (array[i]) {
+          case /* A */ 65:
+            cursorUp(1)
+            state = State.TopLevelContent
+            i++
+            break
+          case /* B */ 66:
+            cursorDown(1)
+            state = State.TopLevelContent
+            i++
+            break
+          case /* C */ 67:
+            cursorRight(1)
+            state = State.TopLevelContent
+            i++
+            break
+          case /* D */ 68:
+            cursorLeft(1)
+            state = State.TopLevelContent
+            i++
+            break
           case /* H */ 72:
             goToHome()
             state = State.TopLevelContent
@@ -80,8 +100,6 @@ export const parseArray = (
         }
         break
       case State.AfterEscape3:
-        console.log('escape')
-        console.log(array[i])
         switch (array[i]) {
           case /* ; */ 59:
             params.push(currentParam)
@@ -89,10 +107,31 @@ export const parseArray = (
             state = State.AfterEscape3AfterSemicolon
             i++
             break
+          case /* A */ 65:
+            cursorUp(1)
+            state = State.TopLevelContent
+            i++
+            break
+          case /* B */ 66:
+            cursorDown(1)
+            state = State.TopLevelContent
+            i++
+            break
+          case /* C */ 67:
+            cursorRight(1)
+            state = State.TopLevelContent
+            i++
+            break
+          case /* D */ 68:
+            cursorLeft(1)
+            state = State.TopLevelContent
+            i++
+            break
           case /* J */ 74:
             eraseInDisplay2()
             i++
             break
+
           default:
             i++
             break
@@ -172,11 +211,33 @@ const setCharAttributes = () => {
   console.log('set char attributes')
 }
 
-const input = `\u001b[0;35msimon`
+const cursorUp = () => {
+  console.log('cursor up')
+}
 
-parseArray(new Uint8Array(input.split('').map((x) => x.charCodeAt())), {
+const cursorDown = () => {
+  console.log('cursor down')
+}
+
+const cursorRight = () => {
+  console.log('cursor right')
+}
+
+const cursorLeft = () => {
+  console.log('cursor left')
+}
+
+const input = `\u001b[A\u001b[B`
+
+const array = new Uint8Array(input.split('').map((x) => x.charCodeAt()))
+
+parseArray(array, {
   eraseInDisplay2,
   eraseToEndOfLine,
   goToHome,
   setCharAttributes,
+  cursorUp,
+  cursorDown,
+  cursorRight,
+  cursorLeft,
 }) //?

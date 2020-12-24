@@ -24,6 +24,22 @@ const setCharAttributes = () => {
   console.warn('setCharAttributes not implemented')
 }
 
+const cursorUp = () => {
+  console.warn('cursorUp not implemented')
+}
+
+const cursorDown = () => {
+  console.warn('cursorDown not implemented')
+}
+
+const cursorRight = () => {
+  console.warn('cursorRight not implemented')
+}
+
+const cursorLeft = () => {
+  console.warn('cursorLeft not implemented')
+}
+
 webSocket.onmessage = async ({ data }) => {
   console.log({ data: await data.text() })
   const arrayBuffer = await data.arrayBuffer()
@@ -34,9 +50,13 @@ webSocket.onmessage = async ({ data }) => {
     eraseToEndOfLine,
     eraseInDisplay2,
     setCharAttributes,
+    cursorUp,
+    cursorDown,
+    cursorRight,
+    cursorLeft,
   })
   $Output.textContent += parsed
-  $Output.textContent += '\n'
+  // $Output.textContent += '\n'
   console.log(parsed)
   // console.log(uint8Array)
   // $Output.textContent += await data.arrayBuffer()
