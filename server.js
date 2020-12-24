@@ -42,6 +42,7 @@ wss.on('connection', (socket) => {
   })
   socket.on('message', (data) => {
     console.log({ data })
+    readStream.write(data)
   })
   socket.on('close', () => {})
 })

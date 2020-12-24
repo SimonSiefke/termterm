@@ -9,7 +9,18 @@ const State = {
 
 export const parseArray = (
   array,
-  { eraseInDisplay2, eraseToEndOfLine, goToHome, setCharAttributes } = {},
+  {
+    eraseInDisplay2,
+    eraseToEndOfLine,
+    goToHome,
+    setCharAttributes,
+    bell,
+    cursorUp,
+    cursorDown,
+    cursorRight,
+    cursorLeft,
+    backspace,
+  } = {},
 ) => {
   let state = State.TopLevelContent
   let i = 0
@@ -23,6 +34,16 @@ export const parseArray = (
         switch (array[i]) {
           case /* \u001b */ 27:
             state = State.AfterEscape1
+            i++
+            break
+          case /* \u0007 */ 7:
+            bell()
+            state = State.TopLevelContent
+            i++
+            break
+          case /* \u0008 */ 8:
+            backspace()
+            state = State.TopLevelContent
             i++
             break
           default:
@@ -47,6 +68,7 @@ export const parseArray = (
         switch (array[i]) {
           case /* A */ 65:
             cursorUp(1)
+            console.log('CURSOR UP')
             state = State.TopLevelContent
             i++
             break
@@ -103,7 +125,6 @@ export const parseArray = (
         switch (array[i]) {
           case /* ; */ 59:
             params.push(currentParam)
-            console.log('do something')
             state = State.AfterEscape3AfterSemicolon
             i++
             break
@@ -227,7 +248,11 @@ const cursorLeft = () => {
   console.log('cursor left')
 }
 
-const input = `\u001b[A\u001b[B`
+const bell = () => {
+  console.log('bell')
+}
+
+const input = `\u001b[A`
 
 const array = new Uint8Array(input.split('').map((x) => x.charCodeAt()))
 
