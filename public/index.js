@@ -4,7 +4,7 @@ const $Output = document.getElementById('Output')
 
 const webSocket = new WebSocket(`ws://${location.host}`)
 // TODO enable on prod
-webSocket.binaryType = 'arraybuffer'
+// webSocket.binaryType = 'arraybuffer'
 
 webSocket.onopen = () => {
   console.log('open')
@@ -50,20 +50,33 @@ const bell = () => {
   alert('ding')
 }
 
+const newline = () => {
+  $Output.textContent += '\n'
+}
+
+window.addEventListener('paste', (event) => {
+  const text = event.clipboardData.getData('text')
+  webSocket.send(text)
+})
+
 window.onkeydown = (event) => {
   switch (event.key) {
     case 'Shift':
       break
     case 'ArrowUp':
+      event.preventDefault()
       webSocket.send('\u001b[A')
       break
     case 'ArrowDown':
+      event.preventDefault()
       webSocket.send('\u001b[B')
       break
     case 'ArrowRight':
+      event.preventDefault()
       webSocket.send('\u001b[C')
       break
     case 'ArrowLeft':
+      event.preventDefault()
       webSocket.send('\u001b[D')
       break
     case 'Enter':
@@ -94,6 +107,7 @@ window.onkeydown = (event) => {
     case 'Control':
       break
     case 'a':
+      event.preventDefault()
       if (event.ctrlKey) {
         webSocket.send('\u0001')
         break
@@ -101,6 +115,7 @@ window.onkeydown = (event) => {
       webSocket.send('a')
       break
     case 'b':
+      event.preventDefault()
       if (event.ctrlKey) {
         webSocket.send('\u0002')
         break
@@ -108,6 +123,7 @@ window.onkeydown = (event) => {
       webSocket.send('b')
       break
     case 'c':
+      event.preventDefault()
       if (event.ctrlKey) {
         webSocket.send('\u0003')
         break
@@ -115,6 +131,7 @@ window.onkeydown = (event) => {
       webSocket.send('c')
       break
     case 'd':
+      event.preventDefault()
       if (event.ctrlKey) {
         webSocket.send('\u0004')
         break
@@ -122,6 +139,7 @@ window.onkeydown = (event) => {
       webSocket.send('d')
       break
     case 'e':
+      event.preventDefault()
       if (event.ctrlKey) {
         webSocket.send('\u0005')
         break
@@ -129,6 +147,7 @@ window.onkeydown = (event) => {
       webSocket.send('e')
       break
     case 'f':
+      event.preventDefault()
       if (event.ctrlKey) {
         webSocket.sen('\u0006')
         break
@@ -136,6 +155,7 @@ window.onkeydown = (event) => {
       webSocket.send('f')
       break
     case 'g':
+      event.preventDefault()
       if (event.ctrlKey) {
         webSocket.send('\u0007')
         break
@@ -143,6 +163,7 @@ window.onkeydown = (event) => {
       webSocket.send('g')
       break
     case 'h':
+      event.preventDefault()
       if (event.ctrlKey) {
         webSocket.send('\u0008')
         break
@@ -150,6 +171,7 @@ window.onkeydown = (event) => {
       webSocket.send('h')
       break
     case 'i':
+      event.preventDefault()
       if (event.ctrlKey) {
         webSocket.send('\u0009')
         break
@@ -157,6 +179,7 @@ window.onkeydown = (event) => {
       webSocket.send('i')
       break
     case 'j':
+      event.preventDefault()
       event.preventDefault()
       if (event.ctrlKey) {
         webSocket.send('\u000a')
@@ -166,6 +189,7 @@ window.onkeydown = (event) => {
       break
     case 'k':
       event.preventDefault()
+      event.preventDefault()
       if (event.ctrlKey) {
         webSocket.send('\u000b')
         break
@@ -174,6 +198,7 @@ window.onkeydown = (event) => {
       break
     case 'l':
       event.preventDefault()
+      event.preventDefault()
       if (event.ctrlKey) {
         webSocket.send('\u000c')
         break
@@ -181,6 +206,7 @@ window.onkeydown = (event) => {
       webSocket.send('l')
       break
     case 'm':
+      event.preventDefault()
       if (event.ctrlKey) {
         webSocket.send('\u000d')
         break
@@ -188,6 +214,7 @@ window.onkeydown = (event) => {
       webSocket.send('m')
       break
     case 'n':
+      event.preventDefault()
       if (event.ctrlKey) {
         webSocket.send('\u000e')
         break
@@ -195,6 +222,7 @@ window.onkeydown = (event) => {
       webSocket.send('n')
       break
     case 'o':
+      event.preventDefault()
       if (event.ctrlKey) {
         webSocket.send('\u000f')
         break
@@ -202,6 +230,7 @@ window.onkeydown = (event) => {
       webSocket.send('o')
       break
     case 'p':
+      event.preventDefault()
       if (event.ctrlKey) {
         webSocket.send('\u0010')
         break
@@ -209,6 +238,7 @@ window.onkeydown = (event) => {
       webSocket.send('p')
       break
     case 'q':
+      event.preventDefault()
       event.preventDefault()
       if (event.ctrlKey) {
         webSocket.send('\u0011')
@@ -218,6 +248,7 @@ window.onkeydown = (event) => {
       break
     case 'r':
       event.preventDefault()
+      event.preventDefault()
       if (event.ctrlKey) {
         webSocket.send('\u0012')
         break
@@ -226,6 +257,7 @@ window.onkeydown = (event) => {
       break
     case 's':
       event.preventDefault()
+      event.preventDefault()
       if (event.ctrlKey) {
         webSocket.send('\u0013')
         break
@@ -233,6 +265,7 @@ window.onkeydown = (event) => {
       webSocket.send('s')
       break
     case 't':
+      event.preventDefault()
       if (event.ctrlKey) {
         webSocket.send('\u0014')
         break
@@ -240,6 +273,7 @@ window.onkeydown = (event) => {
       webSocket.send('t')
       break
     case 'u':
+      event.preventDefault()
       if (event.ctrlKey) {
         webSocket.send('\u0015')
         break
@@ -249,12 +283,14 @@ window.onkeydown = (event) => {
     case 'v':
       if (event.ctrlKey) {
         // TODO paste
-        webSocket.send('\u0016')
+        // webSocket.send('\u0016')
         break
       }
+      event.preventDefault()
       webSocket.send('v')
       break
     case 'w':
+      event.preventDefault()
       if (event.ctrlKey) {
         webSocket.send('\u0017')
         break
@@ -262,6 +298,7 @@ window.onkeydown = (event) => {
       webSocket.send('w')
       break
     case 'x':
+      event.preventDefault()
       if (event.ctrlKey) {
         webSocket.send('\u0018')
         break
@@ -269,6 +306,7 @@ window.onkeydown = (event) => {
       webSocket.send('x')
       break
     case 'y':
+      event.preventDefault()
       if (event.ctrlKey) {
         webSocket.send('\u0019')
         break
@@ -276,6 +314,7 @@ window.onkeydown = (event) => {
       webSocket.send('y')
       break
     case 'z':
+      event.preventDefault()
       if (event.ctrlKey) {
         webSocket.send('\u001a')
         break
@@ -318,14 +357,19 @@ window.onkeydown = (event) => {
     case 'F12':
       webSocket.send('\x1b[24~')
       break
+    case '/':
+      event.preventDefault()
+      webSocket.send('/')
+      break
     default:
+      console.log(event.key)
       webSocket.send(event.key)
       break
   }
 }
 
 webSocket.onmessage = async ({ data }) => {
-  // console.log({ data: await data.text() })
+  console.log({ data: await data.text() })
   const buffer =
     webSocket.binaryType === 'arraybuffer' ? data : await data.arrayBuffer()
   const uint8Array = new Uint8Array(buffer)

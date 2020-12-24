@@ -3,6 +3,7 @@ const State = {
   AfterEscape1: 'AfterEscape1',
   AfterEscape2: 'AfterEscape2',
   AfterEscape3: 'AfterEscape3',
+  AfterEscape4: 'AfterEscape4',
   AfterEscape3AfterSemicolon: 'AfterEscape3AfterSemicolon',
   AfterEscape3AfterSemicolon2: 'AfterEscape3AfterSemicolon2',
 }
@@ -46,6 +47,11 @@ export const parseArray = (
             state = State.TopLevelContent
             i++
             break
+          case /* \r */ 13:
+            output += '\n'
+            state = State.TopLevelContent
+            i++
+            break
           default:
             output += String.fromCharCode(array[i])
             i++
@@ -57,6 +63,23 @@ export const parseArray = (
         switch (array[i]) {
           case /* [ */ 91:
             state = State.AfterEscape2
+            i++
+            break
+          case /* ( */ 40:
+            state = State.AfterEscape4
+            i++
+            break
+          default:
+            state = State.TopLevelContent
+            i++
+            break
+        }
+        break
+      case State.AfterEscape4:
+        switch (array[i]) {
+          case /* B */ 66:
+            // TODO do something
+            state = State.TopLevelContent
             i++
             break
           default:
@@ -94,10 +117,17 @@ export const parseArray = (
             break
           case /* f */ 102:
             goToHome()
+            state = State.TopLevelContent
             i++
+            break
+          case /* m */ 109:
+            // TODO do something
+            i++
+            state = State.TopLevelContent
             break
           case /* K */ 75:
             eraseToEndOfLine()
+            state = State.TopLevelContent
             i++
             break
           case /* 0 */ 48:
@@ -116,7 +146,6 @@ export const parseArray = (
             i++
             break
           default:
-            console.log('default')
             i++
             break
         }
@@ -152,7 +181,11 @@ export const parseArray = (
             eraseInDisplay2()
             i++
             break
-
+          case /* m */ 109:
+            setCharAttributes([currentParam])
+            state = State.TopLevelContent
+            i++
+            break
           default:
             i++
             break
@@ -252,7 +285,7 @@ const bell = () => {
   console.log('bell')
 }
 
-const input = `\u001b[A`
+const input = `\u001b[0m  package.json  `
 
 const array = new Uint8Array(input.split('').map((x) => x.charCodeAt()))
 
