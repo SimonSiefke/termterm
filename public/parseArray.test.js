@@ -1,5 +1,5 @@
-import { parseArray } from './parseArray.js'
 import { jest } from '@jest/globals'
+import { parseArray } from './parseArray.js'
 
 const noop = () => {}
 
@@ -16,6 +16,7 @@ const runTest = (
     cursorRight = noop,
     cursorLeft = noop,
     backspace = noop,
+    print = noop,
   } = {},
 ) => {
   const array = new Uint8Array(input.split('').map((x) => x.charCodeAt()))
@@ -30,7 +31,40 @@ const runTest = (
     cursorLeft,
     bell,
     backspace,
+    print,
   })
+}
+
+const getOutputLines = (input) => {
+  const lines = []
+  let line = ''
+  const array = new Uint8Array(input.split('').map((x) => x.charCodeAt()))
+  parseArray(array, {
+    bell: noop,
+    eraseInDisplay2: noop,
+    eraseToEndOfLine: noop,
+    goToHome: noop,
+    setCharAttributes: noop,
+    cursorUp: noop,
+    cursorDown: noop,
+    cursorRight: noop,
+    cursorLeft: noop,
+    backspace: noop,
+    print: (chars) => {
+      const char = String.fromCharCode(chars)
+      if (char === '\n') {
+        lines.push(line)
+        line = ''
+      } else if (char === '\r') {
+        lines.push(line)
+        line = ''
+      } else {
+        line += char
+      }
+    },
+  })
+  lines.push(line)
+  return lines
 }
 
 test('bell', () => {
@@ -88,10 +122,10 @@ test('setCharAttributes', () => {
 })
 
 test('program nano', () => {
-  const result = runTest(
+  const lines = getOutputLines(
     `\u001b[22;16H\u001b(B\u001b[0;7m[ Welcome to nano.  For basic help, type Ctrl+G. ]\u001b(B\u001b[m\r\u001b[23d\u001b(B\u001b[0;7m^G\u001b(B\u001b[m Get Help  \u001b(B\u001b[0;7m^O\u001b(B\u001b[m Write Out \u001b(B\u001b[0;7m^W\u001b(B\u001b[m Where Is  \u001b(B\u001b[0;7m^K\u001b(B\u001b[m Cut Text  \u001b(B\u001b[0;7m^J\u001b(B\u001b[m Justify   \u001b(B\u001b[0;7m^C\u001b(B\u001b[m Cur Pos\r\u001b[24d\u001b(B\u001b[0;7m^X\u001b(B\u001b[m Exit\u001b[14G\u001b(B\u001b[0;7m^R\u001b(B\u001b[m Read File \u001b(B\u001b[0;7m^\\\u001b(B\u001b[m Replace   \u001b(B\u001b[0;7m^U\u001b(B\u001b[m Paste Text\u001b(B\u001b[0;7m^T\u001b(B\u001b[m To Spell  \u001b(B\u001b[0;7m^_\u001b(B\u001b[m Go To Line\r\u001b[22d\u001b[2d\u001b[39;49m\u001b(B\u001b[m\u001b[?12l\u001b[?25h`,
   )
-  expect(result.split('\n')).toEqual([
+  expect(lines).toEqual([
     '[ Welcome to nano.  For basic help, type Ctrl+G. ]',
     '^G Get Help  ^O Write Out ^W Where Is  ^K Cut Text  ^J Justify   ^C Cur Pos',
     '^X Exit^R Read File ^\\ Replace   ^U Paste Text^T To Spell  ^_ Go To Line',
@@ -100,10 +134,10 @@ test('program nano', () => {
 })
 
 test('program ls', () => {
-  const result = runTest(
+  const lines = getOutputLines(
     `\u001b[0m\u001b[01;34mnode_modules\u001b[0m  package.json  package-lock.json  \u001b[01;34mpublic\u001b[0m  server.js\r\n`,
   )
-  expect(result.split('\n')).toEqual([
+  expect(lines).toEqual([
     'node_modules  package.json  package-lock.json  public  server.js',
     '',
     '',

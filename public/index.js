@@ -2,7 +2,7 @@ import { parseArray } from './parseArray.js'
 
 const $Output = document.getElementById('Output')
 
-const webSocket = new WebSocket(`ws://${location.host}`)
+const webSocket = new WebSocket(`ws://${location.host}`, ['tty'])
 // TODO enable on prod
 // webSocket.binaryType = 'arraybuffer'
 
@@ -52,6 +52,10 @@ const bell = () => {
 
 const newline = () => {
   $Output.textContent += '\n'
+}
+
+const print = (text) => {
+  $Output.textContent += String.fromCharCode(text)
 }
 
 window.addEventListener('paste', (event) => {
@@ -384,8 +388,8 @@ webSocket.onmessage = async ({ data }) => {
     cursorLeft,
     backspace,
     bell,
+    print,
   })
-  $Output.textContent += parsed
   // $Output.textContent += '\n'
   // console.log(parsed)
   // console.log(uint8Array)

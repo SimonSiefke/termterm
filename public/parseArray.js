@@ -21,14 +21,17 @@ export const parseArray = (
     cursorRight,
     cursorLeft,
     backspace,
+    print,
   } = {},
 ) => {
   let state = State.TopLevelContent
   let i = 0
-  let output = ``
+  // let output = ``
   let currentParam
   let params = []
+  // let printed = -1
   while (i < array.length) {
+    // console.log(state)
     // console.log(array[i])
     switch (state) {
       case State.TopLevelContent:
@@ -48,12 +51,21 @@ export const parseArray = (
             i++
             break
           case /* \r */ 13:
-            output += '\n'
+            // console.log('newline')
+            print(array[i])
+            // output += '\n'
             state = State.TopLevelContent
             i++
             break
           default:
-            output += String.fromCharCode(array[i])
+            // if (printed === 0) {
+            //   printed = i
+            // } else {
+            //   printed++
+            // }
+            // console.log('default')
+            // output += String.fromCharCode(array[i])
+            print(array[i])
             i++
             break
         }
@@ -91,7 +103,6 @@ export const parseArray = (
         switch (array[i]) {
           case /* A */ 65:
             cursorUp(1)
-            console.log('CURSOR UP')
             state = State.TopLevelContent
             i++
             break
@@ -246,7 +257,6 @@ export const parseArray = (
         break
     }
   }
-  return output
 }
 
 const eraseInDisplay2 = () => {
@@ -285,17 +295,17 @@ const bell = () => {
   console.log('bell')
 }
 
-const input = `\u001b[0m  package.json  `
+// const input = `\u001b[0m  package.json  `
 
-const array = new Uint8Array(input.split('').map((x) => x.charCodeAt()))
+// const array = new Uint8Array(input.split('').map((x) => x.charCodeAt()))
 
-parseArray(array, {
-  eraseInDisplay2,
-  eraseToEndOfLine,
-  goToHome,
-  setCharAttributes,
-  cursorUp,
-  cursorDown,
-  cursorRight,
-  cursorLeft,
-}) //?
+// parseArray(array, {
+//   eraseInDisplay2,
+//   eraseToEndOfLine,
+//   goToHome,
+//   setCharAttributes,
+//   cursorUp,
+//   cursorDown,
+//   cursorRight,
+//   cursorLeft,
+// }) //?
