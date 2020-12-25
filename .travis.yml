@@ -1,0 +1,17 @@
+language: node_js
+
+node_js: lts/*
+
+if: tag IS blank
+
+install:
+  - npm ci
+
+stages:
+  - test
+
+jobs:
+  include:
+    - stage: test
+      script:
+        - npm test
