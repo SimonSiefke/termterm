@@ -6,7 +6,16 @@ const State = {
   AfterEscape4: 'AfterEscape4',
   AfterEscape3AfterSemicolon: 'AfterEscape3AfterSemicolon',
   AfterEscape3AfterSemicolon2: 'AfterEscape3AfterSemicolon2',
+  Print: 'Print',
 }
+
+const special = new Set([
+  /* \u001b */ 27,
+  /* \u0007 */ 7,
+  /* \u0008 */ 8,
+  /* \r */ 13,
+  undefined,
+])
 
 export const parseArray = (
   array,
@@ -22,6 +31,7 @@ export const parseArray = (
     cursorLeft,
     backspace,
     print,
+    newline,
   } = {},
 ) => {
   let state = State.TopLevelContent
@@ -30,12 +40,13 @@ export const parseArray = (
   let currentParam
   let params = []
   // let printed = -1
+  let printStartIndex = -1
   while (i < array.length) {
-    // console.log(state)
+    state
     // console.log(array[i])
     switch (state) {
       case State.TopLevelContent:
-        switch (array[i]) {
+        middle: switch (array[i]) {
           case /* \u001b */ 27:
             state = State.AfterEscape1
             i++
@@ -52,25 +63,78 @@ export const parseArray = (
             break
           case /* \r */ 13:
             // console.log('newline')
-            print(array[i])
+            // print(array[i])
             // output += '\n'
             state = State.TopLevelContent
             i++
             break
           default:
-            // if (printed === 0) {
-            //   printed = i
-            // } else {
-            //   printed++
-            // }
-            // console.log('default')
-            // output += String.fromCharCode(array[i])
-            print(array[i])
-            i++
+            const printStartIndex = i++
+            while (i < array.length) {
+              switch (array[i]) {
+                case /* \u001b */ 27:
+                  print(printStartIndex, i)
+                  state = State.AfterEscape1
+                  i++
+                  break middle
+                case /* \u0007 */ 7:
+                  print(printStartIndex, i)
+                  bell()
+                  state = State.TopLevelContent
+                  i++
+                  break middle
+                case /* \u0008 */ 8:
+                  print(printStartIndex, i)
+                  backspace()
+                  state = State.TopLevelContent
+                  i++
+                  break middle
+                case /* \r */ 13:
+                  print(printStartIndex, i)
+                  newline()
+                  state = State.TopLevelContent
+                  i++
+                  break middle
+                default:
+                  i++
+                  break
+              }
+            }
+            print(printStartIndex, i)
+            // console.log('out')
             break
         }
         // console.log(array[i])
         break
+      // case State.Print:
+      //   switch (array[i]) {
+      //     case /* \u001b */ 27:
+      //       print(printStartIndex, i)
+      //       state = State.AfterEscape1
+      //       i++
+      //       break
+      //     case /* \u0007 */ 7:
+      //       print(printStartIndex, i)
+      //       bell()
+      //       state = State.TopLevelContent
+      //       i++
+      //       break
+      //     case /* \u0008 */ 8:
+      //       print(printStartIndex, i)
+      //       backspace()
+      //       state = State.TopLevelContent
+      //       i++
+      //       break
+      //     case /* \r */ 13:
+      //       print(printStartIndex, i)
+      //       state = State.TopLevelContent
+      //       i++
+      //       break
+      //     default:
+      //       i++
+      //       break
+      //   }
+      //   break
       case State.AfterEscape1:
         switch (array[i]) {
           case /* [ */ 91:
@@ -257,6 +321,9 @@ export const parseArray = (
         break
     }
   }
+  if (printStartIndex !== -1) {
+    print(printStartIndex, i)
+  }
 }
 
 const eraseInDisplay2 = () => {
@@ -295,9 +362,32 @@ const bell = () => {
   console.log('bell')
 }
 
-// const input = `\u001b[0m  package.json  `
+const newline = () => {
+  console.log('newline')
+}
 
-// const array = new Uint8Array(input.split('').map((x) => x.charCodeAt()))
+let output = ''
+
+const decodeString = (string) => {
+  const { StringDecoder } = require('string_decoder')
+  const decoder = new StringDecoder('utf8')
+  return decoder.write(string)
+}
+
+const encodeString = (input) => {
+  return new Uint8Array(Buffer.from(input, 'utf-8'))
+}
+
+const print = (startIndex, endIndex) => {
+  startIndex
+  endIndex
+  array
+  output += decodeString(array.slice(startIndex, endIndex))
+}
+
+const input = `\u001b[0m  server.js\r\n`
+
+// const array = encodeString(input)
 
 // parseArray(array, {
 //   eraseInDisplay2,
@@ -308,4 +398,8 @@ const bell = () => {
 //   cursorDown,
 //   cursorRight,
 //   cursorLeft,
+//   print,
+//   newline,
 // }) //?
+
+// output

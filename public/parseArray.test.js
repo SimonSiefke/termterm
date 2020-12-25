@@ -1,7 +1,18 @@
 import { jest } from '@jest/globals'
 import { parseArray } from './parseArray.js'
+import fs from 'fs'
+import { StringDecoder } from 'string_decoder'
 
 const noop = () => {}
+
+const encodeText = (input) => {
+  return new Uint8Array(Buffer.from(input, 'utf-8'))
+}
+
+const decodeText = (text) => {
+  const decode = new StringDecoder('utf8')
+  return decode.write(text)
+}
 
 const runTest = (
   input,
@@ -36,9 +47,8 @@ const runTest = (
 }
 
 const getOutputLines = (input) => {
-  const lines = []
-  let line = ''
-  const array = new Uint8Array(input.split('').map((x) => x.charCodeAt()))
+  const chunks = []
+  const array = encodeText(input)
   parseArray(array, {
     bell: noop,
     eraseInDisplay2: noop,
@@ -50,88 +60,103 @@ const getOutputLines = (input) => {
     cursorRight: noop,
     cursorLeft: noop,
     backspace: noop,
-    print: (chars) => {
-      const char = String.fromCharCode(chars)
-      if (char === '\n') {
-        lines.push(line)
-        line = ''
-      } else if (char === '\r') {
-        lines.push(line)
-        line = ''
-      } else {
-        line += char
-      }
+    print: (startIndex, endIndex) => {
+      chunks.push(decodeText(array.slice(startIndex, endIndex)))
+    },
+    newline: () => {
+      chunks.push('\n')
     },
   })
-  lines.push(line)
-  return lines
+  return chunks.join('').split('\n')
 }
 
-test('bell', () => {
+test('function - bell', () => {
   const bell = jest.fn()
   runTest('\u0007', { bell })
   expect(bell).toHaveBeenCalledTimes(1)
 })
 
-test('cursorUp', () => {
+test('function - cursorUp', () => {
   const cursorUp = jest.fn()
   runTest('\u001b[A', { cursorUp })
   expect(cursorUp).toHaveBeenCalledTimes(1)
 })
 
-test('cursorDown', () => {
+test('function - cursorDown', () => {
   const cursorDown = jest.fn()
   runTest('\u001b[B', { cursorDown })
   expect(cursorDown).toHaveBeenCalledTimes(1)
 })
 
-test('cursorRight', () => {
+test('function - cursorRight', () => {
   const cursorRight = jest.fn()
   runTest('\u001b[C', { cursorRight })
   expect(cursorRight).toHaveBeenCalledTimes(1)
 })
 
-test('cursorLeft', () => {
+test('function - cursorLeft', () => {
   const cursorLeft = jest.fn()
   runTest('\u001b[D', { cursorLeft })
   expect(cursorLeft).toHaveBeenCalledTimes(1)
 })
 
-test('goToHome', () => {
+test('function - goToHome', () => {
   const goToHome = jest.fn()
   runTest('\u001b[H', { goToHome })
   expect(goToHome).toHaveBeenCalledTimes(1)
 })
 
-test('eraseToEndOfLine', () => {
+test('function - eraseToEndOfLine', () => {
   const eraseToEndOfLine = jest.fn()
   runTest('\u001b[K', { eraseToEndOfLine })
   expect(eraseToEndOfLine).toHaveBeenCalledTimes(1)
 })
 
-test('backspace', () => {
+test('function - backspace', () => {
   const backspace = jest.fn()
   runTest('\u0008', { backspace })
   expect(backspace).toHaveBeenCalledTimes(1)
 })
 
-test('setCharAttributes', () => {
+test('function - setCharAttributes', () => {
   const setCharAttributes = jest.fn()
   runTest('\u001b[0;7m', { setCharAttributes })
   expect(setCharAttributes).toHaveBeenCalledTimes(1)
 })
 
-test('program nano', () => {
-  const lines = getOutputLines(
-    `\u001b[22;16H\u001b(B\u001b[0;7m[ Welcome to nano.  For basic help, type Ctrl+G. ]\u001b(B\u001b[m\r\u001b[23d\u001b(B\u001b[0;7m^G\u001b(B\u001b[m Get Help  \u001b(B\u001b[0;7m^O\u001b(B\u001b[m Write Out \u001b(B\u001b[0;7m^W\u001b(B\u001b[m Where Is  \u001b(B\u001b[0;7m^K\u001b(B\u001b[m Cut Text  \u001b(B\u001b[0;7m^J\u001b(B\u001b[m Justify   \u001b(B\u001b[0;7m^C\u001b(B\u001b[m Cur Pos\r\u001b[24d\u001b(B\u001b[0;7m^X\u001b(B\u001b[m Exit\u001b[14G\u001b(B\u001b[0;7m^R\u001b(B\u001b[m Read File \u001b(B\u001b[0;7m^\\\u001b(B\u001b[m Replace   \u001b(B\u001b[0;7m^U\u001b(B\u001b[m Paste Text\u001b(B\u001b[0;7m^T\u001b(B\u001b[m To Spell  \u001b(B\u001b[0;7m^_\u001b(B\u001b[m Go To Line\r\u001b[22d\u001b[2d\u001b[39;49m\u001b(B\u001b[m\u001b[?12l\u001b[?25h`,
-  )
-  expect(lines).toEqual([
-    '[ Welcome to nano.  For basic help, type Ctrl+G. ]',
-    '^G Get Help  ^O Write Out ^W Where Is  ^K Cut Text  ^J Justify   ^C Cur Pos',
-    '^X Exit^R Read File ^\\ Replace   ^U Paste Text^T To Spell  ^_ Go To Line',
-    '',
-  ])
+test('text - hello world!', () => {
+  const lines = getOutputLines('hello world!')
+  expect(lines).toEqual([`hello world!`])
 })
+
+test('text - prompt', () => {
+  const lines = getOutputLines(
+    `\u001b[0;35msimon\u001b[0;32m (master *)\u001b[0;34m termterm $ \u001b[0m`,
+  )
+  expect(lines).toEqual([`simon (master *) termterm $ `])
+})
+
+test('text - csi with print and execute', () => {
+  const lines = getOutputLines('\x1b[<31;5mHello World! öäü€\nabc')
+  expect(lines).toEqual([`Hello World! öäü€`, `abc`])
+})
+
+// test('program nano', () => {
+//   const lines = getOutputLines(
+//     `\u001b[22;16H\u001b(B\u001b[0;7m[ Welcome to nano.  For basic help, type Ctrl+G. ]\u001b(B\u001b[m\r\u001b[23d\u001b(B\u001b[0;7m^G\u001b(B\u001b[m Get Help  \u001b(B\u001b[0;7m^O\u001b(B\u001b[m Write Out \u001b(B\u001b[0;7m^W\u001b(B\u001b[m Where Is  \u001b(B\u001b[0;7m^K\u001b(B\u001b[m Cut Text  \u001b(B\u001b[0;7m^J\u001b(B\u001b[m Justify   \u001b(B\u001b[0;7m^C\u001b(B\u001b[m Cur Pos\r\u001b[24d\u001b(B\u001b[0;7m^X\u001b(B\u001b[m Exit\u001b[14G\u001b(B\u001b[0;7m^R\u001b(B\u001b[m Read File \u001b(B\u001b[0;7m^\\\u001b(B\u001b[m Replace   \u001b(B\u001b[0;7m^U\u001b(B\u001b[m Paste Text\u001b(B\u001b[0;7m^T\u001b(B\u001b[m To Spell  \u001b(B\u001b[0;7m^_\u001b(B\u001b[m Go To Line\r\u001b[22d\u001b[2d\u001b[39;49m\u001b(B\u001b[m\u001b[?12l\u001b[?25h`,
+//   )
+//   expect(lines).toEqual([
+//     '[ Welcome to nano.  For basic help, type Ctrl+G. ]',
+//     '^G Get Help  ^O Write Out ^W Where Is  ^K Cut Text  ^J Justify   ^C Cur Pos',
+//     '^X Exit^R Read File ^\\ Replace   ^U Paste Text^T To Spell  ^_ Go To Line',
+//     '',
+//   ])
+// })
+
+// test('program vim', () => {
+//   const lines = getOutputLines(fs.readFileSync('fixtures/vim.txt').toString())
+//   expect(lines).toEqual([])
+// })
 
 test('program ls', () => {
   const lines = getOutputLines(

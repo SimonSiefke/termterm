@@ -33,6 +33,7 @@ const test_terminal = {
   cursorLeft: () => calls.push(['cursorLeft']),
   backspace: () => calls.push(['backspace']),
   print: () => calls.push(['print']),
+  newline: () => calls.push(['newline']),
 }
 
 const noop_terminal = {
@@ -47,6 +48,7 @@ const noop_terminal = {
   cursorLeft: noop,
   backspace: noop,
   print: noop,
+  newline: noop,
 }
 
 const fixtureLs = fs.readFileSync(`${__dirname}/../fixtures/ls.txt`).toString()
