@@ -7,3 +7,8 @@
 <!-- interesting typed array performance improvements https://github.com/xtermjs/xterm.js/pull/1796 -->
 
 <!-- interesting terminal emulator ttyd https://github.com/tsl0922/ttyd -->
+
+<!-- TODO more test cases
+https://gitlab.com/davidbittner/ansi-parser/-/blob/master/src/parsers/tests.rs
+https://github.com/paultag/libansiescape/tree/master/tests/tests
+ -->

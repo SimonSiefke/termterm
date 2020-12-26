@@ -68,16 +68,28 @@ test('key - Ctrl+ArrowUp', () => {
   expect(send).toHaveBeenCalledWith(`\u001b[1;5A`)
 })
 
+test('key - Ctrl+Shift+ArrowUp', () => {
+  const send = jest.fn()
+  runTest({ key: 'ArrowUp', ctrlKey: true, shiftKey: true }, send)
+  expect(send).toHaveBeenCalledWith(`\u001b[1;6A`)
+})
+
 test('key - ArrowDown', () => {
+  const send = jest.fn()
+  runTest({ key: 'ArrowDown' }, send)
+  expect(send).toHaveBeenCalledWith(`\u001b[B`)
+})
+
+test('key - Ctrl+ArrowDown', () => {
   const send = jest.fn()
   runTest({ key: 'ArrowDown', ctrlKey: true }, send)
   expect(send).toHaveBeenCalledWith(`\u001b[1;5B`)
 })
 
-test('key - Ctrl+ArrowDown', () => {
+test('key - Ctrl+Shift+ArrowDown', () => {
   const send = jest.fn()
-  runTest({ key: 'ArrowDown' }, send)
-  expect(send).toHaveBeenCalledWith(`\u001b[B`)
+  runTest({ key: 'ArrowDown', ctrlKey: true, shiftKey: true }, send)
+  expect(send).toHaveBeenCalledWith(`\u001b[1;6B`)
 })
 
 test('key - ArrowRight', () => {
@@ -92,16 +104,28 @@ test('key - Ctrl+ArrowRight', () => {
   expect(send).toHaveBeenCalledWith(`\u001b[1;5C`)
 })
 
+test('key - Ctrl+Shift+ArrowRight', () => {
+  const send = jest.fn()
+  runTest({ key: 'ArrowRight', ctrlKey: true, shiftKey: true }, send)
+  expect(send).toHaveBeenCalledWith(`\u001b[1;6C`)
+})
+
 test('key - ArrowLeft', () => {
   const send = jest.fn()
   runTest({ key: 'ArrowLeft' }, send)
   expect(send).toHaveBeenCalledWith(`\u001b[D`)
 })
 
-test('key - ArrowLeft', () => {
+test('key - Ctrl+ArrowLeft', () => {
   const send = jest.fn()
   runTest({ key: 'ArrowLeft', ctrlKey: true }, send)
   expect(send).toHaveBeenCalledWith(`\u001b[1;5D`)
+})
+
+test('key - Ctrl+Shift+ArrowLeft', () => {
+  const send = jest.fn()
+  runTest({ key: 'ArrowLeft', ctrlKey: true, shiftKey: true }, send)
+  expect(send).toHaveBeenCalledWith(`\u001b[1;6D`)
 })
 
 test('key - Enter', () => {

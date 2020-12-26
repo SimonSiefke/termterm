@@ -1,4 +1,9 @@
 export const handleKeyDown = (webSocket) => (event) => {
+  const modifiers =
+    (event.shiftKey ? 1 : 0) |
+    (event.altKey ? 2 : 0) |
+    (event.ctrlKey ? 4 : 0) |
+    (event.metaKey ? 8 : 0)
   switch (event.key) {
     case 'Shift':
     case 'Alt':
@@ -8,48 +13,39 @@ export const handleKeyDown = (webSocket) => (event) => {
       webSocket.send('\u001b[2~')
       break
     case 'Delete':
-      if (event.ctrlKey) {
-        if (event.shiftKey) {
-          webSocket.send('\u001b[3;6~')
-          break
-        }
-        webSocket.send('\u001b[3;5~')
-        break
-      }
-      if (event.shiftKey) {
-        webSocket.send('\u001b[3;2~')
-        break
+      if (modifiers) {
+        webSocket.send(`\u001b[3;${modifiers + 1}~`)
       }
       webSocket.send('\u001b[3~')
       break
     case 'ArrowUp':
       event.preventDefault()
-      if (event.ctrlKey) {
-        webSocket.send('\u001b[1;5A')
+      if (modifiers) {
+        webSocket.send(`\u001b[1;${modifiers + 1}A`)
         break
       }
       webSocket.send('\u001b[A')
       break
     case 'ArrowDown':
       event.preventDefault()
-      if (event.ctrlKey) {
-        webSocket.send('\u001b[1;5B')
+      if (modifiers) {
+        webSocket.send(`\u001b[1;${modifiers + 1}B`)
         break
       }
       webSocket.send('\u001b[B')
       break
     case 'ArrowRight':
       event.preventDefault()
-      if (event.ctrlKey) {
-        webSocket.send('\u001b[1;5C')
+      if (modifiers) {
+        webSocket.send(`\u001b[1;${modifiers + 1}C`)
         break
       }
       webSocket.send('\u001b[C')
       break
     case 'ArrowLeft':
       event.preventDefault()
-      if (event.ctrlKey) {
-        webSocket.send(`\u001b[1;5D`)
+      if (modifiers) {
+        webSocket.send(`\u001b[1;${modifiers + 1}D`)
         break
       }
       webSocket.send('\u001b[D')
@@ -87,7 +83,6 @@ export const handleKeyDown = (webSocket) => (event) => {
       }
       webSocket.send('\u001b')
       break
-
     case 'a':
       event.preventDefault()
       if (event.ctrlKey) {
