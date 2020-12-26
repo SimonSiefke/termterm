@@ -76,16 +76,31 @@ test('function - bell', () => {
   expect(bell).toHaveBeenCalledTimes(1)
 })
 
+test('function - bell (with text)', () => {
+  const lines = getOutputLines('sample \u0007 text')
+  expect(lines).toEqual(['sample  text'])
+})
+
 test('function - cursorUp', () => {
   const cursorUp = jest.fn()
   runTest('\u001b[A', { cursorUp })
   expect(cursorUp).toHaveBeenCalledTimes(1)
 })
 
-test('function - cursorUp - multiple', () => {
+test('function - cursorUp (with text)', () => {
+  const lines = getOutputLines('sample \u001b[A text')
+  expect(lines).toEqual(['sample  text'])
+})
+
+test('function - cursorUp (multiple)', () => {
   const cursorUp = jest.fn()
   runTest('\u001b[2A', { cursorUp })
   expect(cursorUp).toHaveBeenCalledTimes(1)
+})
+
+test('function - cursorUp (multiple, with text)', () => {
+  const lines = getOutputLines('sample \u001b[2A text')
+  expect(lines).toEqual(['sample  text'])
 })
 
 test('function - cursorDown', () => {
@@ -94,10 +109,20 @@ test('function - cursorDown', () => {
   expect(cursorDown).toHaveBeenCalledTimes(1)
 })
 
-test('function - cursorDown - multiple', () => {
+test('function - cursorDown (with text)', () => {
+  const lines = getOutputLines('sample \u001b[B text')
+  expect(lines).toEqual(['sample  text'])
+})
+
+test('function - cursorDown (multiple)', () => {
   const cursorDown = jest.fn()
   runTest('\u001b[2B', { cursorDown })
   expect(cursorDown).toHaveBeenCalledTimes(1)
+})
+
+test('function - cursorDown (multiple, with text)', () => {
+  const lines = getOutputLines('sample \u001b[2B text')
+  expect(lines).toEqual(['sample  text'])
 })
 
 test('function - cursorRight', () => {
@@ -106,10 +131,20 @@ test('function - cursorRight', () => {
   expect(cursorRight).toHaveBeenCalledTimes(1)
 })
 
-test('function - cursorRight - multiple', () => {
+test('function - cursorRight (with text)', () => {
+  const lines = getOutputLines('sample \u001b[C text')
+  expect(lines).toEqual(['sample  text'])
+})
+
+test('function - cursorRight (multiple)', () => {
   const cursorRight = jest.fn()
   runTest('\u001b[2C', { cursorRight })
   expect(cursorRight).toHaveBeenCalledTimes(1)
+})
+
+test('function - cursorRight (multiple, with text)', () => {
+  const lines = getOutputLines('sample \u001b[2C text')
+  expect(lines).toEqual(['sample  text'])
 })
 
 test('function - cursorLeft', () => {
@@ -118,10 +153,20 @@ test('function - cursorLeft', () => {
   expect(cursorLeft).toHaveBeenCalledTimes(1)
 })
 
-test('function - cursorLeft - multiple', () => {
+test('function - cursorLeft (with text)', () => {
+  const lines = getOutputLines('sample \u001b[D text')
+  expect(lines).toEqual(['sample  text'])
+})
+
+test('function - cursorLeft (multiple)', () => {
   const cursorLeft = jest.fn()
-  runTest('\u001b[D', { cursorLeft })
+  runTest('\u001b[2D', { cursorLeft })
   expect(cursorLeft).toHaveBeenCalledTimes(1)
+})
+
+test('function - cursorLeft (multiple, with text)', () => {
+  const lines = getOutputLines('sample \u001b[2D text')
+  expect(lines).toEqual(['sample  text'])
 })
 
 test('function - goToHome', () => {

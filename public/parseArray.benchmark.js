@@ -4,6 +4,7 @@ import { parseArray as optimizedParseArray } from './optimizedParseArray.js'
 import { performance } from 'perf_hooks'
 import { dirname } from 'path'
 import { fileURLToPath } from 'url'
+import { StringDecoder } from 'string_decoder'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
@@ -11,6 +12,11 @@ const noop = () => {}
 
 const getBinarySize = (string) => {
   return Buffer.byteLength(string, 'utf8')
+}
+
+const decodeText = (text) => {
+  const decode = new StringDecoder('utf8')
+  return decode.write(text)
 }
 
 const bytesToSize = (bytes) => {
@@ -33,7 +39,8 @@ const test_terminal = {
   cursorRight: () => calls.push(['cursorRight']),
   cursorLeft: () => calls.push(['cursorLeft']),
   backspace: () => calls.push(['backspace']),
-  print: () => calls.push(['print']),
+  print: (startIndex, endIndex) =>
+    calls.push(['print', decodeText(array.slice(startIndex, endIndex))]),
   newline: () => calls.push(['newline']),
 }
 

@@ -31,7 +31,6 @@ export const parseArray = (
   let params = []
   let printStartIndex = -1
   while (i < array.length) {
-    state
     switch (state) {
       case State.TopLevelContent:
         middle: switch (array[i]) {
@@ -208,6 +207,7 @@ export const parseArray = (
             break
           case /* J */ 74:
             eraseInDisplay2()
+            state = State.TopLevelContent
             i++
             break
           case /* m */ 109:
