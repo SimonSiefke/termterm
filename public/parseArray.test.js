@@ -82,9 +82,21 @@ test('function - cursorUp', () => {
   expect(cursorUp).toHaveBeenCalledTimes(1)
 })
 
+test('function - cursorUp - multiple', () => {
+  const cursorUp = jest.fn()
+  runTest('\u001b[2A', { cursorUp })
+  expect(cursorUp).toHaveBeenCalledTimes(1)
+})
+
 test('function - cursorDown', () => {
   const cursorDown = jest.fn()
   runTest('\u001b[B', { cursorDown })
+  expect(cursorDown).toHaveBeenCalledTimes(1)
+})
+
+test('function - cursorDown - multiple', () => {
+  const cursorDown = jest.fn()
+  runTest('\u001b[2B', { cursorDown })
   expect(cursorDown).toHaveBeenCalledTimes(1)
 })
 
@@ -94,7 +106,19 @@ test('function - cursorRight', () => {
   expect(cursorRight).toHaveBeenCalledTimes(1)
 })
 
+test('function - cursorRight - multiple', () => {
+  const cursorRight = jest.fn()
+  runTest('\u001b[2C', { cursorRight })
+  expect(cursorRight).toHaveBeenCalledTimes(1)
+})
+
 test('function - cursorLeft', () => {
+  const cursorLeft = jest.fn()
+  runTest('\u001b[D', { cursorLeft })
+  expect(cursorLeft).toHaveBeenCalledTimes(1)
+})
+
+test('function - cursorLeft - multiple', () => {
   const cursorLeft = jest.fn()
   runTest('\u001b[D', { cursorLeft })
   expect(cursorLeft).toHaveBeenCalledTimes(1)
@@ -122,6 +146,18 @@ test('function - setCharAttributes', () => {
   const setCharAttributes = jest.fn()
   runTest('\u001b[0;7m', { setCharAttributes })
   expect(setCharAttributes).toHaveBeenCalledTimes(1)
+})
+
+test.skip('function - auxPortOn', () => {
+  const auxPortOn = jest.fn()
+  runTest(`\u001b[5i`, { auxPortOn })
+  expect(auxPortOn).toHaveBeenCalledTimes(1)
+})
+
+test.skip('function - auxPortOff', () => {
+  const auxPortOff = jest.fn()
+  runTest(`\u001b[4i`, { auxPortOff })
+  expect(auxPortOff).toHaveBeenCalledTimes(1)
 })
 
 test('text - hello world!', () => {
