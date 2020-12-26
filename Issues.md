@@ -5,3 +5,5 @@
 <!-- interesting xterm buffer performance improvements https://github.com/xtermjs/xterm.js/issues/791 -->
 
 <!-- interesting typed array performance improvements https://github.com/xtermjs/xterm.js/pull/1796 -->
+
+<!-- interesting terminal emulator ttyd https://github.com/tsl0922/ttyd -->
