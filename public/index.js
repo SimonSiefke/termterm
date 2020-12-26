@@ -3,7 +3,8 @@ import { handleKeyDown } from './handleKeyDown.js'
 
 const $Output = document.getElementById('Output')
 
-const webSocket = new WebSocket(`ws://${location.host}`, ['tty'])
+const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
+const webSocket = new WebSocket(`${wsProtocol}//${location.host}`, ['tty'])
 // TODO enable on prod
 // webSocket.binaryType = 'arraybuffer'
 
