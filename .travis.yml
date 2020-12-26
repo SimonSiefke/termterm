@@ -9,9 +9,13 @@ install:
 
 stages:
   - test
+  - benchmark
 
 jobs:
   include:
     - stage: test
       script:
         - npm test
+    - stage: benchmark
+      script:
+        - npm run benchmark
