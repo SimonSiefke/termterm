@@ -1,24 +1,64 @@
 export const handleKeyDown = (webSocket) => (event) => {
   switch (event.key) {
     case 'Shift':
+    case 'Alt':
+    case 'Control':
+      break
+    case 'Insert':
+      webSocket.send('\u001b[2~')
+      break
+    case 'Delete':
+      if (event.ctrlKey) {
+        if (event.shiftKey) {
+          webSocket.send('\u001b[3;6~')
+          break
+        }
+        webSocket.send('\u001b[3;5~')
+        break
+      }
+      if (event.shiftKey) {
+        webSocket.send('\u001b[3;2~')
+        break
+      }
+      webSocket.send('\u001b[3~')
       break
     case 'ArrowUp':
       event.preventDefault()
+      if (event.ctrlKey) {
+        webSocket.send('\u001b[1;5A')
+        break
+      }
       webSocket.send('\u001b[A')
       break
     case 'ArrowDown':
       event.preventDefault()
+      if (event.ctrlKey) {
+        webSocket.send('\u001b[1;5B')
+        break
+      }
       webSocket.send('\u001b[B')
       break
     case 'ArrowRight':
       event.preventDefault()
+      if (event.ctrlKey) {
+        webSocket.send('\u001b[1;5C')
+        break
+      }
       webSocket.send('\u001b[C')
       break
     case 'ArrowLeft':
       event.preventDefault()
+      if (event.ctrlKey) {
+        webSocket.send(`\u001b[1;5D`)
+        break
+      }
       webSocket.send('\u001b[D')
       break
     case 'Enter':
+      if (event.altKey) {
+        webSocket.send('\u001b\r')
+        break
+      }
       webSocket.send('\n')
       break
     case 'Backspace':
@@ -35,16 +75,19 @@ export const handleKeyDown = (webSocket) => (event) => {
     case 'Tab':
       event.preventDefault()
       if (event.shiftKey) {
-        webSocket.send('\x1b[Z')
+        webSocket.send('\u001b[Z')
         break
       }
       webSocket.send('\t')
       break
     case 'Escape':
-      webSocket.send('\x1b')
+      if (event.altKey) {
+        webSocket.send('\u001b\u001b')
+        break
+      }
+      webSocket.send('\u001b')
       break
-    case 'Control':
-      break
+
     case 'a':
       event.preventDefault()
       if (event.ctrlKey) {
@@ -261,40 +304,40 @@ export const handleKeyDown = (webSocket) => (event) => {
       webSocket.send('z')
       break
     case 'F1':
-      webSocket.send('\x1bOP')
+      webSocket.send('\u001bOP')
       break
     case 'F2':
-      webSocket.send('\x1bOQ')
+      webSocket.send('\u001bOQ')
       break
     case 'F3':
-      webSocket.send('\x1bOR')
+      webSocket.send('\u001bOR')
       break
     case 'F4':
-      webSocket.send('\x1bOS')
+      webSocket.send('\u001bOS')
       break
     case 'F5':
-      webSocket.send('\x1b[15~')
+      webSocket.send('\u001b[15~')
       break
     case 'F6':
-      webSocket.send('\x1b[17~')
+      webSocket.send('\u001b[17~')
       break
     case 'F7':
-      webSocket.send('\x1b[18~')
+      webSocket.send('\u001b[18~')
       break
     case 'F8':
-      webSocket.send('\x1b[19~')
+      webSocket.send('\u001b[19~')
       break
     case 'F9':
-      webSocket.send('\x1b[20~')
+      webSocket.send('\u001b[20~')
       break
     case 'F10':
-      webSocket.send('\x1b[21~')
+      webSocket.send('\u001b[21~')
       break
     case 'F11':
-      webSocket.send('\x1b[23~')
+      webSocket.send('\u001b[23~')
       break
     case 'F12':
-      webSocket.send('\x1b[24~')
+      webSocket.send('\u001b[24~')
       break
     case '/':
       event.preventDefault()
@@ -303,10 +346,10 @@ export const handleKeyDown = (webSocket) => (event) => {
     case '0':
       if (event.altKey) {
         if (event.shiftKey) {
-          webSocket.send('\x1b)')
+          webSocket.send('\u001b)')
           break
         }
-        webSocket.send('\x1b0')
+        webSocket.send('\u001b0')
         break
       }
       webSocket.send('0')
@@ -314,10 +357,10 @@ export const handleKeyDown = (webSocket) => (event) => {
     case '1':
       if (event.altKey) {
         if (event.shiftKey) {
-          webSocket.send('\x1b!')
+          webSocket.send('\u001b!')
           break
         }
-        webSocket.send('\x1b1')
+        webSocket.send('\u001b1')
         break
       }
       webSocket.send('1')
@@ -325,10 +368,10 @@ export const handleKeyDown = (webSocket) => (event) => {
     case '2':
       if (event.altKey) {
         if (event.shiftKey) {
-          webSocket.send('\x1b@')
+          webSocket.send('\u001b@')
           break
         }
-        webSocket.send('\x1b2')
+        webSocket.send('\u001b2')
         break
       }
       webSocket.send('2')
@@ -336,10 +379,10 @@ export const handleKeyDown = (webSocket) => (event) => {
     case '3':
       if (event.altKey) {
         if (event.shiftKey) {
-          webSocket.send('\x1b#')
+          webSocket.send('\u001b#')
           break
         }
-        webSocket.send('\x1b3')
+        webSocket.send('\u001b3')
         break
       }
       webSocket.send('3')
@@ -347,9 +390,9 @@ export const handleKeyDown = (webSocket) => (event) => {
     case '4':
       if (event.altKey) {
         if (event.shiftKey) {
-          webSocket.send('\x1b$')
+          webSocket.send('\u001b$')
         }
-        webSocket.send('\x1b4')
+        webSocket.send('\u001b4')
         break
       }
       webSocket.send('4')
@@ -357,9 +400,9 @@ export const handleKeyDown = (webSocket) => (event) => {
     case '5':
       if (event.altKey) {
         if (event.shiftKey) {
-          webSocket.send('\x1b%')
+          webSocket.send('\u001b%')
         }
-        webSocket.send('\x1b5')
+        webSocket.send('\u001b5')
         break
       }
       webSocket.send('5')
@@ -367,9 +410,9 @@ export const handleKeyDown = (webSocket) => (event) => {
     case '6':
       if (event.altKey) {
         if (event.shiftKey) {
-          webSocket.send('\x1b^')
+          webSocket.send('\u001b^')
         }
-        webSocket.send('\x1b6')
+        webSocket.send('\u001b6')
         break
       }
       webSocket.send('6')
@@ -377,10 +420,10 @@ export const handleKeyDown = (webSocket) => (event) => {
     case '7':
       if (event.altKey) {
         if (event.shiftKey) {
-          webSocket.send('\x1b&')
+          webSocket.send('\u001b&')
           break
         }
-        webSocket.send('\x1b7')
+        webSocket.send('\u001b7')
         break
       }
       webSocket.send('7')
@@ -388,10 +431,10 @@ export const handleKeyDown = (webSocket) => (event) => {
     case '8':
       if (event.altKey) {
         if (event.shiftKey) {
-          webSocket.send('\x1b*')
+          webSocket.send('\u001b*')
           break
         }
-        webSocket.send('\x1b8')
+        webSocket.send('\u001b8')
         break
       }
       webSocket.send('8')
@@ -399,10 +442,10 @@ export const handleKeyDown = (webSocket) => (event) => {
     case '9':
       if (event.altKey) {
         if (event.shiftKey) {
-          webSocket.send('\x1b(')
+          webSocket.send('\u001b(')
           break
         }
-        webSocket.send('\x1b9')
+        webSocket.send('\u001b9')
         break
       }
       webSocket.send('9')

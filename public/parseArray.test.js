@@ -218,7 +218,7 @@ test('text - prompt', () => {
 })
 
 test('text - csi with print and execute', () => {
-  const lines = getOutputLines('\x1b[<31;5mHello World! öäü€\nabc')
+  const lines = getOutputLines('\u001b[<31;5mHello World! öäü€\nabc')
   expect(lines).toEqual([`Hello World! öäü€`, `abc`])
 })
 
