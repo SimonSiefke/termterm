@@ -1,5 +1,6 @@
 import fs from 'fs'
 import { parseArray } from './parseArray.js'
+import { parseArray as optimizedParseArray } from './optimizedParseArray.js'
 import { performance } from 'perf_hooks'
 import { dirname } from 'path'
 import { fileURLToPath } from 'url'
@@ -60,6 +61,7 @@ for (let i = 0; i < 1000; i++) {
   console.log(bytesToSize(fixtureLs.length))
   const start = performance.now()
   parseArray(array, noop_terminal)
+  // optimizedParseArray(array, noop_terminal)
   const end = performance.now()
   console.log(`took ${end - start}ms`)
   total += end - start
