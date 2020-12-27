@@ -32,8 +32,12 @@ export const handleKeyDown = (webSocket) => (event) => {
     case 'Y':
     case 'Z':
       if (event.ctrlKey) {
-        const charCode = event.key.charCodeAt()
-        webSocket.send(String.fromCharCode(charCode - 64))
+        const char = String.fromCharCode(event.key.charCodeAt() - 64)
+        if (event.altKey) {
+          webSocket.send(`\u001b${char}`)
+          break
+        }
+        webSocket.send(char)
         break
       }
       webSocket.send(event.key)
@@ -68,9 +72,12 @@ export const handleKeyDown = (webSocket) => (event) => {
         if (event.key === 'r' || event.key === 'l') {
           event.preventDefault()
         }
-
-        const charCode = event.key.charCodeAt()
-        webSocket.send(String.fromCharCode(charCode - 96))
+        const char = String.fromCharCode(event.key.charCodeAt() - 96)
+        if (event.altKey) {
+          webSocket.send(`\u001b${char}`)
+          break
+        }
+        webSocket.send(char)
         break
       }
       webSocket.send(event.key)
@@ -204,6 +211,83 @@ export const handleKeyDown = (webSocket) => (event) => {
     case '/':
       event.preventDefault()
       webSocket.send('/')
+      break
+    case '?':
+      if (event.ctrlKey) {
+        webSocket.send('\u007f')
+        break
+      }
+      if (event.altKey) {
+        webSocket.send(`\u001b?`)
+        break
+      }
+      webSocket.send(event.key)
+      break
+    case '|':
+      if (event.ctrlKey) {
+        webSocket.send('\u001c')
+        break
+      }
+      if (event.altKey) {
+        webSocket.send(`\u001b|`)
+        break
+      }
+      webSocket.send(event.key)
+      break
+    case '{':
+      if (event.ctrlKey) {
+        webSocket.send('\u001b')
+        break
+      }
+      if (event.altKey) {
+        webSocket.send(`\u001b{`)
+        break
+      }
+      webSocket.send(event.key)
+      break
+    case '}':
+      if (event.ctrlKey) {
+        webSocket.send('\u001d')
+        break
+      }
+      if (event.altKey) {
+        webSocket.send(`\u001b}`)
+        break
+      }
+      webSocket.send(event.key)
+      break
+    case '_':
+      if (event.ctrlKey) {
+        webSocket.send('\u001f')
+        break
+      }
+      if (event.altKey) {
+        webSocket.send(`\u001b_`)
+        break
+      }
+      webSocket.send(event.key)
+      break
+    case '^':
+      if (event.ctrlKey) {
+        webSocket.send('\u001e')
+        break
+      }
+      if (event.altKey) {
+        webSocket.send(`\u001b^`)
+        break
+      }
+      webSocket.send(event.key)
+      break
+    case '@':
+      if (event.ctrlKey) {
+        webSocket.send('\u0000')
+        break
+      }
+      if (event.altKey) {
+        webSocket.send(`\u001b@`)
+        break
+      }
+      webSocket.send(event.key)
       break
     default:
       if (event.altKey) {

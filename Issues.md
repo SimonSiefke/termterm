@@ -22,3 +22,9 @@ https://github.com/paultag/libansiescape/tree/master/tests/tests
  -->
 
 <!-- TODO ansi escape links https://github.com/xtermjs/xterm.js/issues/1134 -->
+
+<!-- TODO escape sequences https://github.com/xtermjs/xterm.js/issues/2797 -->
+
+<!-- helpful:
+showkey -a to get ascii output of keyboard shortcuts
+ -->

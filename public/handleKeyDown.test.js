@@ -1078,13 +1078,13 @@ test('key - -', () => {
 
 test('key - _', () => {
   const send = jest.fn()
-  runTest({ key: '_' }, send)
+  runTest({ key: '_', shiftKey: true }, send)
   expect(send).toHaveBeenCalledWith(`_`)
 })
 
 test('key - +', () => {
   const send = jest.fn()
-  runTest({ key: '+' }, send)
+  runTest({ key: '+', shiftKey: true }, send)
   expect(send).toHaveBeenCalledWith(`+`)
 })
 
@@ -1108,25 +1108,25 @@ test('key - .', () => {
 
 test('key - <', () => {
   const send = jest.fn()
-  runTest({ key: '<' }, send)
+  runTest({ key: '<', shiftKey: true }, send)
   expect(send).toHaveBeenCalledWith(`<`)
 })
 
 test('key - >', () => {
   const send = jest.fn()
-  runTest({ key: '>' }, send)
+  runTest({ key: '>', shiftKey: true }, send)
   expect(send).toHaveBeenCalledWith(`>`)
 })
 
 test('key - {', () => {
   const send = jest.fn()
-  runTest({ key: '{' }, send)
+  runTest({ key: '{', shiftKey: true }, send)
   expect(send).toHaveBeenCalledWith(`{`)
 })
 
 test('key - }', () => {
   const send = jest.fn()
-  runTest({ key: '}' }, send)
+  runTest({ key: '}', shiftKey: true }, send)
   expect(send).toHaveBeenCalledWith(`}`)
 })
 
@@ -1150,7 +1150,7 @@ test('key - \\', () => {
 
 test('key - |', () => {
   const send = jest.fn()
-  runTest({ key: '|' }, send)
+  runTest({ key: '|', shiftKey: true }, send)
   expect(send).toHaveBeenCalledWith(`|`)
 })
 
@@ -1162,7 +1162,7 @@ test('key - `', () => {
 
 test('key - ~', () => {
   const send = jest.fn()
-  runTest({ key: '~' }, send)
+  runTest({ key: '~', shiftKey: true }, send)
   expect(send).toHaveBeenCalledWith('~')
 })
 
@@ -1224,6 +1224,162 @@ test('key - Alt+(', () => {
   const send = jest.fn()
   runTest({ key: '(', altKey: true, shiftKey: true }, send)
   expect(send).toHaveBeenCalledWith(`\u001b(`)
+})
+
+test('key - Alt+_', () => {
+  const send = jest.fn()
+  runTest({ key: '_', altKey: true, shiftKey: true }, send)
+  expect(send).toHaveBeenCalledWith(`\u001b_`)
+})
+
+test('key - Alt+{', () => {
+  const send = jest.fn()
+  runTest({ key: '{', altKey: true, shiftKey: true }, send)
+  expect(send).toHaveBeenCalledWith(`\u001b{`)
+})
+
+test('key - Alt+}', () => {
+  const send = jest.fn()
+  runTest({ key: '}', altKey: true, shiftKey: true }, send)
+  expect(send).toHaveBeenCalledWith(`\u001b}`)
+})
+
+test('key - Alt+|', () => {
+  const send = jest.fn()
+  runTest({ key: '|', altKey: true, shiftKey: true }, send)
+  expect(send).toHaveBeenCalledWith(`\u001b|`)
+})
+
+test('key - Alt+?', () => {
+  const send = jest.fn()
+  runTest({ key: '?', altKey: true, shiftKey: true }, send)
+  expect(send).toHaveBeenCalledWith(`\u001b?`)
+})
+
+test('key - Ctrl+!', () => {
+  const send = jest.fn()
+  runTest({ key: '!', ctrlKey: true, shiftKey: true }, send)
+  expect(send).toHaveBeenCalledWith(`!`)
+})
+
+test('key - Ctrl+@', () => {
+  const send = jest.fn()
+  runTest({ key: '@', ctrlKey: true, shiftKey: true }, send)
+  expect(send).toHaveBeenCalledWith(`\u0000`)
+})
+
+test('key - Ctrl+#', () => {
+  const send = jest.fn()
+  runTest({ key: '#', ctrlKey: true, shiftKey: true }, send)
+  expect(send).toHaveBeenCalledWith(`#`)
+})
+
+test('key - Ctrl+$', () => {
+  const send = jest.fn()
+  runTest({ key: '$', ctrlKey: true, shiftKey: true }, send)
+  expect(send).toHaveBeenCalledWith(`$`)
+})
+
+test('key - Ctrl+%', () => {
+  const send = jest.fn()
+  runTest({ key: '%', ctrlKey: true, shiftKey: true }, send)
+  expect(send).toHaveBeenCalledWith(`%`)
+})
+
+test('key - Ctrl+^', () => {
+  const send = jest.fn()
+  runTest({ key: '^', ctrlKey: true, shiftKey: true }, send)
+  expect(send).toHaveBeenCalledWith(`\u001e`)
+})
+
+test('key - Ctrl+&', () => {
+  const send = jest.fn()
+  runTest({ key: '&', ctrlKey: true, shiftKey: true }, send)
+  expect(send).toHaveBeenCalledWith(`&`)
+})
+
+test('key - Ctrl+*', () => {
+  const send = jest.fn()
+  runTest({ key: '*', ctrlKey: true, shiftKey: true }, send)
+  expect(send).toHaveBeenCalledWith(`*`)
+})
+
+test('key - Ctrl+(', () => {
+  const send = jest.fn()
+  runTest({ key: '(', ctrlKey: true, shiftKey: true }, send)
+  expect(send).toHaveBeenCalledWith(`(`)
+})
+
+test('key - Ctrl+_', () => {
+  const send = jest.fn()
+  runTest({ key: '_', ctrlKey: true, shiftKey: true }, send)
+  expect(send).toHaveBeenCalledWith(`\u001f`)
+})
+
+test('key - Ctrl+{', () => {
+  const send = jest.fn()
+  runTest({ key: '{', ctrlKey: true, shiftKey: true }, send)
+  expect(send).toHaveBeenCalledWith(`\u001b`)
+})
+
+test('key - Ctrl+}', () => {
+  const send = jest.fn()
+  runTest({ key: '}', ctrlKey: true, shiftKey: true }, send)
+  expect(send).toHaveBeenCalledWith(`\u001d`)
+})
+
+test('key - Ctrl+|', () => {
+  const send = jest.fn()
+  runTest({ key: '|', ctrlKey: true, shiftKey: true }, send)
+  expect(send).toHaveBeenCalledWith(`\u001c`)
+})
+
+test('key - Ctrl+:', () => {
+  const send = jest.fn()
+  runTest({ key: ':', ctrlKey: true, shiftKey: true }, send)
+  expect(send).toHaveBeenCalledWith(`:`)
+})
+
+test('key - Ctrl+"', () => {
+  const send = jest.fn()
+  runTest({ key: '"', ctrlKey: true, shiftKey: true }, send)
+  expect(send).toHaveBeenCalledWith(`"`)
+})
+
+test('key - Ctrl+?', () => {
+  const send = jest.fn()
+  runTest({ key: '?', ctrlKey: true, shiftKey: true }, send)
+  expect(send).toHaveBeenCalledWith(`\u007f`)
+})
+
+test('key - Ctrl+<', () => {
+  const send = jest.fn()
+  runTest({ key: '<', ctrlKey: true, shiftKey: true }, send)
+  expect(send).toHaveBeenCalledWith(`<`)
+})
+
+test('key - Ctrl+>', () => {
+  const send = jest.fn()
+  runTest({ key: '>', ctrlKey: true, shiftKey: true }, send)
+  expect(send).toHaveBeenCalledWith(`>`)
+})
+
+test('key Ctrl+Alt+a', () => {
+  const send = jest.fn()
+  runTest({ key: 'a', ctrlKey: true, altKey: true }, send)
+  expect(send).toHaveBeenCalledWith(`\u001b\u0001`)
+})
+
+test('key Ctrl+Alt+A', () => {
+  const send = jest.fn()
+  runTest({ key: 'A', ctrlKey: true, altKey: true, shiftKey: true }, send)
+  expect(send).toHaveBeenCalledWith(`\u001b\u0001`)
+})
+
+test('key Ctrl+Alt+,', () => {
+  const send = jest.fn()
+  runTest({ key: ',', ctrlKey: true, altKey: true }, send)
+  expect(send).toHaveBeenCalledWith(`\u001b,`)
 })
 
 test('key - UIKeyInputUpArrow', () => {
