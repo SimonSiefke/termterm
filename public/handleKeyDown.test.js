@@ -1225,3 +1225,27 @@ test('key - Alt+(', () => {
   runTest({ key: '(', altKey: true, shiftKey: true }, send)
   expect(send).toHaveBeenCalledWith(`\u001b(`)
 })
+
+test('key - UIKeyInputUpArrow', () => {
+  const send = jest.fn()
+  runTest({ key: 'UIKeyInputUpArrow' }, send)
+  expect(send).toHaveBeenCalledWith(`\u001b[A`)
+})
+
+test('key - UIKeyInputDownArrow', () => {
+  const send = jest.fn()
+  runTest({ key: 'UIKeyInputDownArrow' }, send)
+  expect(send).toHaveBeenCalledWith(`\u001b[B`)
+})
+
+test('key - UIKeyInputRightArrow', () => {
+  const send = jest.fn()
+  runTest({ key: 'UIKeyInputRightArrow' }, send)
+  expect(send).toHaveBeenCalledWith(`\u001b[C`)
+})
+
+test('key - UIKeyInputLeftArrow', () => {
+  const send = jest.fn()
+  runTest({ key: 'UIKeyInputLeftArrow' }, send)
+  expect(send).toHaveBeenCalledWith(`\u001b[D`)
+})

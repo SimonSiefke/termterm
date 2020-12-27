@@ -154,6 +154,18 @@ export const handleKeyDown = (webSocket) => (event) => {
       }
       webSocket.send('\u001b[D')
       break
+    case 'UIKeyInputUpArrow':
+      webSocket.send('\u001b[A')
+      break
+    case 'UIKeyInputDownArrow':
+      webSocket.send('\u001b[B')
+      break
+    case 'UIKeyInputRightArrow':
+      webSocket.send('\u001b[C')
+      break
+    case 'UIKeyInputLeftArrow':
+      webSocket.send('\u001b[D')
+      break
     case 'Enter':
       if (event.altKey) {
         webSocket.send('\u001b\r')
