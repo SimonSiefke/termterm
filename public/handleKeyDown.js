@@ -31,7 +31,6 @@ export const handleKeyDown = (webSocket) => (event) => {
     case 'X':
     case 'Y':
     case 'Z':
-      event.preventDefault()
       if (event.ctrlKey) {
         const charCode = event.key.charCodeAt()
         webSocket.send(String.fromCharCode(charCode - 64))
@@ -65,7 +64,9 @@ export const handleKeyDown = (webSocket) => (event) => {
     case 'x':
     case 'y':
     case 'z':
-      event.preventDefault()
+      if (event.key === 'r') {
+        event.preventDefault()
+      }
       if (event.ctrlKey) {
         const charCode = event.key.charCodeAt()
         webSocket.send(String.fromCharCode(charCode - 96))
