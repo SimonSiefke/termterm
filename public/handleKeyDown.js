@@ -5,6 +5,110 @@ export const handleKeyDown = (webSocket) => (event) => {
     (event.ctrlKey ? 4 : 0) |
     (event.metaKey ? 8 : 0)
   switch (event.key) {
+    case 'A':
+    case 'B':
+    case 'C':
+    case 'D':
+    case 'E':
+    case 'F':
+    case 'G':
+    case 'H':
+    case 'I':
+    case 'J':
+    case 'K':
+    case 'L':
+    case 'M':
+    case 'N':
+    case 'O':
+    case 'P':
+    case 'Q':
+    case 'R':
+    case 'S':
+    case 'T':
+    case 'U':
+    case 'V':
+    case 'W':
+    case 'X':
+    case 'Y':
+    case 'Z':
+      event.preventDefault()
+      if (event.ctrlKey) {
+        const charCode = event.key.charCodeAt()
+        webSocket.send(String.fromCharCode(charCode - 64))
+        break
+      }
+      webSocket.send(event.key)
+      break
+    case 'a':
+    case 'b':
+    case 'c':
+    case 'd':
+    case 'e':
+    case 'f':
+    case 'g':
+    case 'h':
+    case 'i':
+    case 'j':
+    case 'k':
+    case 'l':
+    case 'm':
+    case 'n':
+    case 'o':
+    case 'p':
+    case 'q':
+    case 'r':
+    case 's':
+    case 't':
+    case 'u':
+    case 'v':
+    case 'w':
+    case 'x':
+    case 'y':
+    case 'z':
+      event.preventDefault()
+      if (event.ctrlKey) {
+        const charCode = event.key.charCodeAt()
+        webSocket.send(String.fromCharCode(charCode - 96))
+        break
+      }
+      webSocket.send(event.key)
+      break
+    case 'F1':
+      webSocket.send('\u001bOP')
+      break
+    case 'F2':
+      webSocket.send('\u001bOQ')
+      break
+    case 'F3':
+      webSocket.send('\u001bOR')
+      break
+    case 'F4':
+      webSocket.send('\u001bOS')
+      break
+    case 'F5':
+      webSocket.send('\u001b[15~')
+      break
+    case 'F6':
+      webSocket.send('\u001b[17~')
+      break
+    case 'F7':
+      webSocket.send('\u001b[18~')
+      break
+    case 'F8':
+      webSocket.send('\u001b[19~')
+      break
+    case 'F9':
+      webSocket.send('\u001b[20~')
+      break
+    case 'F10':
+      webSocket.send('\u001b[21~')
+      break
+    case 'F11':
+      webSocket.send('\u001b[23~')
+      break
+    case 'F12':
+      webSocket.send('\u001b[24~')
+      break
     case 'Shift':
     case 'Alt':
     case 'Control':
@@ -82,257 +186,6 @@ export const handleKeyDown = (webSocket) => (event) => {
         break
       }
       webSocket.send('\u001b')
-      break
-    case 'a':
-      event.preventDefault()
-      if (event.ctrlKey) {
-        webSocket.send('\u0001')
-        break
-      }
-      webSocket.send('a')
-      break
-    case 'b':
-      event.preventDefault()
-      if (event.ctrlKey) {
-        webSocket.send('\u0002')
-        break
-      }
-      webSocket.send('b')
-      break
-    case 'c':
-      event.preventDefault()
-      if (event.ctrlKey) {
-        webSocket.send('\u0003')
-        break
-      }
-      webSocket.send('c')
-      break
-    case 'd':
-      event.preventDefault()
-      if (event.ctrlKey) {
-        webSocket.send('\u0004')
-        break
-      }
-      webSocket.send('d')
-      break
-    case 'e':
-      event.preventDefault()
-      if (event.ctrlKey) {
-        webSocket.send('\u0005')
-        break
-      }
-      webSocket.send('e')
-      break
-    case 'f':
-      event.preventDefault()
-      if (event.ctrlKey) {
-        webSocket.send('\u0006')
-        break
-      }
-      webSocket.send('f')
-      break
-    case 'g':
-      event.preventDefault()
-      if (event.ctrlKey) {
-        webSocket.send('\u0007')
-        break
-      }
-      webSocket.send('g')
-      break
-    case 'h':
-      event.preventDefault()
-      if (event.ctrlKey) {
-        webSocket.send('\u0008')
-        break
-      }
-      webSocket.send('h')
-      break
-    case 'i':
-      event.preventDefault()
-      if (event.ctrlKey) {
-        webSocket.send('\u0009')
-        break
-      }
-      webSocket.send('i')
-      break
-    case 'j':
-      event.preventDefault()
-      event.preventDefault()
-      if (event.ctrlKey) {
-        webSocket.send('\u000a')
-        break
-      }
-      webSocket.send('j')
-      break
-    case 'k':
-      event.preventDefault()
-      event.preventDefault()
-      if (event.ctrlKey) {
-        webSocket.send('\u000b')
-        break
-      }
-      webSocket.send('k')
-      break
-    case 'l':
-      event.preventDefault()
-      event.preventDefault()
-      if (event.ctrlKey) {
-        webSocket.send('\u000c')
-        break
-      }
-      webSocket.send('l')
-      break
-    case 'm':
-      event.preventDefault()
-      if (event.ctrlKey) {
-        webSocket.send('\u000d')
-        break
-      }
-      webSocket.send('m')
-      break
-    case 'n':
-      event.preventDefault()
-      if (event.ctrlKey) {
-        webSocket.send('\u000e')
-        break
-      }
-      webSocket.send('n')
-      break
-    case 'o':
-      event.preventDefault()
-      if (event.ctrlKey) {
-        webSocket.send('\u000f')
-        break
-      }
-      webSocket.send('o')
-      break
-    case 'p':
-      event.preventDefault()
-      if (event.ctrlKey) {
-        webSocket.send('\u0010')
-        break
-      }
-      webSocket.send('p')
-      break
-    case 'q':
-      event.preventDefault()
-      event.preventDefault()
-      if (event.ctrlKey) {
-        webSocket.send('\u0011')
-        break
-      }
-      webSocket.send('q')
-      break
-    case 'r':
-      event.preventDefault()
-      event.preventDefault()
-      if (event.ctrlKey) {
-        webSocket.send('\u0012')
-        break
-      }
-      webSocket.send('r')
-      break
-    case 's':
-      event.preventDefault()
-      event.preventDefault()
-      if (event.ctrlKey) {
-        webSocket.send('\u0013')
-        break
-      }
-      webSocket.send('s')
-      break
-    case 't':
-      event.preventDefault()
-      if (event.ctrlKey) {
-        webSocket.send('\u0014')
-        break
-      }
-      webSocket.send('t')
-      break
-    case 'u':
-      event.preventDefault()
-      if (event.ctrlKey) {
-        webSocket.send('\u0015')
-        break
-      }
-      webSocket.send('u')
-      break
-    case 'v':
-      if (event.ctrlKey) {
-        // TODO paste
-        // webSocket.send('\u0016')
-        break
-      }
-      event.preventDefault()
-      webSocket.send('v')
-      break
-    case 'w':
-      event.preventDefault()
-      if (event.ctrlKey) {
-        webSocket.send('\u0017')
-        break
-      }
-      webSocket.send('w')
-      break
-    case 'x':
-      event.preventDefault()
-      if (event.ctrlKey) {
-        webSocket.send('\u0018')
-        break
-      }
-      webSocket.send('x')
-      break
-    case 'y':
-      event.preventDefault()
-      if (event.ctrlKey) {
-        webSocket.send('\u0019')
-        break
-      }
-      webSocket.send('y')
-      break
-    case 'z':
-      event.preventDefault()
-      if (event.ctrlKey) {
-        webSocket.send('\u001a')
-        break
-      }
-      webSocket.send('z')
-      break
-    case 'F1':
-      webSocket.send('\u001bOP')
-      break
-    case 'F2':
-      webSocket.send('\u001bOQ')
-      break
-    case 'F3':
-      webSocket.send('\u001bOR')
-      break
-    case 'F4':
-      webSocket.send('\u001bOS')
-      break
-    case 'F5':
-      webSocket.send('\u001b[15~')
-      break
-    case 'F6':
-      webSocket.send('\u001b[17~')
-      break
-    case 'F7':
-      webSocket.send('\u001b[18~')
-      break
-    case 'F8':
-      webSocket.send('\u001b[19~')
-      break
-    case 'F9':
-      webSocket.send('\u001b[20~')
-      break
-    case 'F10':
-      webSocket.send('\u001b[21~')
-      break
-    case 'F11':
-      webSocket.send('\u001b[23~')
-      break
-    case 'F12':
-      webSocket.send('\u001b[24~')
       break
     case '/':
       event.preventDefault()
