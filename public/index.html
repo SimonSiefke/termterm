@@ -13,12 +13,30 @@
         z-index: -1;
         opacity: 0;
       }
+
+      #Output {
+        margin: 0;
+        line-height: 1;
+      }
+      #Terminal {
+        font-family: monospace;
+        position: relative;
+      }
+      #Cursor {
+        width: 7.21667px;
+        height: 16px;
+        background: rgba(0, 0, 0, 0.5);
+        position: absolute;
+        top: 0;
+        left: 0;
+      }
     </style>
   </head>
   <body>
     <h1>hello world</h1>
     <div id="Terminal">
       <!-- <textarea id="Input" cols="30" rows="10"></textarea> -->
+      <div id="Cursor"></div>
       <pre id="Output"></pre>
     </div>
 

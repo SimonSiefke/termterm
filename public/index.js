@@ -63,13 +63,14 @@ const decodeText = (text) => {
 
 const print = (startIndex, endIndex) => {
   $Output.textContent += decodeText(uint8Array.slice(startIndex, endIndex))
+  window.scrollTo(0, document.body.scrollHeight)
 }
 
 let uint8Array
 
 webSocket.onmessage = async ({ data }) => {
-  // console.log({ data: await data.text() })
-  // console.log({ array: new Uint8Array(await data.arrayBuffer()) })
+  console.log({ data: await data.text() })
+  console.log({ array: new Uint8Array(await data.arrayBuffer()) })
   const buffer =
     webSocket.binaryType === 'arraybuffer' ? data : await data.arrayBuffer()
   uint8Array = new Uint8Array(buffer)
@@ -104,6 +105,44 @@ window.addEventListener('paste', (event) => {
 // $Input.focus()
 // }
 
-window.onkeydown = handleKeyDown(webSocket)
+const $Cursor = document.getElementById('Cursor')
+
+let x = 0
+let y = 0
+
+const columnWidth = 7.21667
+const rowHeight = 13
+const renderCursor = (x, y) => {
+  $Cursor.style.transform = `translate(${x * columnWidth}px, ${
+    y * rowHeight
+  }px)`
+  console.log('render cursor')
+}
+
+window.addEventListener('keydown', (event) => {
+  console.log(event)
+  switch (event.key) {
+    case 'ArrowLeft':
+      // go left
+      x--
+      renderCursor(x, y)
+      break
+    case 'ArrowRight':
+      // go right
+      x++
+      renderCursor(x, y)
+      break
+    case 'ArrowDown':
+      y++
+      renderCursor(x, y)
+      break
+    case 'ArrowUp':
+      y--
+      renderCursor(x, y)
+      break
+  }
+})
+
+window.addEventListener('keydown', handleKeyDown(webSocket))
 
 // $Input.onbeforeinput = handleBeforeInput(webSocket)
