@@ -30,3 +30,9 @@ showkey -a to get ascii output of keyboard shortcuts
  -->
 
 <!-- TODO local echo https://github.com/xtermjs/xterm.js/issues/887 -->
+
+<!-- TODO handle more keys
+- https://github.com/xtermjs/xterm.js/issues/1426
+- https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/keyCode
+- https://github.com/xtermjs/xterm.js/issues/2358
+ -->
