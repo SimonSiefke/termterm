@@ -28,3 +28,5 @@ https://github.com/paultag/libansiescape/tree/master/tests/tests
 <!-- helpful:
 showkey -a to get ascii output of keyboard shortcuts
  -->
+
+<!-- TODO local echo https://github.com/xtermjs/xterm.js/issues/887 -->
