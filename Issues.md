@@ -8,6 +8,8 @@
 
 <!-- interesting terminal emulator ttyd https://github.com/tsl0922/ttyd -->
 
+<!-- interesting terminal emulator terminus https://github.com/Eugeny/terminus -->
+
 <!-- TODO more test cases
 https://gitlab.com/davidbittner/ansi-parser/-/blob/master/src/parsers/tests.rs
 https://github.com/paultag/libansiescape/tree/master/tests/tests
