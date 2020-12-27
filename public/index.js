@@ -1,5 +1,5 @@
-import { parseArray } from './parseArray.js'
 import { handleKeyDown } from './handleKeyDown.js'
+import { parseArray } from './parseArray.js'
 
 const $Output = document.getElementById('Output')
 
@@ -68,8 +68,8 @@ const print = (startIndex, endIndex) => {
 let uint8Array
 
 webSocket.onmessage = async ({ data }) => {
-  console.log({ data: await data.text() })
-  console.log({ array: new Uint8Array(await data.arrayBuffer()) })
+  // console.log({ data: await data.text() })
+  // console.log({ array: new Uint8Array(await data.arrayBuffer()) })
   const buffer =
     webSocket.binaryType === 'arraybuffer' ? data : await data.arrayBuffer()
   uint8Array = new Uint8Array(buffer)
@@ -99,4 +99,11 @@ window.addEventListener('paste', (event) => {
   webSocket.send(text)
 })
 
+// const $Input = document.getElementById('Input')
+// window.onclick = () => {
+// $Input.focus()
+// }
+
 window.onkeydown = handleKeyDown(webSocket)
+
+// $Input.onbeforeinput = handleBeforeInput(webSocket)

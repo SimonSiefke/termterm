@@ -4,10 +4,24 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
+    <style>
+      #Input {
+        width: 0;
+        height: 0;
+        border: none;
+        outline: none;
+        z-index: -1;
+        opacity: 0;
+      }
+    </style>
   </head>
   <body>
     <h1>hello world</h1>
-    <pre id="Output"></pre>
+    <div id="Terminal">
+      <!-- <textarea id="Input" cols="30" rows="10"></textarea> -->
+      <pre id="Output"></pre>
+    </div>
+
     <script type="module" src="index.js"></script>
   </body>
 </html>
