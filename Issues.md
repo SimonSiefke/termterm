@@ -14,3 +14,9 @@
 https://gitlab.com/davidbittner/ansi-parser/-/blob/master/src/parsers/tests.rs
 https://github.com/paultag/libansiescape/tree/master/tests/tests
  -->
+
+<!-- TODO benchmark ideas
+- ls -lR /usr/lib
+- yes
+- seq 1000000
+ -->
