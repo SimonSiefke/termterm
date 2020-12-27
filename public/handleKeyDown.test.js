@@ -14,160 +14,568 @@ const runTest = (
   handleKeyDown({ send })({ key, preventDefault, shiftKey, altKey, ctrlKey })
 }
 
-test('key - A', () => {
+test('key 33', () => {
   const send = jest.fn()
-  runTest({ key: 'A' }, send)
+  runTest({ key: '!', shiftKey: true }, send)
+  expect(send).toHaveBeenCalledWith(`!`)
+})
+
+test('key 34', () => {
+  const send = jest.fn()
+  runTest({ key: '"', shiftKey: true }, send)
+  expect(send).toHaveBeenCalledWith(`"`)
+})
+
+test('key 35', () => {
+  const send = jest.fn()
+  runTest({ key: '#', shiftKey: true }, send)
+  expect(send).toHaveBeenCalledWith(`#`)
+})
+
+test('key 36', () => {
+  const send = jest.fn()
+  runTest({ key: '$', shiftKey: true }, send)
+  expect(send).toHaveBeenCalledWith(`$`)
+})
+
+test('key 37', () => {
+  const send = jest.fn()
+  runTest({ key: '%', shiftKey: true }, send)
+  expect(send).toHaveBeenCalledWith(`%`)
+})
+
+test('key 38', () => {
+  const send = jest.fn()
+  runTest({ key: '&', shiftKey: true }, send)
+  expect(send).toHaveBeenCalledWith(`&`)
+})
+
+test('key 39', () => {
+  const send = jest.fn()
+  runTest({ key: "'", shiftKey: true }, send)
+  expect(send).toHaveBeenCalledWith(`'`)
+})
+
+test('key 40', () => {
+  const send = jest.fn()
+  runTest({ key: '(', shiftKey: true }, send)
+  expect(send).toHaveBeenCalledWith(`(`)
+})
+
+test('key 41', () => {
+  const send = jest.fn()
+  runTest({ key: ')', shiftKey: true }, send)
+  expect(send).toHaveBeenCalledWith(`)`)
+})
+
+test('key 42', () => {
+  const send = jest.fn()
+  runTest({ key: '*', shiftKey: true }, send)
+  expect(send).toHaveBeenCalledWith(`*`)
+})
+
+test('key 43', () => {
+  const send = jest.fn()
+  runTest({ key: '+', shiftKey: true }, send)
+  expect(send).toHaveBeenCalledWith(`+`)
+})
+
+test('key 44', () => {
+  const send = jest.fn()
+  runTest({ key: ',' }, send)
+  expect(send).toHaveBeenCalledWith(`,`)
+})
+
+test('key 45', () => {
+  const send = jest.fn()
+  runTest({ key: '-' }, send)
+  expect(send).toHaveBeenCalledWith(`-`)
+})
+
+test('key 46', () => {
+  const send = jest.fn()
+  runTest({ key: '.' }, send)
+  expect(send).toHaveBeenCalledWith(`.`)
+})
+
+test('key 47', () => {
+  const send = jest.fn()
+  runTest({ key: '/' }, send)
+  expect(send).toHaveBeenCalledWith(`/`)
+})
+
+test('key 48', () => {
+  const send = jest.fn()
+  runTest({ key: '0' }, send)
+  expect(send).toHaveBeenCalledWith(`0`)
+})
+
+test('key 49', () => {
+  const send = jest.fn()
+  runTest({ key: '1' }, send)
+  expect(send).toHaveBeenCalledWith(`1`)
+})
+
+test('key 50', () => {
+  const send = jest.fn()
+  runTest({ key: '2' }, send)
+  expect(send).toHaveBeenCalledWith(`2`)
+})
+
+test('key 51', () => {
+  const send = jest.fn()
+  runTest({ key: '3' }, send)
+  expect(send).toHaveBeenCalledWith(`3`)
+})
+
+test('key 52', () => {
+  const send = jest.fn()
+  runTest({ key: '4' }, send)
+  expect(send).toHaveBeenCalledWith(`4`)
+})
+
+test('key 53', () => {
+  const send = jest.fn()
+  runTest({ key: '5' }, send)
+  expect(send).toHaveBeenCalledWith(`5`)
+})
+
+test('key 54', () => {
+  const send = jest.fn()
+  runTest({ key: '6' }, send)
+  expect(send).toHaveBeenCalledWith(`6`)
+})
+
+test('key 55', () => {
+  const send = jest.fn()
+  runTest({ key: '7' }, send)
+  expect(send).toHaveBeenCalledWith(`7`)
+})
+
+test('key 56', () => {
+  const send = jest.fn()
+  runTest({ key: '8' }, send)
+  expect(send).toHaveBeenCalledWith(`8`)
+})
+
+test('key 57', () => {
+  const send = jest.fn()
+  runTest({ key: '9' }, send)
+  expect(send).toHaveBeenCalledWith(`9`)
+})
+
+test('key 58', () => {
+  const send = jest.fn()
+  runTest({ key: ':', shiftKey: true }, send)
+  expect(send).toHaveBeenCalledWith(`:`)
+})
+
+test('key 59', () => {
+  const send = jest.fn()
+  runTest({ key: ';' }, send)
+  expect(send).toHaveBeenCalledWith(`;`)
+})
+
+test('key 60', () => {
+  const send = jest.fn()
+  runTest({ key: '<', shiftKey: true }, send)
+  expect(send).toHaveBeenCalledWith(`<`)
+})
+
+test('key 61', () => {
+  const send = jest.fn()
+  runTest({ key: '=' }, send)
+  expect(send).toHaveBeenCalledWith(`=`)
+})
+
+test('key 62', () => {
+  const send = jest.fn()
+  runTest({ key: '>', shiftKey: true }, send)
+  expect(send).toHaveBeenCalledWith(`>`)
+})
+
+test('key 63', () => {
+  const send = jest.fn()
+  runTest({ key: '?', shiftKey: true }, send)
+  expect(send).toHaveBeenCalledWith(`?`)
+})
+
+test('key 64', () => {
+  const send = jest.fn()
+  runTest({ key: '@', shiftKey: true }, send)
+  expect(send).toHaveBeenCalledWith(`@`)
+})
+
+test('key 65', () => {
+  const send = jest.fn()
+  runTest({ key: 'A', shiftKey: true }, send)
   expect(send).toHaveBeenCalledWith(`A`)
 })
 
-test('key - B', () => {
+test('key 66', () => {
   const send = jest.fn()
-  runTest({ key: 'B' }, send)
+  runTest({ key: 'B', shiftKey: true }, send)
   expect(send).toHaveBeenCalledWith('B')
 })
 
-test('key - C', () => {
+test('key 67', () => {
   const send = jest.fn()
-  runTest({ key: 'C' }, send)
+  runTest({ key: 'C', shiftKey: true }, send)
   expect(send).toHaveBeenCalledWith('C')
 })
 
-test('key - D', () => {
+test('key 68', () => {
   const send = jest.fn()
-  runTest({ key: 'D' }, send)
+  runTest({ key: 'D', shiftKey: true }, send)
   expect(send).toHaveBeenCalledWith('D')
 })
 
-test('key - E', () => {
+test('key 69', () => {
   const send = jest.fn()
-  runTest({ key: 'E' }, send)
+  runTest({ key: 'E', shiftKey: true }, send)
   expect(send).toHaveBeenCalledWith('E')
 })
 
-test('key - F', () => {
+test('key 70', () => {
   const send = jest.fn()
-  runTest({ key: 'F' }, send)
+  runTest({ key: 'F', shiftKey: true }, send)
   expect(send).toHaveBeenCalledWith('F')
 })
 
-test('key - G', () => {
+test('key 71', () => {
   const send = jest.fn()
-  runTest({ key: 'G' }, send)
+  runTest({ key: 'G', shiftKey: true }, send)
   expect(send).toHaveBeenCalledWith('G')
 })
 
-test('key - H', () => {
+test('key 72', () => {
   const send = jest.fn()
-  runTest({ key: 'H' }, send)
+  runTest({ key: 'H', shiftKey: true }, send)
   expect(send).toHaveBeenCalledWith('H')
 })
 
-test('key - I', () => {
+test('key 73', () => {
   const send = jest.fn()
-  runTest({ key: 'I' }, send)
+  runTest({ key: 'I', shiftKey: true }, send)
   expect(send).toHaveBeenCalledWith('I')
 })
 
-test('key - J', () => {
+test('key 74', () => {
   const send = jest.fn()
-  runTest({ key: 'J' }, send)
+  runTest({ key: 'J', shiftKey: true }, send)
   expect(send).toHaveBeenCalledWith('J')
 })
 
-test('key - K', () => {
+test('key 75', () => {
   const send = jest.fn()
-  runTest({ key: 'K' }, send)
+  runTest({ key: 'K', shiftKey: true }, send)
   expect(send).toHaveBeenCalledWith('K')
 })
 
-test('key - L', () => {
+test('key 76', () => {
   const send = jest.fn()
-  runTest({ key: 'L' }, send)
+  runTest({ key: 'L', shiftKey: true }, send)
   expect(send).toHaveBeenCalledWith('L')
 })
 
-test('key - M', () => {
+test('key 77', () => {
   const send = jest.fn()
-  runTest({ key: 'M' }, send)
+  runTest({ key: 'M', shiftKey: true }, send)
   expect(send).toHaveBeenCalledWith('M')
 })
 
-test('key - N', () => {
+test('key 78', () => {
   const send = jest.fn()
-  runTest({ key: 'N' }, send)
+  runTest({ key: 'N', shiftKey: true }, send)
   expect(send).toHaveBeenCalledWith('N')
 })
 
-test('key - O', () => {
+test('key 79', () => {
   const send = jest.fn()
-  runTest({ key: 'O' }, send)
+  runTest({ key: 'O', shiftKey: true }, send)
   expect(send).toHaveBeenCalledWith('O')
 })
 
-test('key - P', () => {
+test('key 80', () => {
   const send = jest.fn()
-  runTest({ key: 'P' }, send)
+  runTest({ key: 'P', shiftKey: true }, send)
   expect(send).toHaveBeenCalledWith('P')
 })
 
-test('key - Q', () => {
+test('key 81', () => {
   const send = jest.fn()
-  runTest({ key: 'Q' }, send)
+  runTest({ key: 'Q', shiftKey: true }, send)
   expect(send).toHaveBeenCalledWith('Q')
 })
 
-test('key - R', () => {
+test('key 82', () => {
   const send = jest.fn()
-  runTest({ key: 'R' }, send)
+  runTest({ key: 'R', shiftKey: true }, send)
   expect(send).toHaveBeenCalledWith('R')
 })
 
-test('key - S', () => {
+test('key 83', () => {
   const send = jest.fn()
-  runTest({ key: 'S' }, send)
+  runTest({ key: 'S', shiftKey: true }, send)
   expect(send).toHaveBeenCalledWith('S')
 })
 
-test('key - T', () => {
+test('key 84', () => {
   const send = jest.fn()
-  runTest({ key: 'T' }, send)
+  runTest({ key: 'T', shiftKey: true }, send)
   expect(send).toHaveBeenCalledWith('T')
 })
 
-test('key - U', () => {
+test('key 85', () => {
   const send = jest.fn()
-  runTest({ key: 'U' }, send)
+  runTest({ key: 'U', shiftKey: true }, send)
   expect(send).toHaveBeenCalledWith('U')
 })
 
-test('key - V', () => {
+test('key 86', () => {
   const send = jest.fn()
-  runTest({ key: 'V' }, send)
+  runTest({ key: 'V', shiftKey: true }, send)
   expect(send).toHaveBeenCalledWith('V')
 })
 
-test('key - W', () => {
+test('key 87', () => {
   const send = jest.fn()
-  runTest({ key: 'W' }, send)
+  runTest({ key: 'W', shiftKey: true }, send)
   expect(send).toHaveBeenCalledWith('W')
 })
 
-test('key - X', () => {
+test('key 88', () => {
   const send = jest.fn()
-  runTest({ key: 'X' }, send)
+  runTest({ key: 'X', shiftKey: true }, send)
   expect(send).toHaveBeenCalledWith('X')
 })
 
-test('key - Y', () => {
+test('key 89', () => {
   const send = jest.fn()
-  runTest({ key: 'Y' }, send)
+  runTest({ key: 'Y', shiftKey: true }, send)
   expect(send).toHaveBeenCalledWith('Y')
 })
 
-test('key - Z', () => {
+test('key 90', () => {
   const send = jest.fn()
-  runTest({ key: 'Z' }, send)
+  runTest({ key: 'Z', shiftKey: true }, send)
   expect(send).toHaveBeenCalledWith('Z')
+})
+
+test('key 91', () => {
+  const send = jest.fn()
+  runTest({ key: '[' }, send)
+  expect(send).toHaveBeenCalledWith(`[`)
+})
+
+test('key - 92', () => {
+  const send = jest.fn()
+  runTest({ key: '\\' }, send)
+  expect(send).toHaveBeenCalledWith(`\\`)
+})
+
+test('key 93', () => {
+  const send = jest.fn()
+  runTest({ key: ']' }, send)
+  expect(send).toHaveBeenCalledWith(`]`)
+})
+
+test('key 94', () => {
+  const send = jest.fn()
+  runTest({ key: '^', shiftKey: true }, send)
+  expect(send).toHaveBeenCalledWith(`^`)
+})
+
+test('key 95', () => {
+  const send = jest.fn()
+  runTest({ key: '_', shiftKey: true }, send)
+  expect(send).toHaveBeenCalledWith(`_`)
+})
+
+test('key 96', () => {
+  const send = jest.fn()
+  runTest({ key: '`' }, send)
+  expect(send).toHaveBeenCalledWith('`')
+})
+
+test('key 97', () => {
+  const send = jest.fn()
+  runTest({ key: 'a' }, send)
+  expect(send).toHaveBeenCalledWith(`a`)
+})
+
+test('key 98', () => {
+  const send = jest.fn()
+  runTest({ key: 'b' }, send)
+  expect(send).toHaveBeenCalledWith(`b`)
+})
+
+test('key 99', () => {
+  const send = jest.fn()
+  runTest({ key: 'c' }, send)
+  expect(send).toHaveBeenCalledWith(`c`)
+})
+
+test('key 100', () => {
+  const send = jest.fn()
+  runTest({ key: 'd' }, send)
+  expect(send).toHaveBeenCalledWith(`d`)
+})
+
+test('key 101', () => {
+  const send = jest.fn()
+  runTest({ key: 'e' }, send)
+  expect(send).toHaveBeenCalledWith(`e`)
+})
+
+test('key 102', () => {
+  const send = jest.fn()
+  runTest({ key: 'f' }, send)
+  expect(send).toHaveBeenCalledWith(`f`)
+})
+
+test('key 103', () => {
+  const send = jest.fn()
+  runTest({ key: 'g' }, send)
+  expect(send).toHaveBeenCalledWith('g')
+})
+
+test('key 104', () => {
+  const send = jest.fn()
+  runTest({ key: 'j' }, send)
+  expect(send).toHaveBeenCalledWith('j')
+})
+
+test('key 105', () => {
+  const send = jest.fn()
+  runTest({ key: 'h' }, send)
+  expect(send).toHaveBeenCalledWith('h')
+})
+
+test('key 106', () => {
+  const send = jest.fn()
+  runTest({ key: 'i' }, send)
+  expect(send).toHaveBeenCalledWith('i')
+})
+
+test('key 107', () => {
+  const send = jest.fn()
+  runTest({ key: 'k' }, send)
+  expect(send).toHaveBeenCalledWith('k')
+})
+
+test('key 108', () => {
+  const send = jest.fn()
+  runTest({ key: 'l' }, send)
+  expect(send).toHaveBeenCalledWith('l')
+})
+
+test('key 109', () => {
+  const send = jest.fn()
+  runTest({ key: 'm' }, send)
+  expect(send).toHaveBeenCalledWith('m')
+})
+
+test('key 110', () => {
+  const send = jest.fn()
+  runTest({ key: 'n' }, send)
+  expect(send).toHaveBeenCalledWith('n')
+})
+
+test('key 111', () => {
+  const send = jest.fn()
+  runTest({ key: 'o' }, send)
+  expect(send).toHaveBeenCalledWith('o')
+})
+
+test('key 112', () => {
+  const send = jest.fn()
+  runTest({ key: 'p' }, send)
+  expect(send).toHaveBeenCalledWith('p')
+})
+
+test('key 113', () => {
+  const send = jest.fn()
+  runTest({ key: 'q' }, send)
+  expect(send).toHaveBeenCalledWith('q')
+})
+
+test('key 114', () => {
+  const send = jest.fn()
+  runTest({ key: 'r' }, send)
+  expect(send).toHaveBeenCalledWith('r')
+})
+
+test('key 115', () => {
+  const send = jest.fn()
+  runTest({ key: 's' }, send)
+  expect(send).toHaveBeenCalledWith('s')
+})
+
+test('key 116', () => {
+  const send = jest.fn()
+  runTest({ key: 't' }, send)
+  expect(send).toHaveBeenCalledWith('t')
+})
+
+test('key 117', () => {
+  const send = jest.fn()
+  runTest({ key: 'u' }, send)
+  expect(send).toHaveBeenCalledWith('u')
+})
+
+test('key 118', () => {
+  const send = jest.fn()
+  runTest({ key: 'v' }, send)
+  expect(send).toHaveBeenCalledWith('v')
+})
+
+test('key 119', () => {
+  const send = jest.fn()
+  runTest({ key: 'w' }, send)
+  expect(send).toHaveBeenCalledWith('w')
+})
+
+test('key 120', () => {
+  const send = jest.fn()
+  runTest({ key: 'x' }, send)
+  expect(send).toHaveBeenCalledWith('x')
+})
+
+test('key 121', () => {
+  const send = jest.fn()
+  runTest({ key: 'y' }, send)
+  expect(send).toHaveBeenCalledWith('y')
+})
+
+test('key 122', () => {
+  const send = jest.fn()
+  runTest({ key: 'z' }, send)
+  expect(send).toHaveBeenCalledWith('z')
+})
+
+test('key 123', () => {
+  const send = jest.fn()
+  runTest({ key: '{', shiftKey: true }, send)
+  expect(send).toHaveBeenCalledWith(`{`)
+})
+
+test('key 124', () => {
+  const send = jest.fn()
+  runTest({ key: '|', shiftKey: true }, send)
+  expect(send).toHaveBeenCalledWith(`|`)
+})
+
+test('key 125', () => {
+  const send = jest.fn()
+  runTest({ key: '}', shiftKey: true }, send)
+  expect(send).toHaveBeenCalledWith(`}`)
+})
+
+test('key 126', () => {
+  const send = jest.fn()
+  runTest({ key: '~', shiftKey: true }, send)
+  expect(send).toHaveBeenCalledWith('~')
 })
 
 test('key - Ctrl+A', () => {
@@ -500,162 +908,6 @@ test('key - Control', () => {
   expect(send).not.toHaveBeenCalled()
 })
 
-test('key - a', () => {
-  const send = jest.fn()
-  runTest({ key: 'a' }, send)
-  expect(send).toHaveBeenCalledWith(`a`)
-})
-
-test('key - b', () => {
-  const send = jest.fn()
-  runTest({ key: 'b' }, send)
-  expect(send).toHaveBeenCalledWith(`b`)
-})
-
-test('key - c', () => {
-  const send = jest.fn()
-  runTest({ key: 'c' }, send)
-  expect(send).toHaveBeenCalledWith(`c`)
-})
-
-test('key - d', () => {
-  const send = jest.fn()
-  runTest({ key: 'd' }, send)
-  expect(send).toHaveBeenCalledWith(`d`)
-})
-
-test('key - e', () => {
-  const send = jest.fn()
-  runTest({ key: 'e' }, send)
-  expect(send).toHaveBeenCalledWith(`e`)
-})
-
-test('key - f', () => {
-  const send = jest.fn()
-  runTest({ key: 'f' }, send)
-  expect(send).toHaveBeenCalledWith(`f`)
-})
-
-test('key - g', () => {
-  const send = jest.fn()
-  runTest({ key: 'g' }, send)
-  expect(send).toHaveBeenCalledWith('g')
-})
-
-test('key - j', () => {
-  const send = jest.fn()
-  runTest({ key: 'j' }, send)
-  expect(send).toHaveBeenCalledWith('j')
-})
-
-test('key - h', () => {
-  const send = jest.fn()
-  runTest({ key: 'h' }, send)
-  expect(send).toHaveBeenCalledWith('h')
-})
-
-test('key - i', () => {
-  const send = jest.fn()
-  runTest({ key: 'i' }, send)
-  expect(send).toHaveBeenCalledWith('i')
-})
-
-test('key - k', () => {
-  const send = jest.fn()
-  runTest({ key: 'k' }, send)
-  expect(send).toHaveBeenCalledWith('k')
-})
-
-test('key - l', () => {
-  const send = jest.fn()
-  runTest({ key: 'l' }, send)
-  expect(send).toHaveBeenCalledWith('l')
-})
-
-test('key - m', () => {
-  const send = jest.fn()
-  runTest({ key: 'm' }, send)
-  expect(send).toHaveBeenCalledWith('m')
-})
-
-test('key - n', () => {
-  const send = jest.fn()
-  runTest({ key: 'n' }, send)
-  expect(send).toHaveBeenCalledWith('n')
-})
-
-test('key - o', () => {
-  const send = jest.fn()
-  runTest({ key: 'o' }, send)
-  expect(send).toHaveBeenCalledWith('o')
-})
-
-test('key - p', () => {
-  const send = jest.fn()
-  runTest({ key: 'p' }, send)
-  expect(send).toHaveBeenCalledWith('p')
-})
-
-test('key - q', () => {
-  const send = jest.fn()
-  runTest({ key: 'q' }, send)
-  expect(send).toHaveBeenCalledWith('q')
-})
-
-test('key - r', () => {
-  const send = jest.fn()
-  runTest({ key: 'r' }, send)
-  expect(send).toHaveBeenCalledWith('r')
-})
-
-test('key - s', () => {
-  const send = jest.fn()
-  runTest({ key: 's' }, send)
-  expect(send).toHaveBeenCalledWith('s')
-})
-
-test('key - t', () => {
-  const send = jest.fn()
-  runTest({ key: 't' }, send)
-  expect(send).toHaveBeenCalledWith('t')
-})
-
-test('key - u', () => {
-  const send = jest.fn()
-  runTest({ key: 'u' }, send)
-  expect(send).toHaveBeenCalledWith('u')
-})
-
-test('key - v', () => {
-  const send = jest.fn()
-  runTest({ key: 'v' }, send)
-  expect(send).toHaveBeenCalledWith('v')
-})
-
-test('key - w', () => {
-  const send = jest.fn()
-  runTest({ key: 'w' }, send)
-  expect(send).toHaveBeenCalledWith('w')
-})
-
-test('key - x', () => {
-  const send = jest.fn()
-  runTest({ key: 'x' }, send)
-  expect(send).toHaveBeenCalledWith('x')
-})
-
-test('key - y', () => {
-  const send = jest.fn()
-  runTest({ key: 'y' }, send)
-  expect(send).toHaveBeenCalledWith('y')
-})
-
-test('key - z', () => {
-  const send = jest.fn()
-  runTest({ key: 'z' }, send)
-  expect(send).toHaveBeenCalledWith('z')
-})
-
 test('key - Ctrl+a', () => {
   const send = jest.fn()
   runTest({ key: 'a', ctrlKey: true }, send)
@@ -884,72 +1136,6 @@ test('key - F12', () => {
   expect(send).toHaveBeenCalledWith(`\u001b[24~`)
 })
 
-test('key - /', () => {
-  const send = jest.fn()
-  runTest({ key: '/' }, send)
-  expect(send).toHaveBeenCalledWith(`/`)
-})
-
-test('key - 0', () => {
-  const send = jest.fn()
-  runTest({ key: '0' }, send)
-  expect(send).toHaveBeenCalledWith(`0`)
-})
-
-test('key - 1', () => {
-  const send = jest.fn()
-  runTest({ key: '1' }, send)
-  expect(send).toHaveBeenCalledWith(`1`)
-})
-
-test('key - 2', () => {
-  const send = jest.fn()
-  runTest({ key: '2' }, send)
-  expect(send).toHaveBeenCalledWith(`2`)
-})
-
-test('key - 3', () => {
-  const send = jest.fn()
-  runTest({ key: '3' }, send)
-  expect(send).toHaveBeenCalledWith(`3`)
-})
-
-test('key - 4', () => {
-  const send = jest.fn()
-  runTest({ key: '4' }, send)
-  expect(send).toHaveBeenCalledWith(`4`)
-})
-
-test('key - 5', () => {
-  const send = jest.fn()
-  runTest({ key: '5' }, send)
-  expect(send).toHaveBeenCalledWith(`5`)
-})
-
-test('key - 6', () => {
-  const send = jest.fn()
-  runTest({ key: '6' }, send)
-  expect(send).toHaveBeenCalledWith(`6`)
-})
-
-test('key - 7', () => {
-  const send = jest.fn()
-  runTest({ key: '7' }, send)
-  expect(send).toHaveBeenCalledWith(`7`)
-})
-
-test('key - 8', () => {
-  const send = jest.fn()
-  runTest({ key: '8' }, send)
-  expect(send).toHaveBeenCalledWith(`8`)
-})
-
-test('key - 9', () => {
-  const send = jest.fn()
-  runTest({ key: '9' }, send)
-  expect(send).toHaveBeenCalledWith(`9`)
-})
-
 test('key - Alt+0', () => {
   const send = jest.fn()
   runTest({ key: '0', altKey: true }, send)
@@ -1008,162 +1194,6 @@ test('key - Alt+9', () => {
   const send = jest.fn()
   runTest({ key: '9', altKey: true }, send)
   expect(send).toHaveBeenCalledWith(`\u001b9`)
-})
-
-test('key - )', () => {
-  const send = jest.fn()
-  runTest({ key: ')', shiftKey: true }, send)
-  expect(send).toHaveBeenCalledWith(`)`)
-})
-
-test('key - !', () => {
-  const send = jest.fn()
-  runTest({ key: '!', shiftKey: true }, send)
-  expect(send).toHaveBeenCalledWith(`!`)
-})
-
-test('key - @', () => {
-  const send = jest.fn()
-  runTest({ key: '@', shiftKey: true }, send)
-  expect(send).toHaveBeenCalledWith(`@`)
-})
-
-test('key - #', () => {
-  const send = jest.fn()
-  runTest({ key: '#', shiftKey: true }, send)
-  expect(send).toHaveBeenCalledWith(`#`)
-})
-
-test('key - $', () => {
-  const send = jest.fn()
-  runTest({ key: '$', shiftKey: true }, send)
-  expect(send).toHaveBeenCalledWith(`$`)
-})
-
-test('key - %', () => {
-  const send = jest.fn()
-  runTest({ key: '%', shiftKey: true }, send)
-  expect(send).toHaveBeenCalledWith(`%`)
-})
-
-test('key - ^', () => {
-  const send = jest.fn()
-  runTest({ key: '^', shiftKey: true }, send)
-  expect(send).toHaveBeenCalledWith(`^`)
-})
-
-test('key - &', () => {
-  const send = jest.fn()
-  runTest({ key: '&', shiftKey: true }, send)
-  expect(send).toHaveBeenCalledWith(`&`)
-})
-
-test('key - *', () => {
-  const send = jest.fn()
-  runTest({ key: '*', shiftKey: true }, send)
-  expect(send).toHaveBeenCalledWith(`*`)
-})
-
-test('key - (', () => {
-  const send = jest.fn()
-  runTest({ key: '(', shiftKey: true }, send)
-  expect(send).toHaveBeenCalledWith(`(`)
-})
-
-test('key - -', () => {
-  const send = jest.fn()
-  runTest({ key: '-' }, send)
-  expect(send).toHaveBeenCalledWith(`-`)
-})
-
-test('key - _', () => {
-  const send = jest.fn()
-  runTest({ key: '_', shiftKey: true }, send)
-  expect(send).toHaveBeenCalledWith(`_`)
-})
-
-test('key - +', () => {
-  const send = jest.fn()
-  runTest({ key: '+', shiftKey: true }, send)
-  expect(send).toHaveBeenCalledWith(`+`)
-})
-
-test('key - =', () => {
-  const send = jest.fn()
-  runTest({ key: '=' }, send)
-  expect(send).toHaveBeenCalledWith(`=`)
-})
-
-test('key - ,', () => {
-  const send = jest.fn()
-  runTest({ key: ',' }, send)
-  expect(send).toHaveBeenCalledWith(`,`)
-})
-
-test('key - .', () => {
-  const send = jest.fn()
-  runTest({ key: '.' }, send)
-  expect(send).toHaveBeenCalledWith(`.`)
-})
-
-test('key - <', () => {
-  const send = jest.fn()
-  runTest({ key: '<', shiftKey: true }, send)
-  expect(send).toHaveBeenCalledWith(`<`)
-})
-
-test('key - >', () => {
-  const send = jest.fn()
-  runTest({ key: '>', shiftKey: true }, send)
-  expect(send).toHaveBeenCalledWith(`>`)
-})
-
-test('key - {', () => {
-  const send = jest.fn()
-  runTest({ key: '{', shiftKey: true }, send)
-  expect(send).toHaveBeenCalledWith(`{`)
-})
-
-test('key - }', () => {
-  const send = jest.fn()
-  runTest({ key: '}', shiftKey: true }, send)
-  expect(send).toHaveBeenCalledWith(`}`)
-})
-
-test('key - [', () => {
-  const send = jest.fn()
-  runTest({ key: '[' }, send)
-  expect(send).toHaveBeenCalledWith(`[`)
-})
-
-test('key - ]', () => {
-  const send = jest.fn()
-  runTest({ key: ']' }, send)
-  expect(send).toHaveBeenCalledWith(`]`)
-})
-
-test('key - \\', () => {
-  const send = jest.fn()
-  runTest({ key: '\\' }, send)
-  expect(send).toHaveBeenCalledWith(`\\`)
-})
-
-test('key - |', () => {
-  const send = jest.fn()
-  runTest({ key: '|', shiftKey: true }, send)
-  expect(send).toHaveBeenCalledWith(`|`)
-})
-
-test('key - `', () => {
-  const send = jest.fn()
-  runTest({ key: '`' }, send)
-  expect(send).toHaveBeenCalledWith('`')
-})
-
-test('key - ~', () => {
-  const send = jest.fn()
-  runTest({ key: '~', shiftKey: true }, send)
-  expect(send).toHaveBeenCalledWith('~')
 })
 
 test('key - Alt+)', () => {
