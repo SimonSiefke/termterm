@@ -20,3 +20,5 @@ https://github.com/paultag/libansiescape/tree/master/tests/tests
 - yes
 - seq 1000000
  -->
+
+<!-- TODO ansi escape links https://github.com/xtermjs/xterm.js/issues/1134 -->
