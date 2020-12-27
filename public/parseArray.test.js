@@ -217,9 +217,74 @@ test('text - prompt', () => {
   expect(lines).toEqual([`simon (master *) termterm $ `])
 })
 
-test('text - csi with print and execute', () => {
+test('special - csi with print and execute', () => {
   const lines = getOutputLines('\u001b[<31;5mHello World! öäü€\nabc')
   expect(lines).toEqual([`Hello World! öäü€`, `abc`])
+})
+
+test.skip('special - single DCS', () => {
+  const lines = getOutputLines(`\x1bP1;2;3+$aäbc;däe\x9c`)
+  expect(lines).toEqual([])
+})
+
+test.skip('special - multi DCS', () => {
+  const lines = getOutputLines(`\x1bP1;2;3+$abc;de`)
+  expect(lines).toEqual([])
+})
+
+test.skip('special - print + DCS(C1)', () => {
+  const lines = getOutputLines(`abc\x901;2;3+$abc;de\x9c`)
+  expect(lines).toEqual(['abc'])
+})
+
+test.skip('special - print + PM(C1) + print', () => {
+  const lines = getOutputLines(`abc\x98123tzf\x9cdefg`)
+  expect(lines).toEqual(['abcdefg'])
+})
+
+test.skip('special - print + OSC(C1) + print', () => {
+  const lines = getOutputLines(`abc\x9d123;tzf\x9cdefg`)
+  expect(lines).toEqual(['abcdefg'])
+})
+
+test.skip('special - error recovery', () => {
+  const lines = getOutputLines(`\x1b[1€abcdefg\x9b<;c`)
+  expect(lines).toEqual(['abcdefg'])
+})
+
+test.skip('special - 7bit ST should be swallowed', () => {
+  const lines = getOutputLines(`abc\x9d123;tzf\x1b\\defg`)
+  expect(lines).toEqual(['abcdefg'])
+})
+
+test('special - colon notation in CSI params', () => {
+  const lines = getOutputLines(`\x1b[<31;5::123:;8mHello World! öäü€\nabc`)
+  expect(lines).toEqual(['Hello World! öäü€', 'abc'])
+})
+
+test.skip('special - colon notation in DCS params', () => {
+  const lines = getOutputLines(`abc\x901;2::55;3+$abc;de\x9c`)
+  expect(lines).toEqual(['abc'])
+})
+
+test.skip('special - CAN should abort DCS', () => {
+  const lines = getOutputLines(`abc\x901;2::55;3+$abc;de\x18`)
+  expect(lines).toEqual(['abc'])
+})
+
+test.skip('special - SUB should abort DCS', () => {
+  const lines = getOutputLines(`abc\x901;2::55;3+$abc;de\x1a`)
+  expect(lines).toEqual(['abc'])
+})
+
+test.skip('special - CAN should abort OSC', () => {
+  const lines = getOutputLines('\x1b]0;abc123€öäü\x18')
+  expect(lines).toEqual([])
+})
+
+test.skip('special - SUB should abort OSC', () => {
+  const lines = getOutputLines(`\x1b]0;abc123€öäü\x1a`)
+  expect(lines).toEqual([])
 })
 
 test('styled text - [01;32mfastboot[0m', () => {
