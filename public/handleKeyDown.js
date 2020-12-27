@@ -191,114 +191,11 @@ export const handleKeyDown = (webSocket) => (event) => {
       event.preventDefault()
       webSocket.send('/')
       break
-    case '0':
-      if (event.altKey) {
-        if (event.shiftKey) {
-          webSocket.send('\u001b)')
-          break
-        }
-        webSocket.send('\u001b0')
-        break
-      }
-      webSocket.send('0')
-      break
-    case '1':
-      if (event.altKey) {
-        if (event.shiftKey) {
-          webSocket.send('\u001b!')
-          break
-        }
-        webSocket.send('\u001b1')
-        break
-      }
-      webSocket.send('1')
-      break
-    case '2':
-      if (event.altKey) {
-        if (event.shiftKey) {
-          webSocket.send('\u001b@')
-          break
-        }
-        webSocket.send('\u001b2')
-        break
-      }
-      webSocket.send('2')
-      break
-    case '3':
-      if (event.altKey) {
-        if (event.shiftKey) {
-          webSocket.send('\u001b#')
-          break
-        }
-        webSocket.send('\u001b3')
-        break
-      }
-      webSocket.send('3')
-      break
-    case '4':
-      if (event.altKey) {
-        if (event.shiftKey) {
-          webSocket.send('\u001b$')
-        }
-        webSocket.send('\u001b4')
-        break
-      }
-      webSocket.send('4')
-      break
-    case '5':
-      if (event.altKey) {
-        if (event.shiftKey) {
-          webSocket.send('\u001b%')
-        }
-        webSocket.send('\u001b5')
-        break
-      }
-      webSocket.send('5')
-      break
-    case '6':
-      if (event.altKey) {
-        if (event.shiftKey) {
-          webSocket.send('\u001b^')
-        }
-        webSocket.send('\u001b6')
-        break
-      }
-      webSocket.send('6')
-      break
-    case '7':
-      if (event.altKey) {
-        if (event.shiftKey) {
-          webSocket.send('\u001b&')
-          break
-        }
-        webSocket.send('\u001b7')
-        break
-      }
-      webSocket.send('7')
-      break
-    case '8':
-      if (event.altKey) {
-        if (event.shiftKey) {
-          webSocket.send('\u001b*')
-          break
-        }
-        webSocket.send('\u001b8')
-        break
-      }
-      webSocket.send('8')
-      break
-    case '9':
-      if (event.altKey) {
-        if (event.shiftKey) {
-          webSocket.send('\u001b(')
-          break
-        }
-        webSocket.send('\u001b9')
-        break
-      }
-      webSocket.send('9')
-      break
     default:
+      if (event.altKey) {
+        webSocket.send(`\u001b${event.key}`)
+        break
+      }
       webSocket.send(event.key)
       break
   }
