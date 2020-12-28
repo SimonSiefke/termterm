@@ -17,13 +17,16 @@ const goToHome = () => {
 }
 
 const eraseToEndOfLine = () => {
-  $Span.textContent = $Span.textContent.slice(0, x)
+  console.log('TODO erase')
+  // $Span.textContent = $Span.textContent.slice(0, x)
 }
 
 const eraseInDisplay2 = () => {
-  $Output.textContent = ''
-  $Span = document.createElement('span')
-  $Output.append($Span)
+  x = 0
+  y = 0
+  tokens.push({
+    type: 'eraseInDisplay2',
+  })
 }
 
 const setCharAttributes = () => {
@@ -40,8 +43,8 @@ const cursorDown = () => {
 
 const cursorRight = () => {
   x++
-  renderCursor(x, y)
-  console.warn('cursorRight not implemented')
+  // renderCursor(x, y)
+  // console.warn('cursorRight not implemented')
 }
 
 const cursorLeft = () => {
@@ -56,13 +59,15 @@ const bell = () => {
   alert('ding')
 }
 
-let $Span = document.createElement('span')
+// let $Span = document.createElement('span')
 // $Output.append($Span)
 
 const newline = () => {
-  $Span = document.createElement('span')
-  $Output.append($Span)
-  // $Span.textContent += '\n'
+  x = 0
+  y++
+  tokens.push({
+    type: 'newline',
+  })
 }
 
 const decodeText = (text) => {
@@ -72,25 +77,66 @@ const decodeText = (text) => {
 
 const print = (startIndex, endIndex) => {
   const text = decodeText(uint8Array.slice(startIndex, endIndex))
-  console.log({ text })
-  console.log(x)
-  $Span.textContent = $Span.textContent.slice(0, x) + text
-  x = $Span.textContent.length
-  y = $Output.childNodes.length - 1
-
-  // console.log({ offset })
-  // window.scrollTo(0, document.body.scrollHeight)
+  tokens.push({
+    type: 'print',
+    text,
+  })
+  x += text.length
 }
 
 let uint8Array
 
+const tokens = []
+
+let $Span
+
+const renderBuffer = (tokens) => {
+  let $Rows = document.createDocumentFragment()
+  for (const token of tokens) {
+    switch (token.type) {
+      case 'print':
+        $Span = $Span || document.createElement('span')
+        $Span.textContent += token.text
+        break
+      case 'newline':
+        $Rows.append($Span)
+        $Span = undefined
+        break
+      case 'eraseInDisplay2':
+        $Output.textContent = ''
+        $Span = document.createElement('span')
+        $Rows = document.createDocumentFragment()
+        // TODO remove rows
+        // TODO clear output
+        break
+      default:
+        break
+    }
+  }
+  if ($Span) {
+    $Rows.append($Span)
+  }
+  tokens.length = 0
+  $Output.append($Rows)
+}
+
+const columnWidth = 8.43332
+const rowHeight = 14
+const renderCursor = (x, y) => {
+  $Cursor.style.transform = `translate(${(x - 1) * columnWidth}px,${
+    y * rowHeight
+  }px)`
+}
+
 webSocket.onmessage = async ({ data }) => {
-  console.log({ data: await data.text() })
-  console.log({ array: new Uint8Array(await data.arrayBuffer()) })
+  // console.log({ data: await data.text() })
+  // console.log({ array: new Uint8Array(await data.arrayBuffer()) })
   const buffer =
     webSocket.binaryType === 'arraybuffer' ? data : await data.arrayBuffer()
   uint8Array = new Uint8Array(buffer)
-
+  const previousX = x
+  const previousY = y
+  const s = performance.now()
   const parsed = parseArray(uint8Array, {
     goToHome,
     eraseToEndOfLine,
@@ -105,14 +151,17 @@ webSocket.onmessage = async ({ data }) => {
     print,
     newline,
   })
+  const e = performance.now()
+  console.log(`took ${e - s}ms`)
 
-  renderCursor(x, y)
-  // printBuffer()
-  // $Output.textContent += '\n'
-  // console.log(parsed)
-  // console.log(uint8Array)
-  // $Output.textContent += await data.arrayBuffer()
-  // $Output.textContent += '\n'
+  // console.log({ x, y })
+  // send to renderer: lines/tokens
+  renderBuffer(tokens)
+  tokens.length = 0
+  if (previousX !== x || previousY !== y) {
+    // send to renderer: x,y
+    renderCursor(x, y)
+  }
 }
 
 window.addEventListener('paste', (event) => {
@@ -120,51 +169,9 @@ window.addEventListener('paste', (event) => {
   webSocket.send(text)
 })
 
-// const $Input = document.getElementById('Input')
-// window.onclick = () => {
-// $Input.focus()
-// }
-
 const $Cursor = document.getElementById('Cursor')
 
 let x = 0
 let y = 0
 
-const columnWidth = 8.43332
-const rowHeight = 14
-const renderCursor = (x, y) => {
-  $Cursor.style.transform = `translate(${(x - 1) * columnWidth}px, ${
-    y * rowHeight
-  }px)`
-  $Cursor.dataset.x = x
-  $Cursor.dataset.y = y
-  console.log('render cursor')
-}
-
-// window.addEventListener('keydown', (event) => {
-//   console.log(event)
-//   switch (event.key) {
-//     case 'ArrowLeft':
-//       // go left
-//       x--
-//       renderCursor(x, y)
-//       break
-//     case 'ArrowRight':
-//       // go right
-//       x++
-//       renderCursor(x, y)
-//       break
-//     case 'ArrowDown':
-//       y++
-//       renderCursor(x, y)
-//       break
-//     case 'ArrowUp':
-//       y--
-//       renderCursor(x, y)
-//       break
-//   }
-// })
-
 window.addEventListener('keydown', handleKeyDown(webSocket))
-
-// $Input.onbeforeinput = handleBeforeInput(webSocket)

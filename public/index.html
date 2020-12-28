@@ -18,6 +18,12 @@
         margin: 0;
         line-height: 1;
         font-size: 14px;
+        /* display: grid; */
+        display: flex;
+        flex-direction: column;
+      }
+      #Output * {
+        white-space: nowrap;
       }
       #Terminal {
         font-family: monospace;
@@ -38,7 +44,7 @@
     <div id="Terminal">
       <!-- <textarea id="Input" cols="30" rows="10"></textarea> -->
       <div id="Cursor"></div>
-      <pre id="Output"></pre>
+      <div id="Output"></div>
     </div>
 
     <script type="module" src="index.js"></script>
