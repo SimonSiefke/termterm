@@ -36,3 +36,5 @@ showkey -a to get ascii output of keyboard shortcuts
 - https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/keyCode
 - https://github.com/xtermjs/xterm.js/issues/2358
  -->
+
+<!-- interesting: alacritty vte parser https://github.com/alacritty/vte -->
