@@ -22,6 +22,8 @@ const eraseToEndOfLine = () => {
 
 const eraseInDisplay2 = () => {
   $Output.textContent = ''
+  $Span = document.createElement('span')
+  $Output.append($Span)
 }
 
 const setCharAttributes = () => {
@@ -52,8 +54,13 @@ const bell = () => {
   alert('ding')
 }
 
+let $Span = document.createElement('span')
+// $Output.append($Span)
+
 const newline = () => {
-  $Output.textContent += '\n'
+  $Span = document.createElement('span')
+  $Output.append($Span)
+  // $Span.textContent += '\n'
 }
 
 const decodeText = (text) => {
@@ -62,8 +69,15 @@ const decodeText = (text) => {
 }
 
 const print = (startIndex, endIndex) => {
-  $Output.textContent += decodeText(uint8Array.slice(startIndex, endIndex))
-  window.scrollTo(0, document.body.scrollHeight)
+  const text = decodeText(uint8Array.slice(startIndex, endIndex))
+  console.log({ text })
+  $Span.textContent += text
+
+  const x = $Span.textContent.length - 1
+  const y = $Output.childNodes.length - 1
+  renderCursor(x, y)
+  // console.log({ offset })
+  // window.scrollTo(0, document.body.scrollHeight)
 }
 
 let uint8Array
@@ -88,6 +102,8 @@ webSocket.onmessage = async ({ data }) => {
     print,
     newline,
   })
+
+  // printBuffer()
   // $Output.textContent += '\n'
   // console.log(parsed)
   // console.log(uint8Array)
@@ -110,12 +126,14 @@ const $Cursor = document.getElementById('Cursor')
 let x = 0
 let y = 0
 
-const columnWidth = 7.21667
-const rowHeight = 13
+const columnWidth = 8.43332
+const rowHeight = 14
 const renderCursor = (x, y) => {
   $Cursor.style.transform = `translate(${x * columnWidth}px, ${
     y * rowHeight
   }px)`
+  $Cursor.dataset.x = x
+  $Cursor.dataset.y = y
   console.log('render cursor')
 }
 

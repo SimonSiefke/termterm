@@ -752,6 +752,12 @@ test('key - Insert', () => {
   expect(send).toHaveBeenCalledWith(`\u001b[2~`)
 })
 
+test('key - Shift+Insert', () => {
+  const send = jest.fn()
+  runTest({ key: 'Insert', shiftKey: true }, send)
+  expect(send).not.toHaveBeenCalled()
+})
+
 test('key - Delete', () => {
   const send = jest.fn()
   runTest({ key: 'Delete' }, send)
@@ -768,6 +774,12 @@ test('key - Ctrl+Delete', () => {
   const send = jest.fn()
   runTest({ key: 'Delete', ctrlKey: true }, send)
   expect(send).toHaveBeenCalledWith(`\u001b[3;5~`)
+})
+
+test('key - Alt+Delete', () => {
+  const send = jest.fn()
+  runTest({ key: 'Delete', altKey: true }, send)
+  expect(send).toHaveBeenCalledWith(`\u001b[3;3~`)
 })
 
 test('key - Ctrl+Shift+Delete', () => {
@@ -1434,4 +1446,64 @@ test('key - UIKeyInputLeftArrow', () => {
   const send = jest.fn()
   runTest({ key: 'UIKeyInputLeftArrow' }, send)
   expect(send).toHaveBeenCalledWith(`\u001b[D`)
+})
+
+test('key - AltGraph', () => {
+  const send = jest.fn()
+  runTest({ key: 'AltGraph' }, send)
+  expect(send).not.toHaveBeenCalled()
+})
+
+test('key - PageUp', () => {
+  const send = jest.fn()
+  runTest({ key: 'PageUp' }, send)
+  expect(send).toHaveBeenCalledWith(`\u001b[5~`)
+})
+
+test('key Ctrl+PageUp', () => {
+  const send = jest.fn()
+  runTest({ key: 'PageUp', ctrlKey: true }, send)
+  expect(send).toHaveBeenCalledWith(`\u001b[5;5~`)
+})
+
+test('key - PageDown', () => {
+  const send = jest.fn()
+  runTest({ key: 'PageDown' }, send)
+  expect(send).toHaveBeenCalledWith(`\u001b[6~`)
+})
+
+test('key Ctrl+PageDown', () => {
+  const send = jest.fn()
+  runTest({ key: 'PageDown', ctrlKey: true }, send)
+  expect(send).toHaveBeenCalledWith(`\u001b[6;5~`)
+})
+
+test('key - End', () => {
+  const send = jest.fn()
+  runTest({ key: 'End' }, send)
+  expect(send).toHaveBeenCalledWith(`\u001b[F`)
+})
+
+test('key - Shift+End', () => {
+  const send = jest.fn()
+  runTest({ key: 'End', shiftKey: true }, send)
+  expect(send).toHaveBeenCalledWith(`\u001b[1;2F`)
+})
+
+test('key - Home', () => {
+  const send = jest.fn()
+  runTest({ key: 'Home' }, send)
+  expect(send).toHaveBeenCalledWith(`\u001b[H`)
+})
+
+test('key - Shift+Home', () => {
+  const send = jest.fn()
+  runTest({ key: 'Home', shiftKey: true }, send)
+  expect(send).toHaveBeenCalledWith(`\u001b[1;2H`)
+})
+
+test('key 😀', () => {
+  const send = jest.fn()
+  runTest({ key: 'AltGraph' }, send)
+  expect(send).not.toHaveBeenCalled()
 })

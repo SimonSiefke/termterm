@@ -118,11 +118,24 @@ export const handleKeyDown = (webSocket) => (event) => {
     case 'F12':
       webSocket.send('\u001b[24~')
       break
-    case 'Shift':
-    case 'Alt':
-    case 'Control':
+    case 'Home':
+      if (modifiers) {
+        webSocket.send(`\u001b[1;${modifiers + 1}H`)
+        break
+      }
+      webSocket.send(`\u001b[H`)
+      break
+    case 'End':
+      if (modifiers) {
+        webSocket.send(`\u001b[1;${modifiers + 1}F`)
+        break
+      }
+      webSocket.send(`\u001b[F`)
       break
     case 'Insert':
+      if (event.shiftKey || event.ctrlKey) {
+        break
+      }
       webSocket.send('\u001b[2~')
       break
     case 'Delete':
@@ -181,6 +194,20 @@ export const handleKeyDown = (webSocket) => (event) => {
         break
       }
       webSocket.send('\n')
+      break
+    case 'PageUp':
+      if (event.ctrlKey) {
+        webSocket.send(`\u001b[5;5~`)
+        break
+      }
+      webSocket.send('\u001b[5~')
+      break
+    case 'PageDown':
+      if (event.ctrlKey) {
+        webSocket.send(`\u001b[6;5~`)
+        break
+      }
+      webSocket.send(`\u001b[6~`)
       break
     case 'Backspace':
       if (event.altKey) {
@@ -290,6 +317,9 @@ export const handleKeyDown = (webSocket) => (event) => {
       webSocket.send(event.key)
       break
     default:
+      if (event.key.length > 1) {
+        break
+      }
       if (event.altKey) {
         webSocket.send(`\u001b${event.key}`)
         break
