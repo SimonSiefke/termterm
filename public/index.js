@@ -17,7 +17,7 @@ const goToHome = () => {
 }
 
 const eraseToEndOfLine = () => {
-  console.warn('eraseToEndOfLine not implemented')
+  $Span.textContent = $Span.textContent.slice(0, x)
 }
 
 const eraseInDisplay2 = () => {
@@ -39,6 +39,8 @@ const cursorDown = () => {
 }
 
 const cursorRight = () => {
+  x++
+  renderCursor(x, y)
   console.warn('cursorRight not implemented')
 }
 
@@ -47,7 +49,7 @@ const cursorLeft = () => {
 }
 
 const backspace = () => {
-  console.warn('backspace not implemented')
+  x--
 }
 
 const bell = () => {
@@ -71,11 +73,11 @@ const decodeText = (text) => {
 const print = (startIndex, endIndex) => {
   const text = decodeText(uint8Array.slice(startIndex, endIndex))
   console.log({ text })
-  $Span.textContent += text
+  console.log(x)
+  $Span.textContent = $Span.textContent.slice(0, x) + text
+  x = $Span.textContent.length
+  y = $Output.childNodes.length - 1
 
-  const x = $Span.textContent.length - 1
-  const y = $Output.childNodes.length - 1
-  renderCursor(x, y)
   // console.log({ offset })
   // window.scrollTo(0, document.body.scrollHeight)
 }
@@ -88,6 +90,7 @@ webSocket.onmessage = async ({ data }) => {
   const buffer =
     webSocket.binaryType === 'arraybuffer' ? data : await data.arrayBuffer()
   uint8Array = new Uint8Array(buffer)
+
   const parsed = parseArray(uint8Array, {
     goToHome,
     eraseToEndOfLine,
@@ -103,6 +106,7 @@ webSocket.onmessage = async ({ data }) => {
     newline,
   })
 
+  renderCursor(x, y)
   // printBuffer()
   // $Output.textContent += '\n'
   // console.log(parsed)
@@ -129,7 +133,7 @@ let y = 0
 const columnWidth = 8.43332
 const rowHeight = 14
 const renderCursor = (x, y) => {
-  $Cursor.style.transform = `translate(${x * columnWidth}px, ${
+  $Cursor.style.transform = `translate(${(x - 1) * columnWidth}px, ${
     y * rowHeight
   }px)`
   $Cursor.dataset.x = x
@@ -137,29 +141,29 @@ const renderCursor = (x, y) => {
   console.log('render cursor')
 }
 
-window.addEventListener('keydown', (event) => {
-  console.log(event)
-  switch (event.key) {
-    case 'ArrowLeft':
-      // go left
-      x--
-      renderCursor(x, y)
-      break
-    case 'ArrowRight':
-      // go right
-      x++
-      renderCursor(x, y)
-      break
-    case 'ArrowDown':
-      y++
-      renderCursor(x, y)
-      break
-    case 'ArrowUp':
-      y--
-      renderCursor(x, y)
-      break
-  }
-})
+// window.addEventListener('keydown', (event) => {
+//   console.log(event)
+//   switch (event.key) {
+//     case 'ArrowLeft':
+//       // go left
+//       x--
+//       renderCursor(x, y)
+//       break
+//     case 'ArrowRight':
+//       // go right
+//       x++
+//       renderCursor(x, y)
+//       break
+//     case 'ArrowDown':
+//       y++
+//       renderCursor(x, y)
+//       break
+//     case 'ArrowUp':
+//       y--
+//       renderCursor(x, y)
+//       break
+//   }
+// })
 
 window.addEventListener('keydown', handleKeyDown(webSocket))
 

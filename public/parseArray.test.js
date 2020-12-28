@@ -327,3 +327,14 @@ test('program ls', () => {
     '',
   ])
 })
+
+test('cursor left and delete', () => {
+  const eraseToEndOfLine = jest.fn()
+  const backspace = jest.fn()
+  runTest(
+    `\u0008\u0008\u0008\u0008\u0008\u0008\u0008\u0008\u0008\u0008d\u001b[K`,
+    { backspace, eraseToEndOfLine },
+  )
+  expect(backspace).toHaveBeenCalledTimes(10)
+  expect(eraseToEndOfLine).toHaveBeenCalledTimes(1)
+})
