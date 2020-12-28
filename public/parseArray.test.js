@@ -28,6 +28,7 @@ const runTest = (
     cursorLeft = noop,
     backspace = noop,
     print = noop,
+    newline = noop,
   } = {},
 ) => {
   const array = new Uint8Array(input.split('').map((x) => x.charCodeAt()))
@@ -43,6 +44,7 @@ const runTest = (
     bell,
     backspace,
     print,
+    newline,
   })
 }
 
@@ -203,6 +205,12 @@ test.skip('function - auxPortOff', () => {
   const auxPortOff = jest.fn()
   runTest(`\u001b[4i`, { auxPortOff })
   expect(auxPortOff).toHaveBeenCalledTimes(1)
+})
+
+test('function - newline', () => {
+  const newline = jest.fn()
+  runTest('\r', { newline })
+  expect(newline).toHaveBeenCalledTimes(1)
 })
 
 test('text - hello world!', () => {

@@ -49,6 +49,7 @@ export const parseArray = (
             i++
             break
           case /* \r */ 13:
+            newline()
             state = State.TopLevelContent
             i++
             break
