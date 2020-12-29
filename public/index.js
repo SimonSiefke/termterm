@@ -17,8 +17,9 @@ const goToHome = () => {
 }
 
 const eraseToEndOfLine = () => {
-  console.log('TODO erase')
-  // $Span.textContent = $Span.textContent.slice(0, x)
+  tokens.push({
+    type: 'eraseToEndOfLine',
+  })
 }
 
 const eraseInDisplay2 = () => {
@@ -53,6 +54,9 @@ const cursorLeft = () => {
 
 const backspace = () => {
   x--
+  tokens.push({
+    type: 'backspace',
+  })
 }
 
 const bell = () => {
@@ -91,12 +95,13 @@ const tokens = []
 let $Span
 
 const renderBuffer = (tokens) => {
+  console.log(tokens)
   let $Rows = document.createDocumentFragment()
   for (const token of tokens) {
     switch (token.type) {
       case 'print':
         $Span = $Span || document.createElement('span')
-        $Span.textContent += token.text
+        $Span.textContent = $Span.textContent.slice(0, x - 1) + token.text
         break
       case 'newline':
         $Rows.append($Span)
@@ -108,6 +113,11 @@ const renderBuffer = (tokens) => {
         $Rows = document.createDocumentFragment()
         // TODO remove rows
         // TODO clear output
+        break
+      case 'eraseToEndOfLine':
+        if ($Span) {
+          $Span.textContent = $Span.textContent.slice(0, x)
+        }
         break
       default:
         break
@@ -129,8 +139,8 @@ const renderCursor = (x, y) => {
 }
 
 webSocket.onmessage = async ({ data }) => {
-  // console.log({ data: await data.text() })
-  // console.log({ array: new Uint8Array(await data.arrayBuffer()) })
+  console.log({ data: await data.text() })
+  console.log({ array: new Uint8Array(await data.arrayBuffer()) })
   const buffer =
     webSocket.binaryType === 'arraybuffer' ? data : await data.arrayBuffer()
   uint8Array = new Uint8Array(buffer)
