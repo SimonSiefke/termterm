@@ -59,8 +59,14 @@ const backspace = () => {
   })
 }
 
+const playBellAudio = () => {
+  const audio = document.createElement('audio')
+  audio.src = `https://raw.githubusercontent.com/ubuntu/yaru/master/sounds/src/stereo/bell.oga`
+  audio.play()
+}
+
 const bell = () => {
-  alert('ding')
+  playBellAudio()
 }
 
 // let $Span = document.createElement('span')
@@ -138,40 +144,61 @@ const renderCursor = (x, y) => {
   }px)`
 }
 
+const pendingBuffers = []
+
+let scheduled = false
+
+const scheduleUpdate = () => {
+  if (scheduled) {
+    return
+  }
+  scheduled = true
+  requestIdleCallback(() => {
+    const buffer = pendingBuffers.shift()
+    uint8Array = new Uint8Array(buffer)
+
+    const previousX = x
+    const previousY = y
+    const s = performance.now()
+    const parsed = parseArray(uint8Array, {
+      goToHome,
+      eraseToEndOfLine,
+      eraseInDisplay2,
+      setCharAttributes,
+      cursorUp,
+      cursorDown,
+      cursorRight,
+      cursorLeft,
+      backspace,
+      bell,
+      print,
+      newline,
+    })
+    const e = performance.now()
+    console.log(`took ${e - s}ms`)
+
+    // console.log({ x, y })
+    // send to renderer: lines/tokens
+    renderBuffer(tokens)
+    tokens.length = 0
+    if (previousX !== x || previousY !== y) {
+      // send to renderer: x,y
+      renderCursor(x, y)
+    }
+    scheduled = false
+    if (pendingBuffers.length) {
+      scheduleUpdate()
+    }
+  })
+}
+
 webSocket.onmessage = async ({ data }) => {
   console.log({ data: await data.text() })
   console.log({ array: new Uint8Array(await data.arrayBuffer()) })
   const buffer =
     webSocket.binaryType === 'arraybuffer' ? data : await data.arrayBuffer()
-  uint8Array = new Uint8Array(buffer)
-  const previousX = x
-  const previousY = y
-  const s = performance.now()
-  const parsed = parseArray(uint8Array, {
-    goToHome,
-    eraseToEndOfLine,
-    eraseInDisplay2,
-    setCharAttributes,
-    cursorUp,
-    cursorDown,
-    cursorRight,
-    cursorLeft,
-    backspace,
-    bell,
-    print,
-    newline,
-  })
-  const e = performance.now()
-  console.log(`took ${e - s}ms`)
-
-  // console.log({ x, y })
-  // send to renderer: lines/tokens
-  renderBuffer(tokens)
-  tokens.length = 0
-  if (previousX !== x || previousY !== y) {
-    // send to renderer: x,y
-    renderCursor(x, y)
-  }
+  pendingBuffers.push(buffer)
+  scheduleUpdate()
 }
 
 window.addEventListener('paste', (event) => {
