@@ -1,11 +1,13 @@
 const State = {
   TopLevelContent: 'TopLevelContent',
-  AfterEscape1: 'AfterEscape1',
-  AfterEscape2: 'AfterEscape2',
+  Escaped: 'Escaped',
+  Csi: 'Csi',
   AfterEscape3: 'AfterEscape3',
-  AfterEscape4: 'AfterEscape4',
+  Charset: 'Charset',
   AfterEscape3AfterSemicolon: 'AfterEscape3AfterSemicolon',
   AfterEscape3AfterSemicolon2: 'AfterEscape3AfterSemicolon2',
+  Osc: 'Osc',
+  Dcs: 'Dcs',
 }
 
 export const parseArray = (
@@ -35,7 +37,7 @@ export const parseArray = (
       case State.TopLevelContent:
         middle: switch (array[i]) {
           case /* \u001b */ 27:
-            state = State.AfterEscape1
+            state = State.Escaped
             i++
             break
           case /* \u0007 */ 7:
@@ -59,7 +61,7 @@ export const parseArray = (
               switch (array[i]) {
                 case /* \u001b */ 27:
                   print(printStartIndex, i)
-                  state = State.AfterEscape1
+                  state = State.Escaped
                   i++
                   break middle
                 case /* \u0007 */ 7:
@@ -89,14 +91,148 @@ export const parseArray = (
             break
         }
         break
-      case State.AfterEscape1:
+      case State.Escaped:
         switch (array[i]) {
+          // ESC [ Control Sequence Introducer ( CSI is 0x9b).
           case /* [ */ 91:
-            state = State.AfterEscape2
+            params = []
+            state = State.Csi
             i++
             break
+          // ESC ] Operating System Command ( OSC is 0x9d).
+          case /* ] */ 93:
+            state = State.Osc
+            i++
+            break
+          // ESC P Device Control String ( DCS is 0x90).
+          case /* P */ 80:
+            state = State.Dcs
+            i++
+            break
+          // ESC _ Application Program Command ( APC is 0x9f).
+          case /* _ */ 95:
+            i++
+            break
+          // ESC ^ Privacy Message ( PM is 0x9e).
+          case /* ^ */ 94:
+            i++
+            break
+          // ESC c Full Reset (RIS).
+          case /* c */ 99:
+            i++
+            break
+          // ESC E Next Line ( NEL is 0x85).
+          case /* E */ 69:
+            i++
+            break
+          // ESC D Index ( IND is 0x84).
+          case /* D */ 68:
+            i++
+            break
+          // ESC M Reverse Index ( RI is 0x8d).
+          case /* M */ 77:
+            i++
+            break
+          // ESC % Select default/utf-8 character set.
+          // @ = default, G = utf-8
+          case /* % */ 37:
+            state = State.TopLevelContent
+            i++
+            break
+          // ESC (,),*,+,-,. Designate G0-G2 Character Set.
           case /* ( */ 40:
-            state = State.AfterEscape4
+            state = State.Charset
+            i++
+            break
+          case /* ) */ 41:
+            state = State.Charset
+            i++
+            break
+          case /* * */ 42:
+            state = State.Charset
+            i++
+            break
+          case /* + */ 43:
+            state = State.Charset
+            i++
+            break
+          case /* - */ 44:
+            state = State.Charset
+            i++
+            break
+          case /* . */ 45:
+            state = State.Charset
+            i++
+            break
+          // ESC > Normal Keypad (DECPNM).
+          case /* > */ 62:
+            state = State.TopLevelContent
+            i++
+            break
+          // ESC N
+          // Single Shift Select of G2 Character Set
+          // ( SS2 is 0x8e). This affects next character only.
+          case /* N */ 78:
+            i++
+            break
+          // ESC O
+          // Single Shift Select of G3 Character Set
+          // ( SS3 is 0x8f). This affects next character only.
+          case /* O */ 79:
+            i++
+            break
+          // ESC n
+          // Invoke the G2 Character Set as GL (LS2).
+          case /* n */ 110:
+            i++
+            break
+          // ESC o
+          // Invoke the G3 Character Set as GL (LS3).
+          case /* o */ 111:
+            i++
+            break
+          // ESC |
+          // Invoke the G3 Character Set as GR (LS3R).
+          case /* | */ 124:
+            i++
+            break
+          // ESC }
+          // Invoke the G2 Character Set as GR (LS2R).
+          case /* } */ 125:
+            i++
+            break
+          // ESC ~
+          // Invoke the G1 Character Set as GR (LS1R).
+          case /* ~ */ 126:
+            i++
+            break
+          // ESC 7 Save Cursor (DECSC).
+          case /* 7 */ 55:
+            state = State.TopLevelContent
+            i++
+            break
+          // ESC 8 Restore Cursor (DECRC).
+          case /* 8 */ 56:
+            state = State.TopLevelContent
+            i++
+            break
+          // ESC # 3 DEC line height/width
+          case /* # */ 35:
+            state = State.TopLevelContent
+            i++
+            break
+          // ESC H Tab Set (HTS is 0x88).
+          case /* H */ 72:
+            i++
+            break
+          // ESC = Application Keypad (DECPAM).
+          case /* = */ 61:
+            state = State.TopLevelContent
+            i++
+            break
+          // ESC > Normal Keypad (DECPNM).
+          case /* > */ 62:
+            state = State.TopLevelContent
             i++
             break
           default:
@@ -105,19 +241,89 @@ export const parseArray = (
             break
         }
         break
-      case State.AfterEscape4:
+      case State.Charset:
         switch (array[i]) {
+          // DEC Special Character and Line Drawing Set.
+          case /* 0 */ 48:
+            state = State.TopLevelContent
+            i++
+            break
+          // UK
+          case /* A */ 65:
+            state = State.TopLevelContent
+            i++
+            break
+          // United States (USASCII).
           case /* B */ 66:
             // TODO do something
             state = State.TopLevelContent
             i++
             break
+          // Dutch
+          case /* 4 */ 52:
+            state = State.TopLevelContent
+            i++
+            break
+          // Finnish
+          case /* C */ 67:
+          case /* 5 */ 53:
+            state = State.TopLevelContent
+            i++
+            break
+          // French
+          case /* R */ 82:
+            state = State.TopLevelContent
+            i++
+            break
+          // FrenchCanadian
+          case /* Q */ 81:
+            state = State.TopLevelContent
+            i++
+            break
+          // German
+          case /* K */ 75:
+            state = State.TopLevelContent
+            i++
+            break
+          // Italian
+          case /* Y */ 89:
+            state = State.TopLevelContent
+            i++
+            break
+          // NorwegianDanish
+          case /* E */ 69:
+          case /* 6 */ 54:
+            state = State.TopLevelContent
+            i++
+            break
+          // Spanish
+          case /* Z */ 90:
+            state = State.TopLevelContent
+            i++
+            break
+          // Swedish
+          case /* H */ 72:
+          case /* 7 */ 55:
+            state = State.TopLevelContent
+            i++
+            break
+          // Swiss
+          case /* = */ 61:
+            state = State.TopLevelContent
+            i++
+            break
+          // ISOLatin (actually /A)
+          case /* / */ 47:
+            state = State.TopLevelContent
+            i++
+            break
           default:
+            state = State.TopLevelContent
             i++
             break
         }
         break
-      case State.AfterEscape2:
+      case State.Csi:
         switch (array[i]) {
           case /* A */ 65:
             cursorUp(1)
@@ -211,7 +417,21 @@ export const parseArray = (
             state = State.TopLevelContent
             i++
             break
+          case /* 0 */ 48:
+          case /* 1 */ 49:
+          case /* 2 */ 50:
+          case /* 3 */ 51:
+          case /* 4 */ 52:
+          case /* 5 */ 53:
+          case /* 6 */ 54:
+          case /* 7 */ 55:
+          case /* 8 */ 56:
+          case /* 9 */ 57:
+            currentParam = currentParam * 10 + array[i] - 48
+            i++
+            break
           case /* m */ 109:
+            params
             setCharAttributes([currentParam])
             state = State.TopLevelContent
             i++
@@ -272,8 +492,7 @@ export const parseArray = (
         }
         break
       default:
-        i++
-        break
+        throw new Error('invalid state')
     }
   }
   if (printStartIndex !== -1) {
@@ -340,7 +559,7 @@ const print = (startIndex, endIndex) => {
   output += decodeString(array.slice(startIndex, endIndex))
 }
 
-const input = `\u001b[0m  server.js\r\n`
+// const input = `\u001b[31m Hello World`
 
 // const array = encodeString(input)
 

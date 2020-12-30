@@ -30,8 +30,12 @@ const eraseInDisplay2 = () => {
   })
 }
 
-const setCharAttributes = () => {
-  console.warn('setCharAttributes not implemented')
+const setCharAttributes = (params) => {
+  tokens.push({
+    type: 'setCharAttributes',
+    params,
+  })
+  // console.warn('setCharAttributes not implemented')
 }
 
 const cursorUp = () => {
@@ -124,6 +128,12 @@ const renderBuffer = (tokens) => {
         if ($Span) {
           $Span.textContent = $Span.textContent.slice(0, x)
         }
+        break
+      case 'setCharAttributes':
+        $Span = $Span || document.createElement('span')
+        $Span.style.color = 'red'
+        console.log('set char attributes')
+        console.log(token)
         break
       default:
         break

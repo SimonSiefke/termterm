@@ -195,6 +195,18 @@ test('function - setCharAttributes', () => {
   expect(setCharAttributes).toHaveBeenCalledTimes(1)
 })
 
+test('function - setCharAttributes with single param', () => {
+  const setCharAttributes = jest.fn()
+  runTest(`\u001b[31m Hello World`, { setCharAttributes })
+  expect(setCharAttributes).toHaveBeenCalledWith([31])
+})
+
+test('function - setCharAttributes with multiple params', () => {
+  const setCharAttributes = jest.fn()
+  runTest(`\u001b[0;35m Hello World`, { setCharAttributes })
+  expect(setCharAttributes).toHaveBeenCalledWith([0, 35])
+})
+
 test.skip('function - auxPortOn', () => {
   const auxPortOn = jest.fn()
   runTest(`\u001b[5i`, { auxPortOn })
