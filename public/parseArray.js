@@ -25,6 +25,16 @@ export const parseArray = (
     backspace,
     print,
     newline,
+    setGLevel,
+    saveCursor,
+    restoreCursor,
+    index,
+    tabSet,
+    reverseIndex,
+    keypadApplicationMode,
+    keypadNumericMode,
+    fullReset,
+    nextLine,
   } = {},
 ) => {
   let state = State.TopLevelContent
@@ -33,6 +43,7 @@ export const parseArray = (
   let params = []
   let printStartIndex = -1
   while (i < array.length) {
+    state
     switch (state) {
       case State.TopLevelContent:
         middle: switch (array[i]) {
@@ -123,10 +134,12 @@ export const parseArray = (
             break
           // ESC E Next Line ( NEL is 0x85).
           case /* E */ 69:
+            nextLine()
             i++
             break
           // ESC D Index ( IND is 0x84).
           case /* D */ 68:
+            index()
             i++
             break
           // ESC M Reverse Index ( RI is 0x8d).
@@ -136,6 +149,7 @@ export const parseArray = (
           // ESC % Select default/utf-8 character set.
           // @ = default, G = utf-8
           case /* % */ 37:
+            setGLevel(0)
             state = State.TopLevelContent
             i++
             break
@@ -184,35 +198,42 @@ export const parseArray = (
           // ESC n
           // Invoke the G2 Character Set as GL (LS2).
           case /* n */ 110:
+            setGLevel(2)
             i++
             break
           // ESC o
           // Invoke the G3 Character Set as GL (LS3).
           case /* o */ 111:
+            setGLevel(3)
             i++
             break
           // ESC |
           // Invoke the G3 Character Set as GR (LS3R).
           case /* | */ 124:
+            setGLevel(3)
             i++
             break
           // ESC }
           // Invoke the G2 Character Set as GR (LS2R).
           case /* } */ 125:
+            setGLevel(2)
             i++
             break
           // ESC ~
           // Invoke the G1 Character Set as GR (LS1R).
           case /* ~ */ 126:
+            setGLevel(1)
             i++
             break
           // ESC 7 Save Cursor (DECSC).
           case /* 7 */ 55:
+            saveCursor()
             state = State.TopLevelContent
             i++
             break
           // ESC 8 Restore Cursor (DECRC).
           case /* 8 */ 56:
+            restoreCursor()
             state = State.TopLevelContent
             i++
             break
@@ -223,6 +244,7 @@ export const parseArray = (
             break
           // ESC H Tab Set (HTS is 0x88).
           case /* H */ 72:
+            tabSet()
             i++
             break
           // ESC = Application Keypad (DECPAM).
@@ -540,6 +562,10 @@ const newline = () => {
   console.log('newline')
 }
 
+const setGLevel = () => {
+  console.log('set g level')
+}
+
 let output = ''
 
 const decodeString = (string) => {
@@ -559,7 +585,7 @@ const print = (startIndex, endIndex) => {
   output += decodeString(array.slice(startIndex, endIndex))
 }
 
-// const input = `\u001b[31m Hello World`
+// const input = `\u001b[E`
 
 // const array = encodeString(input)
 
@@ -574,6 +600,7 @@ const print = (startIndex, endIndex) => {
 //   cursorLeft,
 //   print,
 //   newline,
+//   setGLevel,
 // }) //?
 
 // output

@@ -29,6 +29,12 @@ const runTest = (
     backspace = noop,
     print = noop,
     newline = noop,
+    setGLevel = noop,
+    saveCursor = noop,
+    restoreCursor = noop,
+    nextLine = noop,
+    index = noop,
+    tabSet = noop,
   } = {},
 ) => {
   const array = new Uint8Array(input.split('').map((x) => x.charCodeAt()))
@@ -45,6 +51,12 @@ const runTest = (
     backspace,
     print,
     newline,
+    setGLevel,
+    saveCursor,
+    restoreCursor,
+    nextLine,
+    index,
+    tabSet,
   })
 }
 
@@ -206,6 +218,60 @@ test('function - setCharAttributes with multiple params', () => {
   runTest(`\u001b[0;35m Hello World`, { setCharAttributes })
   expect(setCharAttributes).toHaveBeenCalledWith([0, 35])
 })
+
+test('function - setGLevel 1', () => {
+  const setGLevel = jest.fn()
+  runTest(`\u001b~`, { setGLevel })
+  expect(setGLevel).toHaveBeenCalledWith(1)
+})
+
+test('function - setGLevel 2', () => {
+  const setGLevel = jest.fn()
+  runTest(`\u001b}`, { setGLevel })
+  expect(setGLevel).toHaveBeenCalledWith(2)
+})
+
+test('function - setGLevel 3', () => {
+  const setGLevel = jest.fn()
+  runTest(`\u001b|`, { setGLevel })
+  expect(setGLevel).toHaveBeenCalledWith(3)
+})
+
+test('function - saveCursor', () => {
+  const saveCursor = jest.fn()
+  runTest(`\u001b7`, { saveCursor })
+  expect(saveCursor).toHaveBeenCalledTimes(1)
+})
+
+test('function - restoreCursor', () => {
+  const restoreCursor = jest.fn()
+  runTest(`\u001b8`, { restoreCursor })
+  expect(restoreCursor).toHaveBeenCalledTimes(1)
+})
+
+test('function - index', () => {
+  const index = jest.fn()
+  runTest(`\u001bD`, { index })
+  expect(index).toHaveBeenCalledTimes(1)
+})
+
+test('function - nextLine', () => {
+  const nextLine = jest.fn()
+  runTest(`\u001bE`, { nextLine })
+  expect(nextLine).toHaveBeenCalledTimes(1)
+})
+
+test('function - tabSet', () => {
+  const tabSet = jest.fn()
+  runTest(`\u001bH`, { tabSet })
+  expect(tabSet).toHaveBeenCalledTimes(1)
+})
+
+test('function - reverseIndex', () => {})
+test('function - keypadApplicationMode', () => {})
+test('function - keypadNumericMode', () => {})
+test('function - fullReset', () => {})
+test('function - selectDefaultCharset', () => {})
 
 test.skip('function - auxPortOn', () => {
   const auxPortOn = jest.fn()
