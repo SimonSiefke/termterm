@@ -219,6 +219,7 @@ const scheduleUpdate = () => {
       // send to renderer: x,y
       renderCursor(x, y)
     }
+    window.scrollTo(0, document.body.scrollHeight)
     scheduled = false
     if (pendingBuffers.length) {
       scheduleUpdate()
@@ -227,8 +228,8 @@ const scheduleUpdate = () => {
 }
 
 webSocket.onmessage = async ({ data }) => {
-//   console.log(await data.text())
-//   console.log(await data.arrayBuffer())
+  //   console.log(await data.text())
+  //   console.log(await data.arrayBuffer())
   const buffer =
     webSocket.binaryType === 'arraybuffer' ? data : await data.arrayBuffer()
   pendingBuffers.push(buffer)
