@@ -8,6 +8,14 @@
       body {
         margin: 0;
       }
+      #Info {
+        position: fixed;
+        top: 0;
+        right: 0;
+        background: lightcyan;
+        width: 200px;
+        height: 30px;
+      }
       #Input {
         width: 0;
         height: 0;
@@ -49,6 +57,10 @@
   </head>
   <body>
     <h1>hello world</h1>
+    <div id="Info">
+      Buffer Size:
+      <div id="BufferSize"></div>
+    </div>
     <div id="Terminal">
       <!-- <textarea id="Input" cols="30" rows="10"></textarea> -->
       <div id="Cursor"></div>

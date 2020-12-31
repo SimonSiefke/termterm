@@ -187,8 +187,11 @@ const scheduleUpdate = () => {
     return
   }
   scheduled = true
-  requestIdleCallback(() => {
+  requestAnimationFrame(() => {
     const buffer = pendingBuffers.shift()
+    if (!buffer) {
+      return
+    }
     uint8Array = new Uint8Array(buffer)
 
     const previousX = x
@@ -221,18 +224,25 @@ const scheduleUpdate = () => {
     }
     window.scrollTo(0, document.body.scrollHeight)
     scheduled = false
+    bufferSize -= buffer.byteLength
+
+    $BufferSize.textContent = bufferSize
     if (pendingBuffers.length) {
       scheduleUpdate()
     }
   })
 }
 
+const $BufferSize = document.getElementById('BufferSize')
+
+let bufferSize = 0
 webSocket.onmessage = async ({ data }) => {
   //   console.log(await data.text())
   //   console.log(await data.arrayBuffer())
   const buffer =
     webSocket.binaryType === 'arraybuffer' ? data : await data.arrayBuffer()
   pendingBuffers.push(buffer)
+  bufferSize += buffer.byteLength
   scheduleUpdate()
 }
 

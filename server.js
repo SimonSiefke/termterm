@@ -40,6 +40,10 @@ wss.on('connection', (socket) => {
     console.log({ data })
     readStream.write(data)
   })
+  socket.on('error', (error) => {
+    console.error(error)
+    socket.close()
+  })
   socket.on('close', () => {
     readStream.destroy()
   })
