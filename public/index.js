@@ -8,9 +8,7 @@ const webSocket = new WebSocket(`${wsProtocol}//${location.host}`, ['tty'])
 // TODO enable on prod
 // webSocket.binaryType = 'arraybuffer'
 
-webSocket.onopen = () => {
-  console.log('open')
-}
+webSocket.onopen = () => {}
 
 const goToHome = () => {
   console.warn('goToHome not implemented')
@@ -100,58 +98,84 @@ const print = (startIndex, endIndex) => {
 
 let uint8Array
 
-const tokens = []
+let tokens = []
 
-let $Span
+let $Row
 
 const renderBuffer = (tokens) => {
-  console.log(tokens)
   let $Rows = document.createDocumentFragment()
+  let $Span
   for (const token of tokens) {
     switch (token.type) {
       case 'print':
+        $Row = $Row || document.createElement('div')
         $Span = $Span || document.createElement('span')
-        $Span.textContent = $Span.textContent.slice(0, x - 1) + token.text
+        $Span.textContent += token.text
+        $Row.append($Span)
+        $Span = undefined
         break
       case 'newline':
-        $Rows.append($Span)
-        $Span = undefined
+        $Row = document.createElement('div')
+        $Rows.append($Row)
         break
       case 'eraseInDisplay2':
         $Output.textContent = ''
-        $Span = document.createElement('span')
+        $Row = document.createElement('div')
         $Rows = document.createDocumentFragment()
         // TODO remove rows
         // TODO clear output
         break
       case 'eraseToEndOfLine':
-        if ($Span) {
-          $Span.textContent = $Span.textContent.slice(0, x)
-        }
+        $Row = $Output.childNodes[y]
+        let total = -1
+        $Row.childNodes.forEach((node) => {
+          total += node.textContent.length
+          if (total >= x) {
+            console.log(node)
+            console.log(total)
+            console.log(x)
+            if (total === x) {
+              $Row.removeChild(node)
+            } else {
+              console.log('greater')
+            }
+          }
+        })
         break
       case 'setCharAttributes':
-        $Span = $Span || document.createElement('span')
-        $Span.style.color = 'red'
-        console.log('set char attributes')
-        console.log(token)
+        // if ($Span) {
+        //   $Row.append($Span)
+        // }
+        $Span = document.createElement('span')
+        let color = 'black'
+        for (const param of token.params) {
+          if (param === 32) {
+            color = 'green'
+          }
+          if (param === 34) {
+            color = 'blue'
+          }
+          if (param === 35) {
+            color = 'purple'
+          }
+        }
+        $Span.style.color = color
         break
       default:
         break
     }
   }
-  if ($Span) {
-    $Rows.append($Span)
+  if ($Row) {
+    $Rows.append($Row)
   }
-  tokens.length = 0
+  tokens = []
   $Output.append($Rows)
 }
 
 const columnWidth = 8.43332
 const rowHeight = 14
 const renderCursor = (x, y) => {
-  $Cursor.style.transform = `translate(${(x - 1) * columnWidth}px,${
-    y * rowHeight
-  }px)`
+  $Cursor.style.transform = `translate(${x * columnWidth}px,${y * rowHeight}px)`
 }
 
 const pendingBuffers = []
@@ -185,12 +209,12 @@ const scheduleUpdate = () => {
       newline,
     })
     const e = performance.now()
-    console.log(`took ${e - s}ms`)
+    //     console.log(`took ${e - s}ms`)
 
     // console.log({ x, y })
     // send to renderer: lines/tokens
     renderBuffer(tokens)
-    tokens.length = 0
+    tokens = []
     if (previousX !== x || previousY !== y) {
       // send to renderer: x,y
       renderCursor(x, y)
@@ -203,8 +227,8 @@ const scheduleUpdate = () => {
 }
 
 webSocket.onmessage = async ({ data }) => {
-  console.log({ data: await data.text() })
-  console.log({ array: new Uint8Array(await data.arrayBuffer()) })
+//   console.log(await data.text())
+//   console.log(await data.arrayBuffer())
   const buffer =
     webSocket.binaryType === 'arraybuffer' ? data : await data.arrayBuffer()
   pendingBuffers.push(buffer)

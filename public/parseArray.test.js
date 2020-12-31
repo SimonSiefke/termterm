@@ -285,9 +285,15 @@ test.skip('function - auxPortOff', () => {
   expect(auxPortOff).toHaveBeenCalledTimes(1)
 })
 
-test('function - newline', () => {
+test('function - carriage return', () => {
   const newline = jest.fn()
   runTest('\r', { newline })
+  expect(newline).not.toHaveBeenCalled()
+})
+
+test('function - newline 2', () => {
+  const newline = jest.fn()
+  runTest('\n', { newline })
   expect(newline).toHaveBeenCalledTimes(1)
 })
 
@@ -378,6 +384,11 @@ test('styled text - [01;32mfastboot[0m', () => {
   expect(lines).toEqual(['fastboot'])
 })
 
+test('tab', () => {
+  const lines = getOutputLines(`\t\t\t`)
+  expect(lines).toEqual(['\t\t\t'])
+})
+
 // test('program nano', () => {
 //   const lines = getOutputLines(
 //     `\u001b[22;16H\u001b(B\u001b[0;7m[ Welcome to nano.  For basic help, type Ctrl+G. ]\u001b(B\u001b[m\r\u001b[23d\u001b(B\u001b[0;7m^G\u001b(B\u001b[m Get Help  \u001b(B\u001b[0;7m^O\u001b(B\u001b[m Write Out \u001b(B\u001b[0;7m^W\u001b(B\u001b[m Where Is  \u001b(B\u001b[0;7m^K\u001b(B\u001b[m Cut Text  \u001b(B\u001b[0;7m^J\u001b(B\u001b[m Justify   \u001b(B\u001b[0;7m^C\u001b(B\u001b[m Cur Pos\r\u001b[24d\u001b(B\u001b[0;7m^X\u001b(B\u001b[m Exit\u001b[14G\u001b(B\u001b[0;7m^R\u001b(B\u001b[m Read File \u001b(B\u001b[0;7m^\\\u001b(B\u001b[m Replace   \u001b(B\u001b[0;7m^U\u001b(B\u001b[m Paste Text\u001b(B\u001b[0;7m^T\u001b(B\u001b[m To Spell  \u001b(B\u001b[0;7m^_\u001b(B\u001b[m Go To Line\r\u001b[22d\u001b[2d\u001b[39;49m\u001b(B\u001b[m\u001b[?12l\u001b[?25h`,
@@ -401,7 +412,6 @@ test('program ls', () => {
   )
   expect(lines).toEqual([
     'node_modules  package.json  package-lock.json  public  server.js',
-    '',
     '',
   ])
 })

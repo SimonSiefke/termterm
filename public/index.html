@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
     <style>
+      body {
+        margin: 0;
+      }
       #Input {
         width: 0;
         height: 0;
@@ -22,20 +25,21 @@
         display: flex;
         flex-direction: column;
       }
-      #Output > * {
-        white-space: nowrap;
+      #Output {
+        white-space: pre;
       }
-      #Output > span {
+      #Output > div {
         height: 14px;
-        contain: strict;
+        width: 100%;
+        /* contain: strict; */
       }
       #Terminal {
         font-family: monospace;
         position: relative;
       }
       #Cursor {
-        width: 7.21667px;
-        height: 16px;
+        width: 8.4333333px;
+        height: 14px;
         background: rgba(0, 0, 0, 0.5);
         position: absolute;
         top: 0;

@@ -61,8 +61,12 @@ export const parseArray = (
             state = State.TopLevelContent
             i++
             break
-          case /* \r */ 13:
+          case /* \n */ 10:
             newline()
+            state = State.TopLevelContent
+            i++
+            break
+          case /* \r */ 13:
             state = State.TopLevelContent
             i++
             break
@@ -89,15 +93,23 @@ export const parseArray = (
                   break middle
                 case /* \r */ 13:
                   print(printStartIndex, i)
-                  newline()
                   state = State.TopLevelContent
                   i++
                   break middle
                 default:
+                  // console.log(String.fromCharCode(array[i]) === '\r')
+                  // console.log(String.fromCharCode(array[i]) === '\n')
+                  // console.log(String.fromCharCode(array[i]) === '\f')
                   i++
                   break
               }
             }
+            // for (let j = printStartIndex; j < i; j++) {
+            //   if (/\s/.test(String.fromCharCode(array[i]))) {
+            //     throw new Error('impossible')
+            //   }
+            // }
+            // console.log('default print')
             print(printStartIndex, i)
             break
         }
@@ -518,6 +530,7 @@ export const parseArray = (
     }
   }
   if (printStartIndex !== -1) {
+    console.log('printing end')
     print(printStartIndex, i)
   }
 }
