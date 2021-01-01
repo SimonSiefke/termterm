@@ -40,3 +40,5 @@ showkey -a to get ascii output of keyboard shortcuts
 <!-- interesting: alacritty vte parser https://github.com/alacritty/vte -->
 
 <!-- interesting terminal spec https://invisible-island.net/xterm/ctlseqs/ctlseqs.html -->
+
+<!-- TODO test urandom -->
