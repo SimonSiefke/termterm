@@ -1,7 +1,6 @@
 import { jest } from '@jest/globals'
-import { createParser } from './parseArray.js'
-import fs from 'fs'
 import { StringDecoder } from 'string_decoder'
+import { createParse } from './parseArray.js'
 
 const noop = () => {}
 
@@ -37,7 +36,7 @@ const runTest = (
     tabSet = noop,
   } = {},
 ) => {
-  const parse = createParser({
+  const parse = createParse({
     eraseInDisplay2,
     eraseToEndOfLine,
     goToHome,
@@ -64,7 +63,7 @@ const runTest = (
 const getOutputLines = (input) => {
   const chunks = []
   const array = encodeText(input)
-  const parse = createParser({
+  const parse = createParse({
     bell: noop,
     eraseInDisplay2: noop,
     eraseToEndOfLine: noop,

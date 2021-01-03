@@ -3,7 +3,7 @@ import { dirname } from 'path'
 import { performance } from 'perf_hooks'
 import { StringDecoder } from 'string_decoder'
 import { fileURLToPath } from 'url'
-import { createParser } from './parseArray.js'
+import { createParse } from './parseArray.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
@@ -63,7 +63,7 @@ const fixtureLs = fs
   .toString()
 const array = new Uint8Array(fixtureLs.split('').map((x) => x.charCodeAt()))
 
-const parse = createParser(noop_terminal)
+const parse = createParse(noop_terminal)
 let total = 0
 for (let i = 0; i < 1000; i++) {
   calls.length = 0

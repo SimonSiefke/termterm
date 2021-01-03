@@ -10,7 +10,7 @@ const State = {
   Dcs: 'Dcs',
 }
 
-export const createParser = ({
+export const createParse = ({
   eraseInDisplay2,
   eraseToEndOfLine,
   goToHome,

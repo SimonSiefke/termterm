@@ -1,4 +1,4 @@
-import { createParser } from './parseArray.js'
+import { createParse } from './parseArray.js'
 import { drawLines } from './drawLines.js'
 
 const CHAR_WIDTH = 15
@@ -77,7 +77,7 @@ export const createTerminal = (canvas) => {
     },
   }
 
-  const parse = createParser(callbackFns)
+  const parse = createParse(callbackFns)
 
   const write = (array) => {
     parse(array)
