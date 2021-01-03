@@ -42,3 +42,7 @@ showkey -a to get ascii output of keyboard shortcuts
 <!-- interesting terminal spec https://invisible-island.net/xterm/ctlseqs/ctlseqs.html -->
 
 <!-- TODO test urandom -->
+
+<!-- TODO investigate if desynchronized canvas can be faster https://developers.google.com/web/updates/2019/05/desynchronized -->
+
+<!-- TODO chunking ws https://stackoverflow.com/questions/13010354/chunking-websocket-transmission -->

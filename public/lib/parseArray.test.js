@@ -1,5 +1,5 @@
 import { jest } from '@jest/globals'
-import { parseArray } from './parseArray.js'
+import { createParser } from './parseArray.js'
 import fs from 'fs'
 import { StringDecoder } from 'string_decoder'
 
@@ -37,8 +37,7 @@ const runTest = (
     tabSet = noop,
   } = {},
 ) => {
-  const array = new Uint8Array(input.split('').map((x) => x.charCodeAt()))
-  return parseArray(array, {
+  const parse = createParser({
     eraseInDisplay2,
     eraseToEndOfLine,
     goToHome,
@@ -58,12 +57,14 @@ const runTest = (
     index,
     tabSet,
   })
+  const array = new Uint8Array(input.split('').map((x) => x.charCodeAt()))
+  return parse(array)
 }
 
 const getOutputLines = (input) => {
   const chunks = []
   const array = encodeText(input)
-  parseArray(array, {
+  const parse = createParser({
     bell: noop,
     eraseInDisplay2: noop,
     eraseToEndOfLine: noop,
@@ -74,13 +75,14 @@ const getOutputLines = (input) => {
     cursorRight: noop,
     cursorLeft: noop,
     backspace: noop,
-    print: (startIndex, endIndex) => {
+    print: (array, startIndex, endIndex) => {
       chunks.push(decodeText(array.slice(startIndex, endIndex)))
     },
     newline: () => {
       chunks.push('\n')
     },
   })
+  parse(array)
   return chunks.join('').split('\n')
 }
 
@@ -90,7 +92,7 @@ test('function - bell', () => {
   expect(bell).toHaveBeenCalledTimes(1)
 })
 
-test('function - bell (with text)', () => {
+test.only('function - bell (with text)', () => {
   const lines = getOutputLines('sample \u0007 text')
   expect(lines).toEqual(['sample  text'])
 })

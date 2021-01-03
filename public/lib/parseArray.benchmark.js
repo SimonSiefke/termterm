@@ -1,10 +1,9 @@
 import fs from 'fs'
-import { parseArray } from './parseArray.js'
-import { parseArray as optimizedParseArray } from './optimizedParseArray.js'
-import { performance } from 'perf_hooks'
 import { dirname } from 'path'
-import { fileURLToPath } from 'url'
+import { performance } from 'perf_hooks'
 import { StringDecoder } from 'string_decoder'
+import { fileURLToPath } from 'url'
+import { createParser } from './parseArray.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
@@ -59,15 +58,18 @@ const noop_terminal = {
   newline: noop,
 }
 
-const fixtureLs = fs.readFileSync(`${__dirname}/../fixtures/ls.txt`).toString()
+const fixtureLs = fs
+  .readFileSync(`${__dirname}/../../fixtures/ls.txt`)
+  .toString()
 const array = new Uint8Array(fixtureLs.split('').map((x) => x.charCodeAt()))
 
+const parse = createParser(noop_terminal)
 let total = 0
 for (let i = 0; i < 1000; i++) {
   calls.length = 0
   console.log(bytesToSize(fixtureLs.length))
   const start = performance.now()
-  parseArray(array, noop_terminal)
+  parse(array)
   // optimizedParseArray(array, noop_terminal)
   const end = performance.now()
   console.log(`took ${end - start}ms`)
