@@ -1,5 +1,5 @@
+import { createDrawLines } from './drawLines.js'
 import { createParse } from './parseArray.js'
-import { drawLines } from './drawLines.js'
 
 const CHAR_WIDTH = 15
 const CHAR_HEIGHT = 15
@@ -7,7 +7,7 @@ const CHAR_HEIGHT = 15
 const BACKGROUND = '#000000'
 const FOREGROUND = '#ffffff'
 
-export const createTerminal = (canvas) => {
+export const createTerminal = (canvas, { bell }) => {
   const COLS = 80
   const ROWS = 25
 
@@ -59,9 +59,7 @@ export const createTerminal = (canvas) => {
     backspace: () => {
       console.log('backspace')
     },
-    bell: () => {
-      console.log('bell')
-    },
+    bell,
     print: (array, start, end) => {
       const text = new TextDecoder().decode(array.subarray(start, end))
       lines[y] += text
@@ -78,13 +76,12 @@ export const createTerminal = (canvas) => {
   }
 
   const parse = createParse(callbackFns)
+  const drawLines = createDrawLines(ctx, lines)
 
   const write = (array) => {
     parse(array)
     console.log(array)
-    drawLines(ctx, lines)
-
-    // writeToBuffer(new Uint8Array(data))
+    drawLines(0, ROWS)
   }
 
   console.log('create terminal')

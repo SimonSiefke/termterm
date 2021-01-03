@@ -5,7 +5,10 @@ const webSocket = new WebSocket(`${wsProtocol}//${location.host}`)
 webSocket.binaryType = 'arraybuffer'
 
 const init = ({ canvas }) => {
-  const terminal = createTerminal(canvas)
+  const bell = () => {
+    postMessage({ command: 'bell' })
+  }
+  const terminal = createTerminal(canvas, { bell })
   const handleMessage = ({ data }) => terminal.write(new Uint8Array(data))
   webSocket.onmessage = handleMessage
 

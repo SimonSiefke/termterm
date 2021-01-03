@@ -1,4 +1,4 @@
-const CHAR_WIDTH = 15
+const CHAR_WIDTH = 12
 const CHAR_HEIGHT = 15
 
 const BACKGROUND = '#000000'
@@ -26,23 +26,31 @@ const drawChar = (char) => {
   return cache[char]
 }
 
-const drawLine = (ctx, line, y) => {
-  let x = -1
-  const chars = [...line]
-  while (++x < chars.length) {
-    const char = chars[x]
-    const imageData = drawChar(char)
-    ctx.drawImage(imageData, x * CHAR_WIDTH, y * CHAR_HEIGHT)
+const NULL_IMAGE_DATA = drawChar(' ')
+
+const createDrawLine = (ctx, lines) => {
+  const drawLine = (y) => {
+    let x = -1
+    const chars = [...lines[y]]
+    while (++x < chars.length) {
+      const char = chars[x]
+      const imageData = drawChar(char)
+      ctx.drawImage(imageData, x * CHAR_WIDTH, y * CHAR_HEIGHT)
+    }
+    x--
+    while (++x < 80) {
+      ctx.drawImage(NULL_IMAGE_DATA, x * CHAR_WIDTH, y * CHAR_HEIGHT)
+    }
   }
-  x--
-  while (++x < 80) {
-    const imageData = drawChar(' ')
-    ctx.drawImage(imageData, x * CHAR_WIDTH, y * CHAR_HEIGHT)
-  }
+  return drawLine
 }
 
-export const drawLines = (ctx, lines, dirtyRowStart, dirtyRowEnd) => {
-  for (let y = dirtyRowStart; y < dirtyRowEnd; y++) {
-    drawLine(ctx, lines[y], y)
+export const createDrawLines = (ctx, lines) => {
+  const drawLine = createDrawLine(ctx, lines)
+  const drawLines = (start, end) => {
+    for (let y = start; y < end; y++) {
+      drawLine(y)
+    }
   }
+  return drawLines
 }
