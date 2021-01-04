@@ -41,6 +41,9 @@ export const createDrawLines = (ctx, lines, cols) => {
     })
   }, 1000)
   const drawChar = (char, x, y) => {
+    if (char === ' ') {
+      return
+    }
     if (char in imageBitmapCache) {
       // console.log('image bitmap cache')
       const { cacheX, cacheY } = imageBitmapCache[char]
@@ -103,8 +106,6 @@ export const createDrawLines = (ctx, lines, cols) => {
     }
   }
 
-  const NULL_IMAGE_DATA = drawChar(' ')
-
   const drawLine = (y) => {
     let x = -1
     const chars = lines[y]
@@ -112,13 +113,20 @@ export const createDrawLines = (ctx, lines, cols) => {
       const char = chars[x]
       drawChar(char, x, y)
     }
-    x--
-    while (++x < cols) {
-      ctx.drawImage(NULL_IMAGE_DATA, x * CHAR_WIDTH, y * CHAR_HEIGHT)
-    }
+  }
+
+  const clearLines = (x, y, width, height) => {
+    ctx.fillStyle = BACKGROUND
+    ctx.fillRect(
+      x * CHAR_WIDTH,
+      y * CHAR_HEIGHT,
+      width * CHAR_WIDTH,
+      height * CHAR_HEIGHT,
+    )
   }
 
   const drawLines = (start, end) => {
+    clearLines(0, start, cols, end - start + 1)
     for (let y = start; y < end; y++) {
       drawLine(y)
     }

@@ -318,6 +318,10 @@ export const createHandleKeyDown = (send) => (event) => {
       }
       send(event.key)
       break
+    case ' ':
+      event.preventDefault()
+      send(` `)
+      break
     default:
       if (event.key.length > 1) {
         break

@@ -1,14 +1,14 @@
 import { createDrawLines } from './drawLines.js'
 import { createParse } from './parseArray.js'
 
-const CHAR_WIDTH = 15
+const CHAR_WIDTH = 13
 const CHAR_HEIGHT = 15
 
 const BACKGROUND = '#000000'
 const FOREGROUND = '#ffffff'
 
 export const createTerminal = (canvas, { bell, cacheCanvas }) => {
-  const COLS = 50
+  const COLS = 60
   const ROWS = 25
 
   canvas.width = COLS * CHAR_WIDTH
