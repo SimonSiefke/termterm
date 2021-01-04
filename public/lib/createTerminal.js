@@ -7,20 +7,46 @@ const CHAR_HEIGHT = 15
 const BACKGROUND = '#000000'
 const FOREGROUND = '#ffffff'
 
-export const createTerminal = (canvas, { bell }) => {
-  const COLS = 80
+export const createTerminal = (canvas, { bell, cacheCanvas }) => {
+  const COLS = 50
   const ROWS = 25
 
   canvas.width = COLS * CHAR_WIDTH
   canvas.height = ROWS * CHAR_HEIGHT
 
-  const lines = []
-  for (let y = 0; y < ROWS; y++) {
-    lines[y] = ''
-  }
-
   let x = 0
   let y = 0
+
+  const dirty = {
+    start: 0,
+    end: 0,
+  }
+
+  const lines = []
+
+  self.lines = lines
+  const createEmptyLine = () => {
+    const line = []
+    for (let x = 0; x < COLS; x++) {
+      line.push(' ')
+    }
+    return line
+  }
+  for (let y = 0; y < ROWS; y++) {
+    lines.push(createEmptyLine())
+  }
+
+  const dirtyMark = (y) => {
+    if (y < dirty.start) {
+      dirty.start = y
+    } else if (y > dirty.end) {
+      dirty.end = y
+    }
+  }
+  const dirtyClear = () => {
+    dirty.start = y
+    dirty.end = y
+  }
 
   const ctx = canvas.getContext('2d', {
     desynchronized: true, // perf
@@ -36,7 +62,7 @@ export const createTerminal = (canvas, { bell }) => {
     },
     eraseInDisplay2: () => {
       for (let i = 0; i < lines.length; i++) {
-        lines[i] = ''
+        lines[i] = createEmptyLine()
       }
       y = 0
       x = 0
@@ -62,26 +88,30 @@ export const createTerminal = (canvas, { bell }) => {
     bell,
     print: (array, start, end) => {
       const text = new TextDecoder().decode(array.subarray(start, end))
-      lines[y] += text
-      x += text.length
-      // markDirty(y)
-      // console.log('print ' + text)
+      const chars = [...text]
+      for (const char of chars) {
+        lines[y][x++] = char
+      }
+      dirtyMark(y)
     },
     newline: () => {
       y++
+      x = 0
       if (y >= lines.length) {
         y--
       }
+      dirtyMark(y)
     },
   }
 
   const parse = createParse(callbackFns)
-  const drawLines = createDrawLines(ctx, lines)
+  const drawLines = createDrawLines(ctx, lines, COLS, dirty)
 
   const write = (array) => {
+    dirtyClear()
     parse(array)
-    console.log(array)
-    drawLines(0, ROWS)
+    //     console.log(array)
+    requestAnimationFrame(() => drawLines(dirty.start, dirty.end + 1))
   }
 
   console.log('create terminal')

@@ -1,7 +1,5 @@
 import { createHandleKeyDown } from './lib/handleKeyDown.js'
 
-const $Canvas = document.getElementById('Canvas')
-const canvas = $Canvas.transferControlToOffscreen()
 const worker = new Worker('worker.js', { type: 'module' })
 
 const send = (text) => {
@@ -28,15 +26,19 @@ const handleMessage = ({ data }) => {
 }
 
 const __initialize__ = () => {
+  const canvas = document.getElementById('Canvas').transferControlToOffscreen()
+  const cacheCanvas = document
+    .getElementById('CacheCanvas')
+    .transferControlToOffscreen()
   window.addEventListener('keydown', handleKeyDown)
   worker.postMessage(
     {
       command: 'init',
       canvas,
+      cacheCanvas,
     },
-    [canvas],
+    [canvas, cacheCanvas],
   )
-
   worker.onmessage = handleMessage
 }
 
