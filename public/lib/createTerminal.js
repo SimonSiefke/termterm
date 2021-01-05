@@ -28,7 +28,10 @@ export const createTerminal = (canvas, { bell, cacheCanvas }) => {
   const createEmptyLine = () => {
     const line = []
     for (let x = 0; x < COLS; x++) {
-      line.push(' ')
+      line.push({
+        char: ' ',
+        attributes: {},
+      })
     }
     return line
   }
@@ -53,6 +56,10 @@ export const createTerminal = (canvas, { bell, cacheCanvas }) => {
     alpha: false, // perf
   })
 
+  let attributes = []
+
+  const charAttributesMap = new Map()
+
   const callbackFns = {
     goToHome: () => {
       console.log('go to home')
@@ -67,8 +74,8 @@ export const createTerminal = (canvas, { bell, cacheCanvas }) => {
       y = 0
       x = 0
     },
-    setCharAttributes: () => {
-      // console.log('set char attributes')
+    setCharAttributes: (params) => {
+      attributes = params
     },
     cursorUp: () => {
       console.log('cursor up')
@@ -83,14 +90,27 @@ export const createTerminal = (canvas, { bell, cacheCanvas }) => {
       console.log('cursor left')
     },
     backspace: () => {
-      console.log('backspace')
+      lines[y][--x] = { char: ' ' }
     },
     bell,
     print: (array, start, end) => {
       const text = new TextDecoder().decode(array.subarray(start, end))
       const chars = [...text]
+      let background = '#000000'
+      let foreground = '#ffffff'
+      if (attributes[1] === 35) {
+        foreground = '#8000ff'
+      } else if (attributes[1] === 32) {
+        foreground = '#09f900'
+      } else if (attributes[1] === 34) {
+        foreground = '#0090ff'
+      }
       for (const char of chars) {
-        lines[y][x++] = char
+        lines[y][x++] = {
+          char,
+          background,
+          foreground,
+        }
       }
       dirtyMark(y)
     },
@@ -113,8 +133,6 @@ export const createTerminal = (canvas, { bell, cacheCanvas }) => {
     //     console.log(array)
     requestAnimationFrame(() => drawLines(dirty.start, dirty.end + 1))
   }
-
-  console.log('create terminal')
 
   return {
     write,

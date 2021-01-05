@@ -2,7 +2,7 @@ const CHAR_WIDTH = 12
 const CHAR_HEIGHT = 15
 
 const BACKGROUND = '#000000'
-const FOREGROUND = '#ff00ff'
+const FOREGROUND = '#ffffff'
 
 const tmpCanvas = new OffscreenCanvas(CHAR_WIDTH, CHAR_HEIGHT)
 const tmpCtx = tmpCanvas.getContext('2d', {
@@ -13,28 +13,28 @@ const tmpCtx = tmpCanvas.getContext('2d', {
 const bitmapCache = Object.create(null)
 
 export const createDrawLines = (ctx, lines, cols) => {
-  const drawChar = (char, x, y) => {
+  const drawChar = (char, x, y, background, foreground) => {
     if (char === ' ') {
       return
     }
-    if (!(char in bitmapCache)) {
-      console.log('not in cache')
-      tmpCtx.fillStyle = BACKGROUND
+    const cacheKey = `${char}${background}${foreground}`
+    if (!(cacheKey in bitmapCache)) {
+      tmpCtx.fillStyle = background
       tmpCtx.fillRect(0, 0, CHAR_WIDTH, CHAR_HEIGHT)
       tmpCtx.font = `${CHAR_HEIGHT}px monospace`
-      tmpCtx.fillStyle = FOREGROUND
+      tmpCtx.fillStyle = foreground
       tmpCtx.fillText(char, 0, CHAR_HEIGHT)
-      bitmapCache[char] = tmpCanvas.transferToImageBitmap()
+      bitmapCache[cacheKey] = tmpCanvas.transferToImageBitmap()
     }
-    ctx.drawImage(bitmapCache[char], x * CHAR_WIDTH, y * CHAR_HEIGHT)
+    ctx.drawImage(bitmapCache[cacheKey], x * CHAR_WIDTH, y * CHAR_HEIGHT)
   }
 
   const drawLine = (y) => {
     let x = -1
     const chars = lines[y]
     while (++x < chars.length) {
-      const char = chars[x]
-      drawChar(char, x, y)
+      const { char, background, foreground } = chars[x]
+      drawChar(char, x, y, background, foreground)
     }
   }
 
