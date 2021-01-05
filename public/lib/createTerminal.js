@@ -7,6 +7,8 @@ const CHAR_HEIGHT = 15
 const BACKGROUND = '#000000'
 const FOREGROUND = '#ffffff'
 
+const EMPTY_CELL = { char: ' ' }
+
 export const createTerminal = (canvas, { bell, cacheCanvas }) => {
   const COLS = 60
   const ROWS = 25
@@ -24,14 +26,13 @@ export const createTerminal = (canvas, { bell, cacheCanvas }) => {
 
   const lines = []
 
+  const textDecoder = new TextDecoder()
+
   self.lines = lines
   const createEmptyLine = () => {
     const line = []
     for (let x = 0; x < COLS; x++) {
-      line.push({
-        char: ' ',
-        attributes: {},
-      })
+      line.push(EMPTY_CELL)
     }
     return line
   }
@@ -65,7 +66,9 @@ export const createTerminal = (canvas, { bell, cacheCanvas }) => {
       console.log('go to home')
     },
     eraseToEndOfLine: () => {
-      console.log('erase to end of line')
+      for (let x1 = x; x1 < COLS; x1++) {
+        lines[y][x1] = EMPTY_CELL
+      }
     },
     eraseInDisplay2: () => {
       for (let i = 0; i < lines.length; i++) {
@@ -90,11 +93,13 @@ export const createTerminal = (canvas, { bell, cacheCanvas }) => {
       console.log('cursor left')
     },
     backspace: () => {
-      lines[y][--x] = { char: ' ' }
+      --x
     },
     bell,
     print: (array, start, end) => {
-      const text = new TextDecoder().decode(array.subarray(start, end))
+      const text = textDecoder.decode(array.subarray(start, end), {
+        stream: true,
+      })
       const chars = [...text]
       let background = '#000000'
       let foreground = '#ffffff'
@@ -106,6 +111,31 @@ export const createTerminal = (canvas, { bell, cacheCanvas }) => {
         foreground = '#0090ff'
       }
       for (const char of chars) {
+        // reuse same object to reduce gc
+        // if (lines[y][x]) {
+        //   console.log(lines[y][x])
+        //   lines[y][x].char = char
+        //   lines[y][x].background = background
+        //   lines[y][x].foreground = foreground
+        // }
+        // if (
+        //   JSON.stringify(lines[y][x]) !==
+        //   JSON.stringify({
+        //     char,
+        //     background,
+        //     foreground,
+        //   })
+        // ) {
+        //   throw new Error('no')
+        // }
+
+        // console.log({ char })
+        // lines[y][x] = lines[y][x] || {}
+        // lines[y][x].char = char
+        // lines[y][x].background = background
+        // lines[y][x].foreground = foreground
+        // x++
+
         lines[y][x++] = {
           char,
           background,
@@ -127,11 +157,19 @@ export const createTerminal = (canvas, { bell, cacheCanvas }) => {
   const parse = createParse(callbackFns)
   const drawLines = createDrawLines(ctx, lines, COLS, dirty)
 
+  let scheduled = false
+
   const write = (array) => {
     dirtyClear()
     parse(array)
+    if (!scheduled) {
+      scheduled = true
+      requestAnimationFrame(() => {
+        drawLines(dirty.start, dirty.end + 1)
+        scheduled = false
+      })
+    }
     //     console.log(array)
-    requestAnimationFrame(() => drawLines(dirty.start, dirty.end + 1))
   }
 
   return {

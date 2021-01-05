@@ -19,6 +19,40 @@ class PipeSocket extends net.Socket {
   }
 }
 
+const createHandleData = (webSocket, delay) => {
+  let pending = Buffer.from('')
+  let state = 'default'
+  const handlePendingData = () => {
+    if (pending.length > 0) {
+      webSocket.send(pending)
+      pending = Buffer.from('')
+      setTimeout(handlePendingData, delay)
+      state = 'justSent'
+    } else {
+      state = 'default'
+    }
+  }
+  const sendBuffer = (data) => {
+    switch (state) {
+      case 'default':
+        webSocket.send(data)
+        state = 'justSent'
+        setTimeout(handlePendingData, delay)
+        break
+      case 'justSent':
+        pending = Buffer.concat([pending, data])
+        state = 'waiting'
+        break
+      case 'waiting':
+        pending = Buffer.concat([pending, data])
+        break
+      default:
+        break
+    }
+  }
+  return sendBuffer
+}
+
 const createTerminal = () => {
   const fd = forkPtyAndExecvp('bash', ['bash', '-i'])
   const socket = new PipeSocket(fd)
@@ -41,10 +75,8 @@ const terminals = Object.create(null)
 
 wss.on('connection', (socket) => {
   const readStream = createTerminal()
-  readStream.on('data', (data) => {
-    socket.send(data)
-    console.log({ data })
-  })
+  const handleData = createHandleData(socket, 8)
+  readStream.on('data', handleData)
   socket.on('message', (data) => {
     console.log({ data })
     readStream.write(data)
