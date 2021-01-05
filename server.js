@@ -3,21 +3,30 @@ import { ReadStream } from 'tty'
 import WebSocket from 'ws'
 import express from 'express'
 import http from 'http'
+import * as net from 'net'
 
 const nextId = (() => {
   let id = 0
   return () => id++
 })()
 
+class PipeSocket extends net.Socket {
+  constructor(fd) {
+    const pipeWrap = process.binding('pipe_wrap')
+    const handle = new pipeWrap.Pipe(pipeWrap.constants.SOCKET)
+    handle.open(fd)
+    super({ handle })
+  }
+}
+
 const createTerminal = () => {
   const fd = forkPtyAndExecvp('bash', ['bash', '-i'])
-
-  const readStream = new ReadStream(fd, { readable: true, writable: true })
+  const socket = new PipeSocket(fd)
 
   // setTimeout(() => {
   //   readStream.write('echo "hello world"\n')
   // }, 1250)
-  return readStream
+  return socket
 }
 
 const app = express()
@@ -33,8 +42,8 @@ const terminals = Object.create(null)
 wss.on('connection', (socket) => {
   const readStream = createTerminal()
   readStream.on('data', (data) => {
-    console.log({ data })
     socket.send(data)
+    console.log({ data })
   })
   socket.on('message', (data) => {
     console.log({ data })

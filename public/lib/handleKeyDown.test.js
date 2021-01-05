@@ -1,5 +1,5 @@
 import { jest } from '@jest/globals'
-import { handleKeyDown } from './handleKeyDown.js'
+import { createHandleKeyDown } from './handleKeyDown.js'
 
 const runTest = (
   {
@@ -11,7 +11,7 @@ const runTest = (
   },
   send,
 ) => {
-  handleKeyDown({ send })({ key, preventDefault, shiftKey, altKey, ctrlKey })
+  createHandleKeyDown(send)({ key, preventDefault, shiftKey, altKey, ctrlKey })
 }
 
 test('key 33', () => {
