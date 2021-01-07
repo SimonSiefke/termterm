@@ -22,7 +22,6 @@ export const createParse = ({
   cursorLeft,
   backspace,
   print,
-  newline,
   setGLevel,
   saveCursor,
   restoreCursor,
@@ -59,15 +58,7 @@ export const createParse = ({
               state = State.TopLevelContent
               i++
               break
-            case /* \n */ 10:
-              newline()
-              state = State.TopLevelContent
-              i++
-              break
-            case /* \r */ 13:
-              state = State.TopLevelContent
-              i++
-              break
+
             default:
               const printStartIndex = i++
               while (i < array.length) {
@@ -86,11 +77,6 @@ export const createParse = ({
                   case /* \u0008 */ 8:
                     print(array, printStartIndex, i)
                     backspace()
-                    state = State.TopLevelContent
-                    i++
-                    break middle
-                  case /* \r */ 13:
-                    print(array, printStartIndex, i)
                     state = State.TopLevelContent
                     i++
                     break middle
@@ -597,6 +583,8 @@ const print = (array, startIndex, endIndex) => {
   array
   output += decodeString(array.slice(startIndex, endIndex))
 }
+
+const lineFeed = () => {}
 
 const input = `sample \u0007 text`
 

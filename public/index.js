@@ -40,6 +40,12 @@ const __initialize__ = () => {
     [canvas, cacheCanvas],
   )
   worker.onmessage = handleMessage
+
+  // setTimeout(() => {
+  //   for (const key of 'ls -lR /usr/lib\n') {
+  //     handleKeyDown({ key, preventDefault: () => {} })
+  //   }
+  // }, 200)
 }
 
 __initialize__()

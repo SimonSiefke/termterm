@@ -1,7 +1,12 @@
 import { createTerminal } from './lib/createTerminal.js'
 
+const USE_NODE_PTY_SERVER = true
+
 const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:'
-const webSocket = new WebSocket(`${wsProtocol}//${location.host}`)
+const webSocket = USE_NODE_PTY_SERVER
+  ? new WebSocket(`ws://localhost:4444`)
+  : new WebSocket(`${wsProtocol}//${location.host}`)
+
 webSocket.binaryType = 'arraybuffer'
 
 const init = ({ canvas }) => {

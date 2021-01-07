@@ -25,10 +25,55 @@ export const createTerminal = (canvas, { bell, cacheCanvas }) => {
   }
 
   const lines = []
+  self.lines = lines
+
+  let background = '#000000'
+  let foreground = '#ffffff'
 
   const textDecoder = new TextDecoder()
 
-  self.lines = lines
+  const storeChar = (char) => {
+    lines[y][x++] = {
+      char,
+      background,
+      foreground,
+    }
+  }
+
+  const storeCharsFast = (array) => {
+    for (let i = 0; i < array.length; i++) {
+      switch (array[i]) {
+        case 13:
+          x = 0
+          break
+        case 10:
+          y++
+          if (y === lines.length) {
+            y--
+          }
+          break
+        default:
+          // if (array[i] < 128) {
+          storeChar(String.fromCharCode(array[i]))
+        // } else {
+        // console.log('SPECIAL')
+        // }
+      }
+    }
+  }
+
+  // const storeChars = (array) => {
+  //   const text = textDecoder.decode(array, {
+  //     stream: true,
+  //   })
+  //   const chars = [...text]
+  //   for (const char of chars) {
+  //     storeChar(char)
+  //   }
+  // }
+
+  const storeChars = storeCharsFast
+
   const createEmptyLine = () => {
     const line = []
     for (let x = 0; x < COLS; x++) {
@@ -79,6 +124,13 @@ export const createTerminal = (canvas, { bell, cacheCanvas }) => {
     },
     setCharAttributes: (params) => {
       attributes = params
+      if (attributes[1] === 35) {
+        foreground = '#8000ff'
+      } else if (attributes[1] === 32) {
+        foreground = '#09f900'
+      } else if (attributes[1] === 34) {
+        foreground = '#0090ff'
+      }
     },
     cursorUp: () => {
       console.log('cursor up')
@@ -97,60 +149,17 @@ export const createTerminal = (canvas, { bell, cacheCanvas }) => {
     },
     bell,
     print: (array, start, end) => {
-      const text = textDecoder.decode(array.subarray(start, end), {
-        stream: true,
-      })
-      const chars = [...text]
-      let background = '#000000'
-      let foreground = '#ffffff'
-      if (attributes[1] === 35) {
-        foreground = '#8000ff'
-      } else if (attributes[1] === 32) {
-        foreground = '#09f900'
-      } else if (attributes[1] === 34) {
-        foreground = '#0090ff'
-      }
-      for (const char of chars) {
-        // reuse same object to reduce gc
-        // if (lines[y][x]) {
-        //   console.log(lines[y][x])
-        //   lines[y][x].char = char
-        //   lines[y][x].background = background
-        //   lines[y][x].foreground = foreground
-        // }
-        // if (
-        //   JSON.stringify(lines[y][x]) !==
-        //   JSON.stringify({
-        //     char,
-        //     background,
-        //     foreground,
-        //   })
-        // ) {
-        //   throw new Error('no')
-        // }
-
-        // console.log({ char })
-        // lines[y][x] = lines[y][x] || {}
-        // lines[y][x].char = char
-        // lines[y][x].background = background
-        // lines[y][x].foreground = foreground
-        // x++
-
-        lines[y][x++] = {
-          char,
-          background,
-          foreground,
-        }
-      }
+      storeChars(array.subarray(start, end))
       dirtyMark(y)
     },
-    newline: () => {
-      y++
-      x = 0
-      if (y >= lines.length) {
+    lineFeed: () => {
+      if (++y === lines.length) {
         y--
       }
       dirtyMark(y)
+    },
+    carriageReturn: () => {
+      x = 0
     },
   }
 
@@ -160,6 +169,7 @@ export const createTerminal = (canvas, { bell, cacheCanvas }) => {
   let scheduled = false
 
   const write = (array) => {
+    //     console.log({ array })
     dirtyClear()
     parse(array)
     if (!scheduled) {
