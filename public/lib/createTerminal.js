@@ -133,10 +133,8 @@ export const createTerminal = (canvas, { bell, cacheCanvas }) => {
       console.log('go to home')
     },
     eraseToEndOfLine: () => {
-      // for (let x1 = x; x1 < COLS; x1++) {
-      //   lines[y][x1] = EMPTY_CELL
-      // }
-      lines[y].fill(0, offsets[y])
+      lines[y].fill(0)
+      offsets[y] = 0
     },
     eraseInDisplay2: () => {
       // for (let i = 0; i < lines.length; i++) {
