@@ -12,7 +12,7 @@ const tmpCtx = tmpCanvas.getContext('2d', {
 
 const bitmapCache = Object.create(null)
 
-export const createDrawLines = (ctx, lines, cols) => {
+export const createDrawLines = (ctx, lines, offsets, cols) => {
   const drawChar = (char, x, y, background, foreground) => {
     if (char === ' ') {
       return
@@ -29,26 +29,41 @@ export const createDrawLines = (ctx, lines, cols) => {
     ctx.drawImage(bitmapCache[cacheKey], x * CHAR_WIDTH, y * CHAR_HEIGHT)
   }
 
+  const getChars = (y) => {
+    const text = new TextDecoder().decode(lines[y].subarray(0, offsets[y]))
+    const chars = [...text]
+    return chars
+  }
+
   const drawLine = (y) => {
     let x = -1
-    const chars = lines[y]
+    const chars = getChars(y)
+    //console.log(chars)
+    // const chars = lines[y]
     while (++x < chars.length) {
-      const { char, background, foreground } = chars[x]
+      // const { char, background, foreground } = chars[x]
+      const char = chars[x]
+      const background = '#000000'
+      const foreground = '#ffffff'
       drawChar(char, x, y, background, foreground)
     }
   }
 
   const clearLines = (x, y, width, height) => {
     ctx.fillStyle = BACKGROUND
-    ctx.fillRect(
-      x * CHAR_WIDTH,
-      y * CHAR_HEIGHT,
-      width * CHAR_WIDTH,
-      height * CHAR_HEIGHT,
-    )
+    ctx.fillRect(x * CHAR_WIDTH, y * CHAR_HEIGHT, 900, height * CHAR_HEIGHT)
+    // ctx.fillRect(
+    //   x * CHAR_WIDTH,
+    //   y * CHAR_HEIGHT,
+    //   width * CHAR_WIDTH,
+    //   height * CHAR_HEIGHT,
+    // )
   }
 
+  self.ctx = ctx
   const drawLines = (start, end) => {
+    start = 0
+    end = lines.length
     clearLines(0, start, cols, end - start + 1)
     for (let y = start; y < end; y++) {
       drawLine(y)

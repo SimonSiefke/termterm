@@ -14,7 +14,7 @@ export const createTerminal = (canvas, { bell, cacheCanvas }) => {
   const ROWS = 25
 
   canvas.width = COLS * CHAR_WIDTH
-  canvas.height = ROWS * CHAR_HEIGHT
+  canvas.height = ROWS * (CHAR_HEIGHT + 10)
 
   let x = 0
   let y = 0
@@ -24,42 +24,75 @@ export const createTerminal = (canvas, { bell, cacheCanvas }) => {
     end: 0,
   }
 
+  // let bufferYStart = 0
+  // let bufferYEnd = lines.length
+
   const lines = []
   self.lines = lines
+
+  // const createEmptyLine = () => {
+  //   const line = []
+  //   for (let x = 0; x < COLS; x++) {
+  //     line.push(EMPTY_CELL)
+  //   }
+  //   return line
+  // }
+  const offsets = new Uint8Array(ROWS)
+
+  self.offsets = offsets
+
+  for (let y = 0; y < ROWS; y++) {
+    lines.push(new Uint8Array(200))
+  }
 
   let background = '#000000'
   let foreground = '#ffffff'
 
   const textDecoder = new TextDecoder()
 
-  const storeChar = (char) => {
-    lines[y][x++] = {
-      char,
-      background,
-      foreground,
-    }
-  }
+  self.printLines = () =>
+    lines.map((line, y) => textDecoder.decode(line.subarray(0, offsets[y] + 1)))
+  // const storeChar = (char) => {
+  //   lines[y][x++] = {
+  //     char,
+  //     background,
+  //     foreground,
+  //   }
+  // }
 
-  const storeCharsFast = (array) => {
-    for (let i = 0; i < array.length; i++) {
-      switch (array[i]) {
-        case 13:
-          x = 0
-          break
-        case 10:
-          y++
-          if (y === lines.length) {
-            y--
-          }
-          break
-        default:
-          // if (array[i] < 128) {
-          storeChar(String.fromCharCode(array[i]))
-        // } else {
-        // console.log('SPECIAL')
-        // }
-      }
-    }
+  const storeChars = (array) => {
+    // if (offsets[y] > 320) {
+    //   debugger
+    // }
+    // console.log({ array })
+    // for (let i = 0; i < array.length; i++) {
+    //   switch (array[i]) {
+    //     case 13:
+    //       x = 0
+    //       break
+    //     case 10:
+    //       y++
+    //       if (y === lines.length) {
+    //         // dirtyMark(y)
+    //         // for (let x = 0; x < COLS; x++) {
+    //         //   lines[0][x] = EMPTY_CELL
+    //         // }
+    //         // y = 0
+    //         // lines[y] = createEmptyLine()
+    //         lines.shift()
+    //         lines.push(createEmptyLine())
+    //         y--
+    //       }
+    //       dirtyMark(y)
+    //       break
+    //     default:
+    //       // if (array[i] < 128) {
+    //       storeChar(String.fromCharCode(array[i]))
+    //     // } else {
+    //     // console.log('SPECIAL')
+    //     // }
+    //   }
+    // }
   }
 
   // const storeChars = (array) => {
@@ -72,18 +105,7 @@ export const createTerminal = (canvas, { bell, cacheCanvas }) => {
   //   }
   // }
 
-  const storeChars = storeCharsFast
-
-  const createEmptyLine = () => {
-    const line = []
-    for (let x = 0; x < COLS; x++) {
-      line.push(EMPTY_CELL)
-    }
-    return line
-  }
-  for (let y = 0; y < ROWS; y++) {
-    lines.push(createEmptyLine())
-  }
+  // const storeChars = storeCharsFast
 
   const dirtyMark = (y) => {
     if (y < dirty.start) {
@@ -116,9 +138,9 @@ export const createTerminal = (canvas, { bell, cacheCanvas }) => {
       }
     },
     eraseInDisplay2: () => {
-      for (let i = 0; i < lines.length; i++) {
-        lines[i] = createEmptyLine()
-      }
+      // for (let i = 0; i < lines.length; i++) {
+      //   lines[i] = createEmptyLine()
+      // }
       y = 0
       x = 0
     },
@@ -130,6 +152,8 @@ export const createTerminal = (canvas, { bell, cacheCanvas }) => {
         foreground = '#09f900'
       } else if (attributes[1] === 34) {
         foreground = '#0090ff'
+      } else {
+        foreground = FOREGROUND
       }
     },
     cursorUp: () => {
@@ -149,14 +173,33 @@ export const createTerminal = (canvas, { bell, cacheCanvas }) => {
     },
     bell,
     print: (array, start, end) => {
-      storeChars(array.subarray(start, end))
-      dirtyMark(y)
+      // self.t = self.t || 0
+      // let s = performance.now()
+      // array.subarray(start, end)
+      // const e = performance.now()
+      // self.t += e - s
+      // storeChars(array.subarray(start, end))
+      // dirtyMark(y)
+      const subArray = array.subarray(start, end)
+      lines[y].set(subArray, offsets[y])
+      offsets[y] += end - start
     },
     lineFeed: () => {
-      if (++y === lines.length) {
-        y--
+      if (y === lines.length - 1) {
+        lines.shift()
+        lines.push(new Uint8Array(200))
+        offsets[y] = 0
+      } else {
+        y++
       }
-      dirtyMark(y)
+
+      // console.log(y)
+      // if (++y === lines.length) {
+      //   bufferYStart++
+      //   dirtyMark(y)
+      //   y = 0
+      // }
+      // dirtyMark(y)
     },
     carriageReturn: () => {
       x = 0
@@ -164,12 +207,14 @@ export const createTerminal = (canvas, { bell, cacheCanvas }) => {
   }
 
   const parse = createParse(callbackFns)
-  const drawLines = createDrawLines(ctx, lines, COLS, dirty)
+  const drawLines = createDrawLines(ctx, lines, offsets, COLS, dirty)
 
   let scheduled = false
 
+  self.drawLines = () => drawLines(dirty.start, dirty.end + 1)
+
   const write = (array) => {
-    //     console.log({ array })
+    // console.log({ array })
     dirtyClear()
     parse(array)
     if (!scheduled) {

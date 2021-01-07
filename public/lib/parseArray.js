@@ -32,13 +32,19 @@ export const createParse = ({
   keypadNumericMode,
   fullReset,
   nextLine,
+  lineFeed,
+  newline,
+  carriageReturn,
 }) => {
+  let state = State.TopLevelContent
+  let i = 0
+  let currentParam
+  let params = []
+  let printStartIndex = -1
   const parse = (array) => {
-    let state = State.TopLevelContent
-    let i = 0
-    let currentParam
-    let params = []
-    let printStartIndex = -1
+    state = State.TopLevelContent
+    i = 0
+
     while (i < array.length) {
       state
       switch (state) {
@@ -55,6 +61,16 @@ export const createParse = ({
               break
             case /* \u0008 */ 8:
               backspace()
+              state = State.TopLevelContent
+              i++
+              break
+            case /* \n */ 10:
+              lineFeed()
+              state = State.TopLevelContent
+              i++
+              break
+            case /* \r */ 13:
+              carriageReturn()
               state = State.TopLevelContent
               i++
               break
@@ -80,6 +96,19 @@ export const createParse = ({
                     state = State.TopLevelContent
                     i++
                     break middle
+                  case /* \n */ 10:
+                    lineFeed()
+                    print(array, printStartIndex, i)
+                    state = State.TopLevelContent
+                    i++
+                    break
+                  case /* \r */ 13:
+                    carriageReturn()
+                    print(array, printStartIndex, i)
+                    state = State.TopLevelContent
+                    i++
+                    break middle
+
                   default:
                     // console.log(String.fromCharCode(array[i]) === '\r')
                     // console.log(String.fromCharCode(array[i]) === '\n')
