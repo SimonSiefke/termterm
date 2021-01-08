@@ -24,7 +24,7 @@ export const createTerminal = (canvas, { bell, cacheCanvas }) => {
     end: 0,
   }
 
-  // let bufferYStart = 0
+  let bufferYStart = 0
   // let bufferYEnd = lines.length
 
   const lines = []
@@ -133,8 +133,7 @@ export const createTerminal = (canvas, { bell, cacheCanvas }) => {
       console.log('go to home')
     },
     eraseToEndOfLine: () => {
-      lines[y].fill(0)
-      offsets[y] = 0
+      // offsets[y] = x
     },
     eraseInDisplay2: () => {
       // for (let i = 0; i < lines.length; i++) {
@@ -184,21 +183,8 @@ export const createTerminal = (canvas, { bell, cacheCanvas }) => {
       offsets[y] += end - start
     },
     lineFeed: () => {
-      if (y === lines.length - 1) {
-        lines.shift()
-        lines.push(new Uint8Array(200))
-        offsets[y] = 0
-      } else {
-        y++
-      }
-
-      // console.log(y)
-      // if (++y === lines.length) {
-      //   bufferYStart++
-      //   dirtyMark(y)
-      //   y = 0
-      // }
-      // dirtyMark(y)
+      y = (y + 1) % lines.length
+      offsets[y] = 0
     },
     carriageReturn: () => {
       x = 0
