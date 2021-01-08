@@ -139,6 +139,9 @@ export const createTerminal = (canvas, { bell, cacheCanvas }) => {
       // for (let i = 0; i < lines.length; i++) {
       //   lines[i] = createEmptyLine()
       // }
+      for (let i = 0; i < offsets.length; i++) {
+        offsets[i] = 0
+      }
       y = 0
       x = 0
     },
