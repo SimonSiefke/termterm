@@ -205,7 +205,6 @@ export const createTerminal = (canvas, { bell, cacheCanvas }) => {
   self.drawLines = () => drawLines(dirty.start, dirty.end + 1)
 
   const write = (array) => {
-    // console.log({ array })
     dirtyClear()
     parse(array)
     if (!scheduled) {
@@ -215,7 +214,6 @@ export const createTerminal = (canvas, { bell, cacheCanvas }) => {
         scheduled = false
       })
     }
-    //     console.log(array)
   }
 
   return {

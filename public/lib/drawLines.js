@@ -4,7 +4,37 @@ const CHAR_HEIGHT = 15
 const BACKGROUND = '#000000'
 const FOREGROUND = '#ffffff'
 
-const tmpCanvas = new OffscreenCanvas(CHAR_WIDTH, CHAR_HEIGHT)
+const supportsOffscreenCanvas = (() => {
+  try {
+    const canvas = new OffscreenCanvas(CHAR_WIDTH, CHAR_HEIGHT)
+    canvas.getContext('2d')
+    return true
+  } catch {
+    return false
+  }
+})()
+
+const supportsTransferToImageBitMap = (() => {
+  try {
+    const canvas = document.createElement('canvas')
+    canvas.width = CHAR_WIDTH
+    canvas.height = CHAR_HEIGHT
+    canvas.transferToImageBitmap()
+    return true
+  } catch {
+    return false
+  }
+})()
+
+const tmpCanvas = supportsOffscreenCanvas
+  ? new OffscreenCanvas(CHAR_WIDTH, CHAR_HEIGHT)
+  : (() => {
+      const canvas = document.createElement('canvas')
+      canvas.width = CHAR_WIDTH
+      canvas.height = CHAR_HEIGHT
+      return canvas
+    })()
+
 const tmpCtx = tmpCanvas.getContext('2d', {
   desynchronized: true, // perf
   alpha: false, // perf
@@ -24,9 +54,13 @@ export const createDrawLines = (ctx, lines, offsets, cols) => {
       tmpCtx.font = `${CHAR_HEIGHT}px monospace`
       tmpCtx.fillStyle = foreground
       tmpCtx.fillText(char, 0, CHAR_HEIGHT)
-      bitmapCache[cacheKey] = tmpCanvas.transferToImageBitmap()
+      bitmapCache[cacheKey] = supportsTransferToImageBitMap
+        ? tmpCanvas.transferToImageBitmap()
+        : tmpCtx.getImageData(0, 0, CHAR_WIDTH, CHAR_HEIGHT)
     }
-    ctx.drawImage(bitmapCache[cacheKey], x * CHAR_WIDTH, y * CHAR_HEIGHT)
+    supportsTransferToImageBitMap
+      ? ctx.drawImage(bitmapCache[cacheKey], x * CHAR_WIDTH, y * CHAR_HEIGHT)
+      : ctx.putImageData(bitmapCache[cacheKey], x * CHAR_WIDTH, y * CHAR_HEIGHT)
   }
 
   const getChars = (y) => {
@@ -60,9 +94,7 @@ export const createDrawLines = (ctx, lines, offsets, cols) => {
     // )
   }
 
-  self.ctx = ctx
   const drawLines = (start, end, offsetY) => {
-    console.log(offsetY)
     start = 0
     end = lines.length
     clearLines(0, start, cols, end - start + 1)

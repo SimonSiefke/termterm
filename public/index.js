@@ -26,18 +26,19 @@ const handleMessage = ({ data }) => {
 }
 
 const __initialize__ = () => {
-  const canvas = document.getElementById('Canvas').transferControlToOffscreen()
-  const cacheCanvas = document
-    .getElementById('CacheCanvas')
-    .transferControlToOffscreen()
+  let canvas
+  try {
+    canvas = document.getElementById('Canvas').transferControlToOffscreen()
+  } catch {
+    window.location.href = '/legacy'
+  }
   window.addEventListener('keydown', handleKeyDown)
   worker.postMessage(
     {
       command: 'init',
       canvas,
-      cacheCanvas,
     },
-    [canvas, cacheCanvas],
+    [canvas],
   )
   worker.onmessage = handleMessage
 

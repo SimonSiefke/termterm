@@ -26,9 +26,6 @@ onmessage = ({ data }) => {
   switch (data.command) {
     case 'init':
       init(data)
-      self.visibleCacheCtx = data.cacheCanvas.getContext('2d')
-      data.cacheCanvas.width = 1000
-      data.cacheCanvas.height = 1000
       break
     case 'send':
       webSocket.send(data.text)
