@@ -35,9 +35,9 @@ export const createDrawLines = (ctx, lines, offsets, cols) => {
     return chars
   }
 
-  const drawLine = (y) => {
+  const drawLine = (bufferY, positionY) => {
     let x = -1
-    const chars = getChars(y)
+    const chars = getChars(bufferY)
     //console.log(chars)
     // const chars = lines[y]
     while (++x < chars.length) {
@@ -45,7 +45,7 @@ export const createDrawLines = (ctx, lines, offsets, cols) => {
       const char = chars[x]
       const background = '#000000'
       const foreground = '#ffffff'
-      drawChar(char, x, y, background, foreground)
+      drawChar(char, x, positionY, background, foreground)
     }
   }
 
@@ -61,12 +61,13 @@ export const createDrawLines = (ctx, lines, offsets, cols) => {
   }
 
   self.ctx = ctx
-  const drawLines = (start, end) => {
+  const drawLines = (start, end, offsetY) => {
+    console.log(offsetY)
     start = 0
     end = lines.length
     clearLines(0, start, cols, end - start + 1)
     for (let y = start; y < end; y++) {
-      drawLine(y)
+      drawLine((offsetY + y) % (end - 1), y)
     }
   }
 

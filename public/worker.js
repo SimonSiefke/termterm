@@ -4,7 +4,7 @@ const USE_NODE_PTY_SERVER = true
 
 const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:'
 const webSocket = USE_NODE_PTY_SERVER
-  ? new WebSocket(`ws://localhost:4444`)
+  ? new WebSocket(`ws://${location.hostname}:4444`)
   : new WebSocket(`${wsProtocol}//${location.host}`)
 
 webSocket.binaryType = 'arraybuffer'

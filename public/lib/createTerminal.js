@@ -16,15 +16,21 @@ export const createTerminal = (canvas, { bell, cacheCanvas }) => {
   canvas.width = COLS * CHAR_WIDTH
   canvas.height = ROWS * (CHAR_HEIGHT + 10)
 
-  let x = 0
-  let y = 0
+  let cursorX = 0
+  let cursorY = ROWS - 1
+
+  self.cursorY = {
+    get() {
+      return cursorY
+    },
+  }
 
   const dirty = {
     start: 0,
     end: 0,
   }
 
-  let bufferYStart = 0
+  let bufferY = 0
   // let bufferYEnd = lines.length
 
   const lines = []
@@ -115,8 +121,8 @@ export const createTerminal = (canvas, { bell, cacheCanvas }) => {
     }
   }
   const dirtyClear = () => {
-    dirty.start = y
-    dirty.end = y
+    dirty.start = cursorY
+    dirty.end = cursorY
   }
 
   const ctx = canvas.getContext('2d', {
@@ -124,16 +130,13 @@ export const createTerminal = (canvas, { bell, cacheCanvas }) => {
     alpha: false, // perf
   })
 
-  let attributes = []
-
-  const charAttributesMap = new Map()
-
   const callbackFns = {
     goToHome: () => {
       console.log('go to home')
     },
     eraseToEndOfLine: () => {
-      // offsets[y] = x
+      // console.log(x)
+      // offsets[y] = 10
     },
     eraseInDisplay2: () => {
       // for (let i = 0; i < lines.length; i++) {
@@ -142,16 +145,16 @@ export const createTerminal = (canvas, { bell, cacheCanvas }) => {
       for (let i = 0; i < offsets.length; i++) {
         offsets[i] = 0
       }
-      y = 0
-      x = 0
+      cursorY = 0
+      cursorY = ROWS - 1
+      cursorX = 0
     },
     setCharAttributes: (params) => {
-      attributes = params
-      if (attributes[1] === 35) {
+      if (params[1] === 35) {
         foreground = '#8000ff'
-      } else if (attributes[1] === 32) {
+      } else if (params[1] === 32) {
         foreground = '#09f900'
-      } else if (attributes[1] === 34) {
+      } else if (params[1] === 34) {
         foreground = '#0090ff'
       } else {
         foreground = FOREGROUND
@@ -170,7 +173,7 @@ export const createTerminal = (canvas, { bell, cacheCanvas }) => {
       console.log('cursor left')
     },
     backspace: () => {
-      --x
+      offsets[cursorY]--
     },
     bell,
     print: (array, start, end) => {
@@ -182,15 +185,15 @@ export const createTerminal = (canvas, { bell, cacheCanvas }) => {
       // storeChars(array.subarray(start, end))
       // dirtyMark(y)
       const subArray = array.subarray(start, end)
-      lines[y].set(subArray, offsets[y])
-      offsets[y] += end - start
+      lines[cursorY].set(subArray, offsets[cursorY])
+      offsets[cursorY] += end - start
     },
     lineFeed: () => {
-      y = (y + 1) % lines.length
-      offsets[y] = 0
+      cursorY = (cursorY + 1) % lines.length
+      offsets[cursorY] = 0
     },
     carriageReturn: () => {
-      x = 0
+      cursorX = 0
     },
   }
 
@@ -208,7 +211,7 @@ export const createTerminal = (canvas, { bell, cacheCanvas }) => {
     if (!scheduled) {
       scheduled = true
       requestAnimationFrame(() => {
-        drawLines(dirty.start, dirty.end + 1)
+        drawLines(dirty.start, dirty.end + 1, cursorY)
         scheduled = false
       })
     }
