@@ -49,6 +49,10 @@ export const createTerminal = (canvas, { bell, cacheCanvas }) => {
         case 10:
           y++
           if (y === lines.length) {
+            dirtyMark(0)
+            dirtyMark(lines.length - 1)
+            lines.shift()
+            lines.push(createEmptyLine())
             y--
           }
           break
@@ -130,6 +134,8 @@ export const createTerminal = (canvas, { bell, cacheCanvas }) => {
         foreground = '#09f900'
       } else if (attributes[1] === 34) {
         foreground = '#0090ff'
+      } else if (attributes[0] === 0) {
+        foreground = FOREGROUND
       }
     },
     cursorUp: () => {
@@ -152,15 +158,15 @@ export const createTerminal = (canvas, { bell, cacheCanvas }) => {
       storeChars(array.subarray(start, end))
       dirtyMark(y)
     },
-    lineFeed: () => {
-      if (++y === lines.length) {
-        y--
-      }
-      dirtyMark(y)
-    },
-    carriageReturn: () => {
-      x = 0
-    },
+    // lineFeed: () => {
+    //   if (++y === lines.length) {
+    //     y--
+    //   }
+    //   dirtyMark(y)
+    // },
+    // carriageReturn: () => {
+    //   x = 0
+    // },
   }
 
   const parse = createParse(callbackFns)
