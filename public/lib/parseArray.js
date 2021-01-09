@@ -35,6 +35,7 @@ export const createParse = ({
   lineFeed,
   newline,
   carriageReturn,
+  deleteChars,
 }) => {
   let state = State.TopLevelContent
   let i = 0
@@ -397,6 +398,11 @@ export const createParse = ({
               state = State.TopLevelContent
               i++
               break
+            case /* P */ 80:
+              deleteChars(1)
+              state = State.TopLevelContent
+              i++
+              break
             case /* f */ 102:
               goToHome()
               state = State.TopLevelContent
@@ -461,6 +467,12 @@ export const createParse = ({
               break
             case /* J */ 74:
               eraseInDisplay2()
+              state = State.TopLevelContent
+              i++
+              break
+            case /* P */ 80:
+              deleteChars(1)
+              console.log(params)
               state = State.TopLevelContent
               i++
               break
@@ -617,11 +629,11 @@ const print = (array, startIndex, endIndex) => {
 
 const lineFeed = () => {}
 
-const input = `sample \u0007 text`
+const input = `[1Pecho ok`
 
 // const array = encodeString(input)
 
-// createParser({
+// createParse({
 //   eraseInDisplay2,
 //   eraseToEndOfLine,
 //   goToHome,
@@ -634,6 +646,7 @@ const input = `sample \u0007 text`
 //   newline,
 //   setGLevel,
 //   bell,
+//   backspace: () => {},
 // })(array) //?
 
 // output

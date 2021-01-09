@@ -114,7 +114,13 @@ export const createDrawLines = (
 
   const clearLines = (x, y, width, height) => {
     ctx.fillStyle = BACKGROUND
-    ctx.fillRect(x * CHAR_WIDTH, y * CHAR_HEIGHT, 900, height * CHAR_HEIGHT)
+    ctx.fillRect(0, 0, 780, 625)
+    // ctx.clearRect(
+    //   x * CHAR_WIDTH,
+    //   y * CHAR_HEIGHT,
+    //   width * CHAR_WIDTH,
+    //   height * CHAR_HEIGHT,
+    // )
     // ctx.fillRect(
     //   x * CHAR_WIDTH,
     //   y * CHAR_HEIGHT,

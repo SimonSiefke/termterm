@@ -64,23 +64,24 @@ export const createTerminal = (
   }
 
   const callbackFns = {
-    goToHome: () => {
+    goToHome() {
       console.log('go to home')
     },
-    eraseToEndOfLine: () => {
+    eraseToEndOfLine() {
       const y = bufferYEnd + cursorYRelative
       const x = COLS + cursorXRelative
       offsets[y] = x
     },
-    eraseInDisplay2: () => {
+    eraseInDisplay2() {
       offsets.fill(0)
       cursorYRelative = -ROWS + 1
+      cursorXRelative = -COLS
       bufferYEnd = ROWS
       for (const key of Object.keys(attributes)) {
         delete attributes[key]
       }
     },
-    setCharAttributes: (params) => {
+    setCharAttributes(params) {
       if (params[1] === 35) {
         foreground = '#8000ff'
       } else if (params[1] === 32) {
@@ -97,32 +98,42 @@ export const createTerminal = (
         background,
       }
     },
-    cursorUp: () => {
+    cursorUp() {
       console.log('cursor up')
     },
-    cursorDown: () => {
+    cursorDown() {
       console.log('cursor down')
     },
-    cursorRight: () => {
+    cursorRight() {
       cursorXRelative++
-      console.log('cursor right')
     },
-    cursorLeft: () => {
+    cursorLeft() {
       console.log('cursor left')
     },
-    backspace: () => {
+    backspace() {
       cursorXRelative--
       // offsets[bufferYEnd + cursorYRelative]--
     },
+    deleteChars(numberOfChars) {
+      console.log('delete chars')
+      const y = bufferYEnd + cursorYRelative
+      // offsets[y] = x - 1
+      // cursorXRelative--
+      const x = COLS + cursorXRelative
+      offsets[y] = x
+    },
     bell,
-    print: (array, start, end) => {
+    print(array, start, end) {
       const subArray = array.subarray(start, end)
       const y = bufferYEnd + cursorYRelative
-      lines[y].set(subArray, offsets[y])
-      offsets[y] += end - start
-      cursorXRelative = -COLS + offsets[y]
+      const x = COLS + cursorXRelative
+      lines[y].set(subArray, x)
+      cursorXRelative += end - start
+      offsets[y] = COLS + cursorXRelative
+      // offsets[y] += end - start
+      // cursorXRelative = -COLS + offsets[y]
     },
-    lineFeed: () => {
+    lineFeed() {
       if (cursorYRelative === 0) {
         bufferYEnd = (bufferYEnd + 1) % BUFFER_LINES
         offsets[bufferYEnd] = 0
@@ -130,9 +141,12 @@ export const createTerminal = (
       } else {
         cursorYRelative++
       }
+      cursorXRelative = -COLS
     },
-    carriageReturn: () => {
+    carriageReturn() {
+      // cursorXRelative = -COLS
       // cursorX = 0
+      cursorXRelative = -COLS
     },
   }
 

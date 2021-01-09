@@ -34,6 +34,7 @@ const runTest = (
     nextLine = noop,
     index = noop,
     tabSet = noop,
+    deleteChars = noop,
   } = {},
 ) => {
   const parse = createParse({
@@ -55,6 +56,7 @@ const runTest = (
     nextLine,
     index,
     tabSet,
+    deleteChars,
   })
   const array = new Uint8Array(input.split('').map((x) => x.charCodeAt()))
   return parse(array)
@@ -188,6 +190,12 @@ test('function - goToHome', () => {
   const goToHome = jest.fn()
   runTest('\u001b[H', { goToHome })
   expect(goToHome).toHaveBeenCalledTimes(1)
+})
+
+test('function - deleteChars', () => {
+  const deleteChars = jest.fn()
+  runTest(`\x1B[1P`, { deleteChars })
+  expect(deleteChars).toHaveBeenCalledWith(1)
 })
 
 test('function - eraseToEndOfLine', () => {
@@ -429,5 +437,10 @@ test('cursor left and delete', () => {
 })
 
 test.skip('delete 2', () => {
-  runTest(`\b\x1B[1Pbcd\b\b\b`)
+  const print = jest.fn()
+  const backspace = jest.fn()
+  const deleteChars = jest.fn()
+  runTest(`\b\x1B[1Pbcd`, { print, backspace })
+  expect(print).toHaveBeenCalledWith('bcd')
+  expect(backspace).toHaveBeenCalledTimes(1)
 })
