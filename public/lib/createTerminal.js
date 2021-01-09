@@ -144,6 +144,7 @@ export const createTerminal = (canvas, { bell, cacheCanvas }) => {
     BUFFER_LINES,
     offsets,
     attributes,
+    ROWS,
     COLS,
     dirty,
   )

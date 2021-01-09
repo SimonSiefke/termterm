@@ -58,6 +58,7 @@ export const createDrawLines = (
   bufferLines,
   offsets,
   attributes,
+  rows,
   cols,
 ) => {
   const drawChar = (char, x, y, background, foreground) => {
@@ -121,16 +122,16 @@ export const createDrawLines = (
     start = 0
     end = lines.length
     clearLines(0, start, cols, end - start + 1)
-    if (bufferYEnd < 25) {
-      for (let i = 0; i < bufferYEnd; i++) {
-        drawLine(bufferLines - i - 1, i)
+    if (bufferYEnd < rows) {
+      for (let i = 0; i < rows - bufferYEnd; i++) {
+        drawLine(bufferLines - i - 1, rows - i)
       }
-      for (let i = 0; i < bufferYEnd; i++) {
-        drawLine(i, 25 - i)
+      for (let i = 0; i < bufferYEnd + 1; i++) {
+        drawLine(i, rows - (bufferYEnd - i))
       }
     } else {
-      for (let i = 0; i < 25; i++) {
-        drawLine(bufferYEnd - i, 25 - i)
+      for (let i = 0; i < rows; i++) {
+        drawLine(bufferYEnd - i, rows - i)
       }
     }
   }
