@@ -16,15 +16,25 @@ const supportsOffscreenCanvas = (() => {
 
 const supportsTransferToImageBitMap = (() => {
   try {
-    const canvas = document.createElement('canvas')
-    canvas.width = CHAR_WIDTH
-    canvas.height = CHAR_HEIGHT
-    canvas.transferToImageBitmap()
+    supportsOffscreenCanvas
+      ? (() => {
+          const canvas = new OffscreenCanvas(CHAR_WIDTH, CHAR_HEIGHT)
+          canvas.getContext('2d')
+          canvas.transferToImageBitmap()
+        })()
+      : (() => {
+          const canvas = document.createElement('canvas')
+          canvas.width = CHAR_WIDTH
+          canvas.height = CHAR_HEIGHT
+          canvas.transferToImageBitmap()
+        })()
     return true
   } catch {
     return false
   }
 })()
+
+self.supportsTransferToImageBitMap = supportsTransferToImageBitMap
 
 const tmpCanvas = supportsOffscreenCanvas
   ? new OffscreenCanvas(CHAR_WIDTH, CHAR_HEIGHT)
@@ -42,7 +52,7 @@ const tmpCtx = tmpCanvas.getContext('2d', {
 
 const bitmapCache = Object.create(null)
 
-export const createDrawLines = (ctx, lines, offsets, cols) => {
+export const createDrawLines = (ctx, lines, offsets, attributes, cols) => {
   const drawChar = (char, x, y, background, foreground) => {
     if (char === ' ') {
       return
@@ -74,11 +84,17 @@ export const createDrawLines = (ctx, lines, offsets, cols) => {
     const chars = getChars(bufferY)
     //console.log(chars)
     // const chars = lines[y]
+    const attributesOnLine = attributes[bufferY] || {}
+    let currentAttributes = {
+      foreground: '#ffffff',
+      background: '#000000',
+    }
     while (++x < chars.length) {
+      currentAttributes = attributesOnLine[x] || currentAttributes
       // const { char, background, foreground } = chars[x]
       const char = chars[x]
-      const background = '#000000'
-      const foreground = '#ffffff'
+      const background = currentAttributes.background || '#000000'
+      const foreground = currentAttributes.foreground || '#ffffff'
       drawChar(char, x, positionY, background, foreground)
     }
   }

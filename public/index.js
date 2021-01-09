@@ -25,13 +25,22 @@ const handleMessage = ({ data }) => {
   }
 }
 
-const __initialize__ = () => {
-  let canvas
+const supportsModernCanvas = (() => {
   try {
-    canvas = document.getElementById('Canvas').transferControlToOffscreen()
+    const canvas = document.createElement('Canvas')
+    canvas.width = 1
+    canvas.height = 1
+    canvas.transferControlToOffscreen()
+    return true
   } catch {
+    return false
+  }
+})()
+const __initialize__ = () => {
+  if (!supportsModernCanvas) {
     window.location.href = '/legacy'
   }
+  const canvas = document.getElementById('Canvas').transferControlToOffscreen()
   window.addEventListener('keydown', handleKeyDown)
   worker.postMessage(
     {

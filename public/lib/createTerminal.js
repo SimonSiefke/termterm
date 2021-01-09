@@ -46,9 +46,12 @@ export const createTerminal = (canvas, { bell, cacheCanvas }) => {
   const offsets = new Uint8Array(ROWS)
 
   self.offsets = offsets
+  let attributes = {}
+
+  self.attributes = attributes
 
   for (let y = 0; y < ROWS; y++) {
-    lines.push(new Uint8Array(200))
+    lines.push(new Uint8Array(300))
   }
 
   let background = '#000000'
@@ -142,12 +145,14 @@ export const createTerminal = (canvas, { bell, cacheCanvas }) => {
       // for (let i = 0; i < lines.length; i++) {
       //   lines[i] = createEmptyLine()
       // }
-      for (let i = 0; i < offsets.length; i++) {
-        offsets[i] = 0
-      }
+
+      offsets.fill(0)
       cursorY = 0
       cursorY = ROWS - 1
       cursorX = 0
+      for (const key of Object.keys(attributes)) {
+        delete attributes[key]
+      }
     },
     setCharAttributes: (params) => {
       if (params[1] === 35) {
@@ -158,6 +163,11 @@ export const createTerminal = (canvas, { bell, cacheCanvas }) => {
         foreground = '#0090ff'
       } else {
         foreground = FOREGROUND
+      }
+      attributes[cursorY] = attributes[cursorY] || {}
+      attributes[cursorY][offsets[cursorY]] = {
+        foreground,
+        background,
       }
     },
     cursorUp: () => {
@@ -185,6 +195,12 @@ export const createTerminal = (canvas, { bell, cacheCanvas }) => {
       // storeChars(array.subarray(start, end))
       // dirtyMark(y)
       const subArray = array.subarray(start, end)
+      if (offsets[cursorY] + subArray.length > lines[cursorY].length) {
+        lines[cursorY].set(subArray.subArray(0, 100), offsets[cursorY])
+        offsets[cursorY] += end - start
+        console.warn('chars dropped')
+        return
+      }
       lines[cursorY].set(subArray, offsets[cursorY])
       offsets[cursorY] += end - start
     },
@@ -198,7 +214,14 @@ export const createTerminal = (canvas, { bell, cacheCanvas }) => {
   }
 
   const parse = createParse(callbackFns)
-  const drawLines = createDrawLines(ctx, lines, offsets, COLS, dirty)
+  const drawLines = createDrawLines(
+    ctx,
+    lines,
+    offsets,
+    attributes,
+    COLS,
+    dirty,
+  )
 
   let scheduled = false
 
