@@ -68,8 +68,9 @@ export const createTerminal = (
       console.log('go to home')
     },
     eraseToEndOfLine: () => {
-      // console.log(x)
-      // offsets[y] = 10
+      const y = bufferYEnd + cursorYRelative
+      const x = COLS + cursorXRelative
+      offsets[y] = x
     },
     eraseInDisplay2: () => {
       offsets.fill(0)
@@ -103,13 +104,15 @@ export const createTerminal = (
       console.log('cursor down')
     },
     cursorRight: () => {
+      cursorXRelative++
       console.log('cursor right')
     },
     cursorLeft: () => {
       console.log('cursor left')
     },
     backspace: () => {
-      offsets[bufferYEnd + cursorYRelative]--
+      cursorXRelative--
+      // offsets[bufferYEnd + cursorYRelative]--
     },
     bell,
     print: (array, start, end) => {
@@ -117,6 +120,7 @@ export const createTerminal = (
       const y = bufferYEnd + cursorYRelative
       lines[y].set(subArray, offsets[y])
       offsets[y] += end - start
+      cursorXRelative = -COLS + offsets[y]
     },
     lineFeed: () => {
       if (cursorYRelative === 0) {
@@ -161,7 +165,8 @@ export const createTerminal = (
       requestAnimationFrame(() => {
         drawLines(dirty.start, dirty.end + 1, bufferYEnd)
         const y = ROWS + cursorYRelative
-        drawCursor(offsets[y], y)
+        const x = COLS + cursorXRelative
+        drawCursor(x, y)
         scheduled = false
       })
     }

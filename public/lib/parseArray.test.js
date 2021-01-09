@@ -427,3 +427,7 @@ test('cursor left and delete', () => {
   expect(backspace).toHaveBeenCalledTimes(10)
   expect(eraseToEndOfLine).toHaveBeenCalledTimes(1)
 })
+
+test.skip('delete 2', () => {
+  runTest(`\b\x1B[1Pbcd\b\b\b`)
+})
