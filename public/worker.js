@@ -9,11 +9,11 @@ const webSocket = USE_NODE_PTY_SERVER
 
 webSocket.binaryType = 'arraybuffer'
 
-const init = ({ canvas }) => {
+const init = ({ canvas, cursor }) => {
   const bell = () => {
     postMessage({ command: 'bell' })
   }
-  const terminal = createTerminal(canvas, { bell })
+  const terminal = createTerminal(canvas, cursor, { bell })
   const handleMessage = ({ data }) => terminal.write(new Uint8Array(data))
   webSocket.onmessage = handleMessage
 

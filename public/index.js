@@ -41,13 +41,15 @@ const __initialize__ = () => {
     window.location.href = '/legacy'
   }
   const canvas = document.getElementById('Canvas').transferControlToOffscreen()
+  const cursor = document.getElementById('Cursor').transferControlToOffscreen()
   window.addEventListener('keydown', handleKeyDown)
   worker.postMessage(
     {
       command: 'init',
       canvas,
+      cursor,
     },
-    [canvas],
+    [canvas, cursor],
   )
   worker.onmessage = handleMessage
 

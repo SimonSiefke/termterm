@@ -1,3 +1,4 @@
+import { createDrawCursor } from './drawCursor.js'
 import { createDrawLines } from './drawLines.js'
 import { createParse } from './parseArray.js'
 
@@ -11,12 +12,19 @@ const COLS = 60
 const ROWS = 25
 const BUFFER_LINES = 200
 
-export const createTerminal = (canvas, { bell, cacheCanvas }) => {
-  canvas.width = COLS * CHAR_WIDTH
-  canvas.height = ROWS * (CHAR_HEIGHT + 10)
+export const createTerminal = (
+  canvasText,
+  canvasCursor,
+  { bell, cacheCanvas },
+) => {
+  const WIDTH = COLS * CHAR_WIDTH
+  const HEIGHT = ROWS * (CHAR_HEIGHT + 10)
+  canvasText.width = canvasCursor.width = WIDTH
+  canvasText.height = canvasCursor.height = HEIGHT
 
   let bufferYEnd = 0
-  let cursorYRelative = -25
+  let cursorYRelative = -ROWS
+  let cursorXRelative = -COLS
   let foreground = '#ffffff'
   let background = '#000000'
   const dirty = {
@@ -54,11 +62,6 @@ export const createTerminal = (canvas, { bell, cacheCanvas }) => {
     dirty.start = bufferYEnd - 25
     dirty.end = bufferYEnd
   }
-
-  const ctx = canvas.getContext('2d', {
-    desynchronized: true, // perf
-    alpha: false, // perf
-  })
 
   const callbackFns = {
     goToHome: () => {
@@ -130,7 +133,7 @@ export const createTerminal = (canvas, { bell, cacheCanvas }) => {
 
   const parse = createParse(callbackFns)
   const drawLines = createDrawLines(
-    ctx,
+    canvasText,
     lines,
     BUFFER_LINES,
     offsets,
@@ -139,6 +142,8 @@ export const createTerminal = (canvas, { bell, cacheCanvas }) => {
     COLS,
     dirty,
   )
+
+  const drawCursor = createDrawCursor(canvasCursor)
 
   let scheduled = false
 
@@ -154,6 +159,8 @@ export const createTerminal = (canvas, { bell, cacheCanvas }) => {
       scheduled = true
       requestAnimationFrame(() => {
         drawLines(dirty.start, dirty.end + 1, bufferYEnd)
+        const y = ROWS + cursorYRelative
+        drawCursor(offsets[y], y)
         scheduled = false
       })
     }

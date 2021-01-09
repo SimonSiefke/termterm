@@ -10,6 +10,17 @@
       }
       #Terminal {
         position: relative;
+        contain: strict;
+        width: 780px;
+        height: 625px;
+      }
+      #Canvas,
+      #Cursor {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
       }
     </style>
   </head>
@@ -17,6 +28,7 @@
     <h1>hello world</h1>
     <div id="Terminal">
       <canvas id="Canvas"></canvas>
+      <canvas id="Cursor"></canvas>
     </div>
     <script type="module" src="index.js"></script>
   </body>

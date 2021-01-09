@@ -53,7 +53,7 @@ const tmpCtx = tmpCanvas.getContext('2d', {
 const bitmapCache = Object.create(null)
 
 export const createDrawLines = (
-  ctx,
+  canvas,
   lines,
   bufferLines,
   offsets,
@@ -61,6 +61,11 @@ export const createDrawLines = (
   rows,
   cols,
 ) => {
+  const ctx = canvas.getContext('2d', {
+    desynchronized: true, // perf
+    alpha: false, // perf
+  })
+
   const drawChar = (char, x, y, background, foreground) => {
     if (char === ' ') {
       return
