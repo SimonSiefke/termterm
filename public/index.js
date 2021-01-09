@@ -25,21 +25,37 @@ const handleMessage = ({ data }) => {
   }
 }
 
+const supportsModernCanvas = (() => {
+  try {
+    const canvas = document.createElement('Canvas')
+    canvas.width = 1
+    canvas.height = 1
+    canvas.transferControlToOffscreen()
+    return true
+  } catch {
+    return false
+  }
+})()
 const __initialize__ = () => {
+  if (!supportsModernCanvas) {
+    window.location.href = '/legacy'
+  }
   const canvas = document.getElementById('Canvas').transferControlToOffscreen()
-  const cacheCanvas = document
-    .getElementById('CacheCanvas')
-    .transferControlToOffscreen()
   window.addEventListener('keydown', handleKeyDown)
   worker.postMessage(
     {
       command: 'init',
       canvas,
-      cacheCanvas,
     },
-    [canvas, cacheCanvas],
+    [canvas],
   )
   worker.onmessage = handleMessage
+
+  // setTimeout(() => {
+  //   for (const key of 'ls -lR /usr/lib\n') {
+  //     handleKeyDown({ key, preventDefault: () => {} })
+  //   }
+  // }, 200)
 }
 
 __initialize__()

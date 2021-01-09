@@ -40,7 +40,6 @@ const test_terminal = {
   backspace: () => calls.push(['backspace']),
   print: (startIndex, endIndex) =>
     calls.push(['print', decodeText(array.slice(startIndex, endIndex))]),
-  newline: () => calls.push(['newline']),
 }
 
 const noop_terminal = {
@@ -55,7 +54,6 @@ const noop_terminal = {
   cursorLeft: noop,
   backspace: noop,
   print: noop,
-  newline: noop,
 }
 
 const fixtureLs = fs

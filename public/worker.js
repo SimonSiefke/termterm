@@ -1,7 +1,12 @@
 import { createTerminal } from './lib/createTerminal.js'
 
+const USE_NODE_PTY_SERVER = true
+
 const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:'
-const webSocket = new WebSocket(`${wsProtocol}//${location.host}`)
+const webSocket = USE_NODE_PTY_SERVER
+  ? new WebSocket(`ws://${location.hostname}:4444`)
+  : new WebSocket(`${wsProtocol}//${location.host}`)
+
 webSocket.binaryType = 'arraybuffer'
 
 const init = ({ canvas }) => {
@@ -21,9 +26,6 @@ onmessage = ({ data }) => {
   switch (data.command) {
     case 'init':
       init(data)
-      self.visibleCacheCtx = data.cacheCanvas.getContext('2d')
-      data.cacheCanvas.width = 1000
-      data.cacheCanvas.height = 1000
       break
     case 'send':
       webSocket.send(data.text)

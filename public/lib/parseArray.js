@@ -22,7 +22,6 @@ export const createParse = ({
   cursorLeft,
   backspace,
   print,
-  newline,
   setGLevel,
   saveCursor,
   restoreCursor,
@@ -33,13 +32,19 @@ export const createParse = ({
   keypadNumericMode,
   fullReset,
   nextLine,
+  lineFeed,
+  newline,
+  carriageReturn,
 }) => {
+  let state = State.TopLevelContent
+  let i = 0
+  let currentParam
+  let params = []
+  let printStartIndex = -1
   const parse = (array) => {
-    let state = State.TopLevelContent
-    let i = 0
-    let currentParam
-    let params = []
-    let printStartIndex = -1
+    state = State.TopLevelContent
+    i = 0
+
     while (i < array.length) {
       state
       switch (state) {
@@ -60,14 +65,16 @@ export const createParse = ({
               i++
               break
             case /* \n */ 10:
-              newline()
+              lineFeed()
               state = State.TopLevelContent
               i++
               break
             case /* \r */ 13:
+              carriageReturn()
               state = State.TopLevelContent
               i++
               break
+
             default:
               const printStartIndex = i++
               while (i < array.length) {
@@ -89,11 +96,19 @@ export const createParse = ({
                     state = State.TopLevelContent
                     i++
                     break middle
+                  case /* \n */ 10:
+                    lineFeed()
+                    print(array, printStartIndex, i)
+                    state = State.TopLevelContent
+                    i++
+                    break
                   case /* \r */ 13:
+                    carriageReturn()
                     print(array, printStartIndex, i)
                     state = State.TopLevelContent
                     i++
                     break middle
+
                   default:
                     // console.log(String.fromCharCode(array[i]) === '\r')
                     // console.log(String.fromCharCode(array[i]) === '\n')
@@ -597,6 +612,8 @@ const print = (array, startIndex, endIndex) => {
   array
   output += decodeString(array.slice(startIndex, endIndex))
 }
+
+const lineFeed = () => {}
 
 const input = `sample \u0007 text`
 

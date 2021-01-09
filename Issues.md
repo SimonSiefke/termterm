@@ -46,3 +46,48 @@ showkey -a to get ascii output of keyboard shortcuts
 <!-- TODO investigate if desynchronized canvas can be faster https://developers.google.com/web/updates/2019/05/desynchronized -->
 
 <!-- TODO chunking ws https://stackoverflow.com/questions/13010354/chunking-websocket-transmission -->
+
+<!-- lines
+UInt32[80]   [65, 66, 67, 68]
+
+ -->
+
+<!--
+step 1
+
+cursorYRelative = -25
+cursorY = 0
+bufferYStart = 0
+bufferYEnd = 25
+
+---------
+insert one row
+---------
+
+step 2
+
+cursorYRelative = -25
+cursorY = 1
+bufferYStart = 0
+bufferYEnd = 26
+
+
+
+step 24
+
+cursorY = 26
+bufferYStart = 1
+bufferYEnd = 26
+
+
+step 210
+
+cursorY relative = 0
+cursorY = 210 % 200 = 10
+bufferYStart = 185
+bufferYEnd = 210 % 200 = 10
+
+
+
+
+ -->

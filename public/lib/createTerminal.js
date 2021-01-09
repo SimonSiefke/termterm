@@ -7,38 +7,41 @@ const CHAR_HEIGHT = 15
 const BACKGROUND = '#000000'
 const FOREGROUND = '#ffffff'
 
-const EMPTY_CELL = { char: ' ' }
+const COLS = 60
+const ROWS = 25
+const BUFFER_LINES = 200
 
 export const createTerminal = (canvas, { bell, cacheCanvas }) => {
-  const COLS = 60
-  const ROWS = 25
-
   canvas.width = COLS * CHAR_WIDTH
-  canvas.height = ROWS * CHAR_HEIGHT
+  canvas.height = ROWS * (CHAR_HEIGHT + 10)
 
-  let x = 0
-  let y = 0
-
+  let bufferYEnd = 0
+  let cursorYRelative = -25
+  let foreground = '#ffffff'
+  let background = '#000000'
   const dirty = {
     start: 0,
     end: 0,
   }
 
   const lines = []
+  self.lines = lines
+
+  const offsets = new Uint8Array(BUFFER_LINES)
+
+  self.offsets = offsets
+  let attributes = {}
+
+  self.attributes = attributes
+
+  for (let y = 0; y < BUFFER_LINES; y++) {
+    lines.push(new Uint8Array(300))
+  }
 
   const textDecoder = new TextDecoder()
 
-  self.lines = lines
-  const createEmptyLine = () => {
-    const line = []
-    for (let x = 0; x < COLS; x++) {
-      line.push(EMPTY_CELL)
-    }
-    return line
-  }
-  for (let y = 0; y < ROWS; y++) {
-    lines.push(createEmptyLine())
-  }
+  self.printLines = () =>
+    lines.map((line, y) => textDecoder.decode(line.subarray(0, offsets[y] + 1)))
 
   const dirtyMark = (y) => {
     if (y < dirty.start) {
@@ -48,8 +51,8 @@ export const createTerminal = (canvas, { bell, cacheCanvas }) => {
     }
   }
   const dirtyClear = () => {
-    dirty.start = y
-    dirty.end = y
+    dirty.start = bufferYEnd - 25
+    dirty.end = bufferYEnd
   }
 
   const ctx = canvas.getContext('2d', {
@@ -57,28 +60,38 @@ export const createTerminal = (canvas, { bell, cacheCanvas }) => {
     alpha: false, // perf
   })
 
-  let attributes = []
-
-  const charAttributesMap = new Map()
-
   const callbackFns = {
     goToHome: () => {
       console.log('go to home')
     },
     eraseToEndOfLine: () => {
-      for (let x1 = x; x1 < COLS; x1++) {
-        lines[y][x1] = EMPTY_CELL
-      }
+      // console.log(x)
+      // offsets[y] = 10
     },
     eraseInDisplay2: () => {
-      for (let i = 0; i < lines.length; i++) {
-        lines[i] = createEmptyLine()
+      offsets.fill(0)
+      cursorYRelative = -ROWS + 1
+      bufferYEnd = ROWS
+      for (const key of Object.keys(attributes)) {
+        delete attributes[key]
       }
-      y = 0
-      x = 0
     },
     setCharAttributes: (params) => {
-      attributes = params
+      if (params[1] === 35) {
+        foreground = '#8000ff'
+      } else if (params[1] === 32) {
+        foreground = '#09f900'
+      } else if (params[1] === 34) {
+        foreground = '#0090ff'
+      } else {
+        foreground = FOREGROUND
+      }
+      const y = bufferYEnd + cursorYRelative
+      attributes[y] = attributes[y] || {}
+      attributes[y][offsets[y]] = {
+        foreground,
+        background,
+      }
     },
     cursorUp: () => {
       console.log('cursor up')
@@ -93,83 +106,57 @@ export const createTerminal = (canvas, { bell, cacheCanvas }) => {
       console.log('cursor left')
     },
     backspace: () => {
-      --x
+      offsets[bufferYEnd + cursorYRelative]--
     },
     bell,
     print: (array, start, end) => {
-      const text = textDecoder.decode(array.subarray(start, end), {
-        stream: true,
-      })
-      const chars = [...text]
-      let background = '#000000'
-      let foreground = '#ffffff'
-      if (attributes[1] === 35) {
-        foreground = '#8000ff'
-      } else if (attributes[1] === 32) {
-        foreground = '#09f900'
-      } else if (attributes[1] === 34) {
-        foreground = '#0090ff'
-      }
-      for (const char of chars) {
-        // reuse same object to reduce gc
-        // if (lines[y][x]) {
-        //   console.log(lines[y][x])
-        //   lines[y][x].char = char
-        //   lines[y][x].background = background
-        //   lines[y][x].foreground = foreground
-        // }
-        // if (
-        //   JSON.stringify(lines[y][x]) !==
-        //   JSON.stringify({
-        //     char,
-        //     background,
-        //     foreground,
-        //   })
-        // ) {
-        //   throw new Error('no')
-        // }
-
-        // console.log({ char })
-        // lines[y][x] = lines[y][x] || {}
-        // lines[y][x].char = char
-        // lines[y][x].background = background
-        // lines[y][x].foreground = foreground
-        // x++
-
-        lines[y][x++] = {
-          char,
-          background,
-          foreground,
-        }
-      }
-      dirtyMark(y)
+      const subArray = array.subarray(start, end)
+      const y = bufferYEnd + cursorYRelative
+      lines[y].set(subArray, offsets[y])
+      offsets[y] += end - start
     },
-    newline: () => {
-      y++
-      x = 0
-      if (y >= lines.length) {
-        y--
+    lineFeed: () => {
+      if (cursorYRelative === 0) {
+        bufferYEnd = (bufferYEnd + 1) % BUFFER_LINES
+        offsets[bufferYEnd] = 0
+      } else {
+        cursorYRelative++
       }
-      dirtyMark(y)
+    },
+    carriageReturn: () => {
+      // cursorX = 0
     },
   }
 
   const parse = createParse(callbackFns)
-  const drawLines = createDrawLines(ctx, lines, COLS, dirty)
+  const drawLines = createDrawLines(
+    ctx,
+    lines,
+    BUFFER_LINES,
+    offsets,
+    attributes,
+    ROWS,
+    COLS,
+    dirty,
+  )
 
   let scheduled = false
+
+  self.drawLines = () => drawLines(dirty.start, dirty.end + 1)
 
   const write = (array) => {
     dirtyClear()
     parse(array)
+    // if (lines.length > 1_000) {
+    //   lines.length = 1_000
+    // }
     if (!scheduled) {
       scheduled = true
       requestAnimationFrame(() => {
-        drawLines(dirty.start, dirty.end + 1)
+        drawLines(dirty.start, dirty.end + 1, bufferYEnd)
         scheduled = false
       })
     }
-    //     console.log(array)
   }
 
   return {

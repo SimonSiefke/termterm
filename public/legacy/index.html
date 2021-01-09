@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      body {
+        margin: 0;
+      }
+      #Info {
+        position: fixed;
+        top: 0;
+        right: 0;
+        background: lightcyan;
+        width: 200px;
+        height: 30px;
+        z-index: 1;
+      }
+      #Input {
+        width: 0;
+        height: 0;
+        border: none;
+        outline: none;
+        z-index: -1;
+        opacity: 0;
+      }
+
+      #Output {
+        margin: 0;
+        line-height: 1;
+        font-size: 14px;
+        /* display: grid; */
+        display: flex;
+        flex-direction: column;
+      }
+      #Output {
+        white-space: pre;
+      }
+      #Output > div {
+        height: 14px;
+        width: 100%;
+        /* contain: strict; */
+      }
+      #Terminal {
+        font-family: monospace;
+        position: relative;
+      }
+      #Cursor {
+        width: 8.4333333px;
+        height: 14px;
+        background: rgba(0, 0, 0, 0.5);
+        position: absolute;
+        top: 0;
+        left: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>hello world</h1>
+    <div id="Info">
+      Buffer Size:
+      <div id="BufferSize"></div>
+    </div>
+    <div id="Terminal">
+      <div id="Cursor"></div>
+      <canvas id="Canvas"></canvas>
+    </div>
+
+    <script type="module" src="index.js"></script>
+  </body>
+</html>
