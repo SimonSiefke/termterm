@@ -122,6 +122,7 @@ export const createTerminal = (
       if (cursorYRelative === 0) {
         bufferYEnd = (bufferYEnd + 1) % BUFFER_LINES
         offsets[bufferYEnd] = 0
+        delete attributes[bufferYEnd]
       } else {
         cursorYRelative++
       }
