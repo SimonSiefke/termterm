@@ -51,3 +51,43 @@ showkey -a to get ascii output of keyboard shortcuts
 UInt32[80]   [65, 66, 67, 68]
 
  -->
+
+<!--
+step 1
+
+cursorYRelative = -25
+cursorY = 0
+bufferYStart = 0
+bufferYEnd = 25
+
+---------
+insert one row
+---------
+
+step 2
+
+cursorYRelative = -25
+cursorY = 1
+bufferYStart = 0
+bufferYEnd = 26
+
+
+
+step 24
+
+cursorY = 26
+bufferYStart = 1
+bufferYEnd = 26
+
+
+step 210
+
+cursorY relative = 0
+cursorY = 210 % 200 = 10
+bufferYStart = 185
+bufferYEnd = 210 % 200 = 10
+
+
+
+
+ -->

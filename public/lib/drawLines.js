@@ -52,7 +52,14 @@ const tmpCtx = tmpCanvas.getContext('2d', {
 
 const bitmapCache = Object.create(null)
 
-export const createDrawLines = (ctx, lines, offsets, attributes, cols) => {
+export const createDrawLines = (
+  ctx,
+  lines,
+  bufferLines,
+  offsets,
+  attributes,
+  cols,
+) => {
   const drawChar = (char, x, y, background, foreground) => {
     if (char === ' ') {
       return
@@ -110,12 +117,21 @@ export const createDrawLines = (ctx, lines, offsets, attributes, cols) => {
     // )
   }
 
-  const drawLines = (start, end, offsetY) => {
+  const drawLines = (start, end, bufferYEnd) => {
     start = 0
     end = lines.length
     clearLines(0, start, cols, end - start + 1)
-    for (let y = start; y < end; y++) {
-      drawLine((offsetY + y) % (end - 1), y)
+    if (bufferYEnd < 25) {
+      for (let i = 0; i < bufferYEnd; i++) {
+        drawLine(bufferLines - i - 1, i)
+      }
+      for (let i = 0; i < bufferYEnd; i++) {
+        drawLine(i, 25 - i)
+      }
+    } else {
+      for (let i = 0; i < 25; i++) {
+        drawLine(bufferYEnd - i, 25 - i)
+      }
     }
   }
 
