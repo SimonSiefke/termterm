@@ -100,3 +100,5 @@ for code in {0..255}
  -->
 
 <!-- interesting hterm emulator https://github.com/chromium/hterm -->
+
+<!-- interestin emulator shellinabox https://github.com/shellinabox/shellinabox -->
