@@ -539,7 +539,9 @@ export const createParse = ({
           }
           break
         default:
-          throw new Error('invalid state')
+          i++
+          console.warn('invalid state')
+          break
       }
     }
     if (printStartIndex !== -1) {
