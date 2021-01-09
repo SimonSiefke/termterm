@@ -1,6 +1,6 @@
 import { createTerminal } from './lib/createTerminal.js'
 
-const USE_NODE_PTY_SERVER = true
+const USE_NODE_PTY_SERVER = false
 
 const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:'
 const webSocket = USE_NODE_PTY_SERVER
