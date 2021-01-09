@@ -40,16 +40,20 @@ const __initialize__ = () => {
   if (!supportsModernCanvas) {
     window.location.href = '/legacy'
   }
-  const canvas = document.getElementById('Canvas').transferControlToOffscreen()
-  const cursor = document.getElementById('Cursor').transferControlToOffscreen()
+  const canvasText = document
+    .getElementById('CanvasText')
+    .transferControlToOffscreen()
+  const canvasCursor = document
+    .getElementById('CanvasCursor')
+    .transferControlToOffscreen()
   window.addEventListener('keydown', handleKeyDown)
   worker.postMessage(
     {
       command: 'init',
-      canvas,
-      cursor,
+      canvasText,
+      canvasCursor,
     },
-    [canvas, cursor],
+    [canvasText, canvasCursor],
   )
   worker.onmessage = handleMessage
 

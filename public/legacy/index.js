@@ -16,8 +16,9 @@ const bell = () => {
   audio.play()
 }
 
-const canvas = document.getElementById('Canvas')
-const terminal = createTerminal(canvas, { bell })
+const canvasText = document.getElementById('CanvasText')
+const canvasCursor = document.getElementById('CanvasCursor')
+const terminal = createTerminal(canvasText, canvasCursor, { bell })
 const handleMessage = ({ data }) => terminal.write(new Uint8Array(data))
 
 const send = (text) => webSocket.send(text)
