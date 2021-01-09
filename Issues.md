@@ -102,3 +102,5 @@ for code in {0..255}
 <!-- interesting hterm emulator https://github.com/chromium/hterm -->
 
 <!-- interestin emulator shellinabox https://github.com/shellinabox/shellinabox -->
+
+<!-- TODO copy escape code https://www.reddit.com/r/vim/comments/k1ydpn/a_guide_on_how_to_copy_text_from_anywhere/ -->
