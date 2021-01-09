@@ -18,6 +18,7 @@ export const createTerminal = (canvas, { bell, cacheCanvas }) => {
   let bufferYEnd = 0
   let cursorYRelative = -25
   let foreground = '#ffffff'
+  let background = '#000000'
   const dirty = {
     start: 0,
     end: 0,
@@ -85,11 +86,12 @@ export const createTerminal = (canvas, { bell, cacheCanvas }) => {
       } else {
         foreground = FOREGROUND
       }
-      // attributes[cursorY] = attributes[cursorY] || {}
-      // attributes[cursorY][offsets[cursorY]] = {
-      //   foreground,
-      //   background,
-      // }
+      const y = bufferYEnd + cursorYRelative
+      attributes[y] = attributes[y] || {}
+      attributes[y][offsets[y]] = {
+        foreground,
+        background,
+      }
     },
     cursorUp: () => {
       console.log('cursor up')
