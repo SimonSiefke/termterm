@@ -68,10 +68,6 @@ export const createTerminal = (canvas, { bell, cacheCanvas }) => {
       // offsets[y] = 10
     },
     eraseInDisplay2: () => {
-      // for (let i = 0; i < lines.length; i++) {
-      //   lines[i] = createEmptyLine()
-      // }
-
       offsets.fill(0)
       cursorYRelative = -ROWS + 1
       bufferYEnd = ROWS
@@ -112,13 +108,6 @@ export const createTerminal = (canvas, { bell, cacheCanvas }) => {
     },
     bell,
     print: (array, start, end) => {
-      // self.t = self.t || 0
-      // let s = performance.now()
-      // array.subarray(start, end)
-      // const e = performance.now()
-      // self.t += e - s
-      // storeChars(array.subarray(start, end))
-      // dirtyMark(y)
       const subArray = array.subarray(start, end)
       const y = bufferYEnd + cursorYRelative
       lines[y].set(subArray, offsets[y])
