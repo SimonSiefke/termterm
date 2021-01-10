@@ -22,7 +22,7 @@ export const createTerminal = (
   canvasText.width = canvasCursor.width = WIDTH
   canvasText.height = canvasCursor.height = HEIGHT
 
-  let bufferYEnd = 0
+  let bufferYEnd = ROWS
   let cursorYRelative = -ROWS
   let cursorXRelative = -COLS
   let foreground = '#ffffff'
