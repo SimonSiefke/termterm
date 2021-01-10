@@ -106,3 +106,5 @@ for code in {0..255}
 <!-- TODO copy escape code https://www.reddit.com/r/vim/comments/k1ydpn/a_guide_on_how_to_copy_text_from_anywhere/ -->
 
 <!-- interesting terminal emulator jsterm https://github.com/pnitsch/jsTerm -->
+
+<!-- interesting another terminal spec/info https://docs.microsoft.com/en-us/windows/console/console-virtual-terminal-sequences -->
