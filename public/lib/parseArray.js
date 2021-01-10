@@ -45,6 +45,7 @@ export const createParse = ({
   const parse = (array) => {
     state = State.TopLevelContent
     i = 0
+    printStartIndex = -1
 
     while (i < array.length) {
       state
@@ -98,14 +99,14 @@ export const createParse = ({
                     i++
                     break middle
                   case /* \n */ 10:
-                    lineFeed()
                     print(array, printStartIndex, i)
+                    lineFeed()
                     state = State.TopLevelContent
                     i++
                     break
                   case /* \r */ 13:
-                    carriageReturn()
                     print(array, printStartIndex, i)
+                    carriageReturn()
                     state = State.TopLevelContent
                     i++
                     break middle
@@ -608,6 +609,10 @@ const setGLevel = () => {
   console.log('set g level')
 }
 
+const carriageReturn = () => {
+  console.log('carriage return')
+}
+
 let output = ''
 
 const decodeString = (string) => {
@@ -629,7 +634,7 @@ const print = (array, startIndex, endIndex) => {
 
 const lineFeed = () => {}
 
-const input = `[1Pecho ok`
+// const input = `echo "ok\r\n\r"`
 
 // const array = encodeString(input)
 
@@ -647,6 +652,8 @@ const input = `[1Pecho ok`
 //   setGLevel,
 //   bell,
 //   backspace: () => {},
+//   carriageReturn,
+//   lineFeed,
 // })(array) //?
 
 // output

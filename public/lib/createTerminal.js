@@ -32,6 +32,13 @@ export const createTerminal = (
     end: 0,
   }
 
+  self.stats = () => ({
+    cursorYRelative,
+    cursorXRelative,
+    x: COLS + cursorXRelative,
+    y: bufferYEnd + cursorYRelative,
+  })
+
   const lines = []
   self.lines = lines
 
@@ -141,11 +148,8 @@ export const createTerminal = (
       } else {
         cursorYRelative++
       }
-      cursorXRelative = -COLS
     },
     carriageReturn() {
-      // cursorXRelative = -COLS
-      // cursorX = 0
       cursorXRelative = -COLS
     },
   }

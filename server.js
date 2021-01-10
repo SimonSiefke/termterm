@@ -79,7 +79,7 @@ wss.on('connection', (socket) => {
   const handleData = createHandleData(socket, 8)
   readStream.on('data', handleData)
   socket.on('message', (data) => {
-    console.log({ data })
+    // console.log({ data })
     readStream.write(data)
   })
   socket.on('error', (error) => {

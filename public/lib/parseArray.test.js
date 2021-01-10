@@ -87,6 +87,29 @@ const getOutputLines = (input) => {
   return chunks.join('').split('\n')
 }
 
+const operations = (input) => {
+  const calls = []
+  const terminal = {
+    bell: () => calls.push(['bell']),
+    eraseInDisplay2: () => calls.push(['eraseInDisplay2']),
+    eraseToEndOfLine: () => calls.push(['eraseToEndOfLine']),
+    goToHome: () => calls.push(['goToHome']),
+    setCharAttributes: () => calls.push(['setCharAttributes']),
+    cursorUp: () => calls.push(['cursorUp']),
+    cursorDown: () => calls.push(['cursorDown']),
+    cursorRight: () => calls.push(['cursorRight']),
+    cursorLeft: () => calls.push(['cursorLeft']),
+    backspace: () => calls.push(['backspace']),
+    print: (startIndex, endIndex) => calls.push(['print']),
+    lineFeed: () => calls.push(['lineFeed']),
+    carriageReturn: () => calls.push(['carriageReturn']),
+  }
+  const parse = createParse(terminal)
+  const array = encodeText(input)
+  parse(array)
+  return calls
+}
+
 test('function - bell', () => {
   const bell = jest.fn()
   runTest('\u0007', { bell })
@@ -443,4 +466,18 @@ test.skip('delete 2', () => {
   runTest(`\b\x1B[1Pbcd`, { print, backspace })
   expect(print).toHaveBeenCalledWith('bcd')
   expect(backspace).toHaveBeenCalledTimes(1)
+})
+
+test('multiple carriage return', () => {
+  const carriageReturn = jest.fn()
+  runTest(`Run \`unset PREFIX\` to unset it.\r\n`, { carriageReturn })
+  expect(carriageReturn).toHaveBeenCalledTimes(2)
+})
+
+test.only('bug with carriage return', () => {
+  expect(operations(`echo\r\n`)).toEqual([
+    ['print'],
+    ['carriageReturn'],
+    ['lineFeed'],
+  ])
 })
