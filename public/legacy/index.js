@@ -33,5 +33,10 @@ const send = (text) => webSocket.send(text)
 
 const handleKeyDown = createHandleKeyDown(send)
 window.addEventListener('keydown', handleKeyDown)
+const handlePaste = (event) => {
+  const text = event.clipboardData.getData('Text')
+  send(text)
+}
+document.addEventListener('paste', handlePaste)
 
 webSocket.onmessage = handleMessage
