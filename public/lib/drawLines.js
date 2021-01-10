@@ -67,7 +67,7 @@ export const createDrawLines = (
   })
 
   const drawChar = (char, x, y, background, foreground) => {
-    if (char === ' ') {
+    if (char === ' ' && background === '#000000') {
       return
     }
     const cacheKey = `${char}${background}${foreground}`
