@@ -122,7 +122,6 @@ export const createTerminal = (
       // offsets[bufferYEnd + cursorYRelative]--
     },
     deleteChars(numberOfChars) {
-      console.log('delete chars')
       const y = bufferYEnd + cursorYRelative
       // offsets[y] = x - 1
       // cursorXRelative--
