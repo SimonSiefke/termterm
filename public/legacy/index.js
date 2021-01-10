@@ -1,7 +1,7 @@
 import { createTerminal } from '/lib/createTerminal.js'
 import { createHandleKeyDown } from '/lib/handleKeyDown.js'
 
-const USE_NODE_PTY_SERVER = true
+const USE_NODE_PTY_SERVER = false
 
 const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:'
 const webSocket = USE_NODE_PTY_SERVER
