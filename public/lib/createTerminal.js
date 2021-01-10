@@ -89,7 +89,9 @@ export const createTerminal = (
       }
     },
     setCharAttributes(params) {
-      if (params[1] === 35) {
+      if (params[1] === 7) {
+        ;[foreground, background] = [background, foreground]
+      } else if (params[1] === 35) {
         foreground = '#8000ff'
       } else if (params[1] === 32) {
         foreground = '#09f900'
@@ -97,6 +99,7 @@ export const createTerminal = (
         foreground = '#0090ff'
       } else {
         foreground = FOREGROUND
+        background = BACKGROUND
       }
       const y = bufferYEnd + cursorYRelative
       attributes[y] = attributes[y] || {}
@@ -109,7 +112,7 @@ export const createTerminal = (
       console.log('cursor up')
     },
     cursorDown() {
-      console.log('cursor down')
+//       console.log('cursor down')
     },
     cursorRight() {
       cursorXRelative++
@@ -147,6 +150,8 @@ export const createTerminal = (
       } else {
         cursorYRelative++
       }
+      foreground = FOREGROUND
+      background = BACKGROUND
     },
     carriageReturn() {
       cursorXRelative = -COLS

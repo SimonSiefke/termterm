@@ -110,3 +110,5 @@ for code in {0..255}
 <!-- interesting another terminal spec/info https://docs.microsoft.com/en-us/windows/console/console-virtual-terminal-sequences -->
 
 <!-- another terminal spec/info https://man7.org/linux/man-pages/man4/console_codes.4.html -->
+
+<!-- TODO e2e test for echo -e "\x1B[0;7m^C" -->

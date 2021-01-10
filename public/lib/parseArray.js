@@ -412,7 +412,7 @@ export const createParse = ({
               i++
               break
             case /* m */ 109:
-              // TODO do something
+              setCharAttributes([])
               i++
               state = State.TopLevelContent
               break
@@ -691,7 +691,7 @@ const print = (array, startIndex, endIndex) => {
 
 const lineFeed = () => {}
 
-// const input = '\u001b[<31;5mHello World! öäü€\nabc'
+// const input = '\u001b[m;'
 
 // const array = encodeString(input)
 

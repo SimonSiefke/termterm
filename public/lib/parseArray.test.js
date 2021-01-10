@@ -266,6 +266,10 @@ test('function - setCharAttributes with multiple params', () => {
   expect(setCharAttributes).toHaveBeenCalledWith([0, 35])
 })
 
+test('function - setCharAttributes with white background', () => {
+  expect(operations(`\x1B[0;7m^C`)).toEqual([['setCharAttributes'], ['print']])
+})
+
 test('function - setGLevel 1', () => {
   const setGLevel = jest.fn()
   runTest(`\u001b~`, { setGLevel })
@@ -598,4 +602,71 @@ test.skip('osc bug', () => {
       ),
     ).toEqual([]),
   )
+})
+
+test.skip('\x1B(B', () => {
+  runTest(`\x1B(B`)
+})
+
+test('set charset uk', () => {
+  expect(operations(`\x1B(A`)).toEqual([])
+})
+
+test('set charset us ascii', () => {
+  expect(operations(`\x1B(B`)).toEqual([])
+})
+
+test('set charset dutch', () => {
+  expect(operations(`\x1B(4`)).toEqual([])
+})
+
+test('set charset finnish', () => {
+  expect(operations(`\x1B(C`)).toEqual([])
+  expect(operations(`\x1B(5`)).toEqual([])
+})
+
+test('set charset french', () => {
+  expect(operations(`\x1B(R`)).toEqual([])
+})
+
+test('set charset french canadian', () => {
+  expect(operations(`\x1B(Q`)).toEqual([])
+})
+
+test('set charset german', () => {
+  expect(operations(`\x1B(K`)).toEqual([])
+})
+
+test('set charset italian', () => {
+  expect(operations(`\x1B(Y`)).toEqual([])
+})
+
+test('set charset norwegian danish', () => {
+  expect(operations(`\x1B(E`)).toEqual([])
+  expect(operations(`\x1B(6`)).toEqual([])
+})
+
+test('set charset norwegian spanish', () => {
+  expect(operations(`\x1B(Z`)).toEqual([])
+})
+
+test('set charset norwegian swedish', () => {
+  expect(operations(`\x1B(H`)).toEqual([])
+  expect(operations(`\x1B(7`)).toEqual([])
+})
+
+test('set charset swiss', () => {
+  expect(operations(`\x1B(=`)).toEqual([])
+})
+
+test('set charset iso latin', () => {
+  expect(operations(`\x1B(/`)).toEqual([])
+})
+
+test('reset char attributes', () => {
+  expect(operations(`\x1B[m;`)).toEqual([
+    ['setCharAttributes'],
+    // TODO should be no print
+    ['print'],
+  ])
 })

@@ -1,5 +1,5 @@
-import { createTerminal } from '/lib/createTerminal.js'
-import { createHandleKeyDown } from '/lib/handleKeyDown.js'
+import { createTerminal } from '../lib/createTerminal.js'
+import { createHandleKeyDown } from '../lib/handleKeyDown.js'
 
 const USE_NODE_PTY_SERVER = false
 
