@@ -35,6 +35,9 @@ const runTest = (
     index = noop,
     tabSet = noop,
     deleteChars = noop,
+    setWindowTitle = noop,
+    lineFeed = noop,
+    carriageReturn = noop,
   } = {},
 ) => {
   const parse = createParse({
@@ -57,6 +60,9 @@ const runTest = (
     index,
     tabSet,
     deleteChars,
+    setWindowTitle,
+    carriageReturn,
+    lineFeed,
   })
   const array = new Uint8Array(input.split('').map((x) => x.charCodeAt()))
   return parse(array)
@@ -82,6 +88,10 @@ const getOutputLines = (input) => {
     newline: () => {
       chunks.push('\n')
     },
+    lineFeed: () => {
+      chunks.push('\n')
+    },
+    carriageReturn: noop,
   })
   parse(array)
   return chunks.join('').split('\n')
@@ -103,6 +113,11 @@ const operations = (input) => {
     print: (startIndex, endIndex) => calls.push(['print']),
     lineFeed: () => calls.push(['lineFeed']),
     carriageReturn: () => calls.push(['carriageReturn']),
+    setWindowTitle: (array, startIndex, endIndex) =>
+      calls.push([
+        'setWindowTitle',
+        decodeText(array.slice(startIndex, endIndex)),
+      ]),
   }
   const parse = createParse(terminal)
   const array = encodeText(input)
@@ -116,7 +131,7 @@ test('function - bell', () => {
   expect(bell).toHaveBeenCalledTimes(1)
 })
 
-test.only('function - bell (with text)', () => {
+test('function - bell (with text)', () => {
   const lines = getOutputLines('sample \u0007 text')
   expect(lines).toEqual(['sample  text'])
 })
@@ -299,6 +314,12 @@ test('function - tabSet', () => {
   expect(tabSet).toHaveBeenCalledTimes(1)
 })
 
+test('function - setWindowTitle', () => {
+  expect(operations('\u001b]0;This is the window title\x07')).toEqual([
+    ['setWindowTitle', 'This is the window title'],
+  ])
+})
+
 test('function - reverseIndex', () => {})
 test('function - keypadApplicationMode', () => {})
 test('function - keypadNumericMode', () => {})
@@ -318,16 +339,16 @@ test.skip('function - auxPortOff', () => {
 })
 
 test('function - carriage return', () => {
-  const newline = jest.fn()
-  runTest('\r', { newline })
-  expect(newline).not.toHaveBeenCalled()
+  const carriageReturn = jest.fn()
+  runTest('\r', { carriageReturn })
+  expect(carriageReturn).toHaveBeenCalledTimes(1)
 })
 
-test('function - newline 2', () => {
-  const newline = jest.fn()
-  runTest('\n', { newline })
-  expect(newline).toHaveBeenCalledTimes(1)
-})
+// test.only('function - newline 2', () => {
+//   const newline = jest.fn()
+//   runTest('\n', { newline })
+//   expect(newline).toHaveBeenCalledTimes(1)
+// })
 
 test('text - hello world!', () => {
   const lines = getOutputLines('hello world!')
@@ -471,13 +492,110 @@ test.skip('delete 2', () => {
 test('multiple carriage return', () => {
   const carriageReturn = jest.fn()
   runTest(`Run \`unset PREFIX\` to unset it.\r\n`, { carriageReturn })
-  expect(carriageReturn).toHaveBeenCalledTimes(2)
+  expect(carriageReturn).toHaveBeenCalledTimes(1)
 })
 
-test.only('bug with carriage return', () => {
+test('bug with carriage return', () => {
   expect(operations(`echo\r\n`)).toEqual([
     ['print'],
     ['carriageReturn'],
     ['lineFeed'],
   ])
+})
+
+test.skip('osc bug', () => {
+  expect(
+    operations(
+      decodeText(
+        new Uint8Array([
+          27,
+          93,
+          48,
+          59,
+          103,
+          105,
+          116,
+          112,
+          111,
+          100,
+          32,
+          47,
+          119,
+          111,
+          114,
+          107,
+          115,
+          112,
+          97,
+          99,
+          101,
+          47,
+          116,
+          101,
+          114,
+          109,
+          116,
+          101,
+          114,
+          109,
+          7,
+          27,
+          91,
+          48,
+          49,
+          59,
+          51,
+          50,
+          109,
+          103,
+          105,
+          116,
+          112,
+          111,
+          100,
+          27,
+          91,
+          48,
+          48,
+          109,
+          32,
+          27,
+          91,
+          48,
+          49,
+          59,
+          51,
+          52,
+          109,
+          47,
+          119,
+          111,
+          114,
+          107,
+          115,
+          112,
+          97,
+          99,
+          101,
+          47,
+          116,
+          101,
+          114,
+          109,
+          116,
+          101,
+          114,
+          109,
+          27,
+          91,
+          48,
+          48,
+          109,
+          32,
+          36,
+          32,
+        ]),
+      ),
+    ).toEqual([]),
+  )
 })

@@ -15,7 +15,7 @@ const BUFFER_LINES = 200
 export const createTerminal = (
   canvasText,
   canvasCursor,
-  { bell, cacheCanvas },
+  { bell, setWindowTitle, cacheCanvas },
 ) => {
   const WIDTH = COLS * CHAR_WIDTH
   const HEIGHT = ROWS * (CHAR_HEIGHT + 10)
@@ -152,6 +152,7 @@ export const createTerminal = (
     carriageReturn() {
       cursorXRelative = -COLS
     },
+    setWindowTitle,
   }
 
   const parse = createParse(callbackFns)

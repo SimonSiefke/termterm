@@ -58,6 +58,7 @@ const noop_terminal = {
   print: noop,
   lineFeed: noop,
   carriageReturn: noop,
+  setWindowTitle: noop,
 }
 
 const fixtureLs = fs

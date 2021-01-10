@@ -13,7 +13,16 @@ const init = ({ canvasText, canvasCursor }) => {
   const bell = () => {
     postMessage({ command: 'bell' })
   }
-  const terminal = createTerminal(canvasText, canvasCursor, { bell })
+  const setWindowTitle = (array, startIndex, endIndex) => {
+    postMessage({
+      command: 'setWindowTitle',
+      title: new TextDecoder().decode(array.subarray(startIndex, endIndex)),
+    })
+  }
+  const terminal = createTerminal(canvasText, canvasCursor, {
+    bell,
+    setWindowTitle,
+  })
   const handleMessage = ({ data }) => terminal.write(new Uint8Array(data))
   webSocket.onmessage = handleMessage
 

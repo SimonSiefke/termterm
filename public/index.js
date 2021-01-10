@@ -17,10 +17,17 @@ const playBellAudio = () => {
   audio.play()
 }
 
+const setWindowTitle = (title) => {
+  document.title = title
+}
+
 const handleMessage = ({ data }) => {
   switch (data.command) {
     case 'bell':
       playBellAudio()
+      break
+    case 'setWindowTitle':
+      setWindowTitle(data.title)
       break
   }
 }

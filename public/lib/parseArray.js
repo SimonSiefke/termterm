@@ -8,6 +8,8 @@ const State = {
   AfterEscape3AfterSemicolon2: 'AfterEscape3AfterSemicolon2',
   Osc: 'Osc',
   Dcs: 'Dcs',
+  AfterOscAfter0: 'AfterOscAfter0',
+  AfterOscAfter0AfterSemicolon: 'AfterOscAfter0AfterSemicolon',
 }
 
 export const createParse = ({
@@ -36,6 +38,7 @@ export const createParse = ({
   newline,
   carriageReturn,
   deleteChars,
+  setWindowTitle,
 }) => {
   let state = State.TopLevelContent
   let i = 0
@@ -48,7 +51,7 @@ export const createParse = ({
     printStartIndex = -1
 
     while (i < array.length) {
-      state
+      // state
       switch (state) {
         case State.TopLevelContent:
           middle: switch (array[i]) {
@@ -76,9 +79,8 @@ export const createParse = ({
               state = State.TopLevelContent
               i++
               break
-
             default:
-              const printStartIndex = i++
+              printStartIndex = i++
               while (i < array.length) {
                 switch (array[i]) {
                   case /* \u001b */ 27:
@@ -103,7 +105,7 @@ export const createParse = ({
                     lineFeed()
                     state = State.TopLevelContent
                     i++
-                    break
+                    break middle
                   case /* \r */ 13:
                     print(array, printStartIndex, i)
                     carriageReturn()
@@ -473,7 +475,6 @@ export const createParse = ({
               break
             case /* P */ 80:
               deleteChars(1)
-              console.log(params)
               state = State.TopLevelContent
               i++
               break
@@ -551,16 +552,66 @@ export const createParse = ({
               break
           }
           break
+        case State.Osc:
+          middle: switch (array[i]) {
+            case /* 0 */ 48:
+              state = State.AfterOscAfter0
+              i++
+              break
+            // printStartIndex = i++
+            // while (i < array.length) {
+            //   switch (array[i]) {
+            //     case /* \u0007 */ 7:
+            //       setWindowTitle(array, printStartIndex, i)
+            //       state = State.TopLevelContent
+            //       i++
+            //       break middle
+            //     default:
+            //       i++
+            //       break
+            //   }
+            // }
+            // setWindowTitle(array, printStartIndex, i)
+            // break
+            default:
+              i++
+              break
+          }
+          break
+        case State.AfterOscAfter0:
+          switch (array[i]) {
+            case /* ; */ 59:
+              state = State.AfterOscAfter0AfterSemicolon
+              i++
+              printStartIndex = i
+              break
+            default:
+              i++
+              break
+          }
+          break
+        case State.AfterOscAfter0AfterSemicolon:
+          switch (array[i]) {
+            case /* \u0007 */ 7:
+              setWindowTitle(array, printStartIndex, i)
+              state = State.TopLevelContent
+              i++
+              break
+            default:
+              i++
+              break
+          }
+          break
         default:
           i++
           console.warn('invalid state')
           break
       }
     }
-    if (printStartIndex !== -1) {
-      console.log('printing end')
-      print(array, printStartIndex, i)
-    }
+    // if (printStartIndex !== -1) {
+    //   console.log('printing end')
+    //   print(array, printStartIndex, i)
+    // }
   }
   return parse
 }
@@ -621,6 +672,12 @@ const decodeString = (string) => {
   return decoder.write(string)
 }
 
+const setWindowTitle = (array, startIndex, endIndex) => {
+  console.log(
+    'set window title' + decodeString(array.slice(startIndex, endIndex)),
+  )
+}
+
 const encodeString = (input) => {
   return new Uint8Array(Buffer.from(input, 'utf-8'))
 }
@@ -634,7 +691,7 @@ const print = (array, startIndex, endIndex) => {
 
 const lineFeed = () => {}
 
-// const input = `echo "ok\r\n\r"`
+// const input = '\u001b[<31;5mHello World! öäü€\nabc'
 
 // const array = encodeString(input)
 
@@ -654,6 +711,7 @@ const lineFeed = () => {}
 //   backspace: () => {},
 //   carriageReturn,
 //   lineFeed,
+//   setWindowTitle,
 // })(array) //?
 
 // output
