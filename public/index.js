@@ -10,6 +10,10 @@ const send = (text) => {
 }
 
 const handleKeyDown = createHandleKeyDown(send)
+const handlePaste = (event) => {
+  const text = event.clipboardData.getData('Text')
+  send(text)
+}
 
 const playBellAudio = () => {
   const audio = document.createElement('audio')
@@ -54,6 +58,7 @@ const __initialize__ = () => {
     .getElementById('CanvasCursor')
     .transferControlToOffscreen()
   window.addEventListener('keydown', handleKeyDown)
+  document.addEventListener('paste', handlePaste)
   worker.postMessage(
     {
       command: 'init',
