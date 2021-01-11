@@ -118,6 +118,9 @@ const operations = (input) => {
         'setWindowTitle',
         decodeText(array.slice(startIndex, endIndex)),
       ]),
+    setCursor(params) {
+      calls.push(['setCursor', params])
+    },
   }
   const parse = createParse(terminal)
   const array = encodeText(input)
@@ -346,6 +349,10 @@ test('function - carriage return', () => {
   const carriageReturn = jest.fn()
   runTest('\r', { carriageReturn })
   expect(carriageReturn).toHaveBeenCalledTimes(1)
+})
+
+test('function - setCursor', () => {
+  expect(operations(`\x1B[22;16H`)).toEqual([['setCursor', [22, 16]]])
 })
 
 // test.only('function - newline 2', () => {

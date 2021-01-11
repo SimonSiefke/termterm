@@ -112,7 +112,7 @@ export const createTerminal = (
       console.log('cursor up')
     },
     cursorDown() {
-//       console.log('cursor down')
+      //       console.log('cursor down')
     },
     cursorRight() {
       cursorXRelative++
@@ -157,6 +157,14 @@ export const createTerminal = (
       cursorXRelative = -COLS
     },
     setWindowTitle,
+    setCursor(params) {
+      if (params.length === 2) {
+        const row = params[0]
+        const column = params[1]
+        cursorYRelative = -ROWS + row
+        cursorXRelative = -COLS + column
+      }
+    },
   }
 
   const parse = createParse(callbackFns)

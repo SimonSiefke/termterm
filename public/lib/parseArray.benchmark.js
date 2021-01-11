@@ -42,6 +42,7 @@ const test_terminal = {
     calls.push(['print', decodeText(array.slice(startIndex, endIndex))]),
   lineFeed: () => calls.push(['lineFeed']),
   carriageReturn: () => calls.push(['carriageReturn']),
+  setCursor: () => calls.push(['setCursor']),
 }
 
 const noop_terminal = {
@@ -59,6 +60,7 @@ const noop_terminal = {
   lineFeed: noop,
   carriageReturn: noop,
   setWindowTitle: noop,
+  setCursor: noop,
 }
 
 const fixtureLs = fs

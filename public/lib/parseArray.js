@@ -39,6 +39,7 @@ export const createParse = ({
   carriageReturn,
   deleteChars,
   setWindowTitle,
+  setCursor,
 }) => {
   let state = State.TopLevelContent
   let i = 0
@@ -375,6 +376,7 @@ export const createParse = ({
           }
           break
         case State.Csi:
+          // console.log('csi')
           switch (array[i]) {
             case /* A */ 65:
               cursorUp(1)
@@ -491,6 +493,7 @@ export const createParse = ({
               currentParam = currentParam * 10 + array[i] - 48
               i++
               break
+
             case /* m */ 109:
               params
               setCharAttributes([currentParam])
@@ -543,6 +546,12 @@ export const createParse = ({
             case /* m */ 109:
               params.push(currentParam)
               setCharAttributes(params)
+              state = State.TopLevelContent
+              i++
+              break
+            case /* H */ 72:
+              params.push(currentParam)
+              setCursor(params)
               state = State.TopLevelContent
               i++
               break
@@ -682,6 +691,10 @@ const encodeString = (input) => {
   return new Uint8Array(Buffer.from(input, 'utf-8'))
 }
 
+const setCursor = (params) => {
+  console.log(params)
+}
+
 const print = (array, startIndex, endIndex) => {
   startIndex
   endIndex
@@ -691,7 +704,7 @@ const print = (array, startIndex, endIndex) => {
 
 const lineFeed = () => {}
 
-// const input = '\u001b[m;'
+// const input = '\x1B[22;16H'
 
 // const array = encodeString(input)
 
@@ -712,6 +725,7 @@ const lineFeed = () => {}
 //   carriageReturn,
 //   lineFeed,
 //   setWindowTitle,
+//   setCursor,
 // })(array) //?
 
 // output
