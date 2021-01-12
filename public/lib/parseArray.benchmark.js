@@ -61,6 +61,8 @@ const noop_terminal = {
   carriageReturn: noop,
   setWindowTitle: noop,
   setCursor: noop,
+  cursorShow: noop,
+  cursorHide: noop,
 }
 
 const fixtureLs = fs

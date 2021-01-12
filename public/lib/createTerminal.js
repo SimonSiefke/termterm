@@ -204,7 +204,7 @@ export const createTerminal = (
         drawLines(dirty.start, dirty.end + 1, bufferYEnd)
         const y = ROWS + cursorYRelative
         const x = COLS + cursorXRelative
-        drawCursor(x, y)
+        drawCursor(x, y, cursorVisible)
         scheduled = false
       })
     }

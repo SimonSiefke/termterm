@@ -121,6 +121,12 @@ const operations = (input) => {
     setCursor(params) {
       calls.push(['setCursor', params])
     },
+    cursorHide() {
+      calls.push(['cursorHide'])
+    },
+    cursorShow() {
+      calls.push(['cursorShow'])
+    },
   }
   const parse = createParse(terminal)
   const array = encodeText(input)
@@ -678,10 +684,10 @@ test('reset char attributes', () => {
   ])
 })
 
-test.skip('function hideCursor', () => {
-  expect(operations(`\x1B[?25l`)).toEqual([])
+test('function cursorHide', () => {
+  expect(operations(`\x1B[?25l`)).toEqual([['cursorHide']])
 })
 
-test.skip('function showCursor', () => {
-  expect(operations(`\x1B[?25r`)).toEqual([])
+test('function cursorShow', () => {
+  expect(operations(`\x1B[?25r`)).toEqual([['cursorShow']])
 })

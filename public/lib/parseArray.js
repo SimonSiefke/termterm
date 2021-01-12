@@ -10,6 +10,9 @@ const State = {
   Dcs: 'Dcs',
   AfterOscAfter0: 'AfterOscAfter0',
   AfterOscAfter0AfterSemicolon: 'AfterOscAfter0AfterSemicolon',
+  AfterCsiAfterQuestionMark: 'AfterCsiAfterQuestionMark',
+  AfterCsiAfterQuestionMarkAfter2: 'AfterCsiAfterQuestionMarkAfter2',
+  AfterCsiAfterQuestionMarkAfter25: 'AfterCsiAfterQuestionMarkAfter25',
 }
 
 export const createParse = ({
@@ -40,6 +43,8 @@ export const createParse = ({
   deleteChars,
   setWindowTitle,
   setCursor,
+  cursorHide,
+  cursorShow,
 }) => {
   let state = State.TopLevelContent
   let i = 0
@@ -52,7 +57,7 @@ export const createParse = ({
     printStartIndex = -1
 
     while (i < array.length) {
-      // state
+      state
       switch (state) {
         case State.TopLevelContent:
           middle: switch (array[i]) {
@@ -293,6 +298,44 @@ export const createParse = ({
               break
           }
           break
+        case State.AfterCsiAfterQuestionMark:
+          switch (array[i]) {
+            case /* 2 */ 50:
+              state = State.AfterCsiAfterQuestionMarkAfter2
+              i++
+              break
+            default:
+              i++
+              break
+          }
+          break
+        case State.AfterCsiAfterQuestionMarkAfter2:
+          switch (array[i]) {
+            case /* 5 */ 53:
+              state = State.AfterCsiAfterQuestionMarkAfter25
+              i++
+              break
+            default:
+              i++
+              break
+          }
+          break
+        case State.AfterCsiAfterQuestionMarkAfter25:
+          switch (array[i]) {
+            case /* l */ 108:
+              cursorHide()
+              i++
+              state = State.TopLevelContent
+              break
+            case /* r */ 114:
+              cursorShow()
+              i++
+              state = State.TopLevelContent
+              break
+            default:
+              break
+          }
+          break
         case State.Charset:
           switch (array[i]) {
             // DEC Special Character and Line Drawing Set.
@@ -378,6 +421,10 @@ export const createParse = ({
         case State.Csi:
           // console.log('csi')
           switch (array[i]) {
+            case /* ? */ 63:
+              state = State.AfterCsiAfterQuestionMark
+              i++
+              break
             case /* A */ 65:
               cursorUp(1)
               state = State.TopLevelContent
@@ -695,6 +742,10 @@ const setCursor = (params) => {
   console.log(params)
 }
 
+const cursorHide = () => {
+  console.log('cursor hide')
+}
+
 const print = (array, startIndex, endIndex) => {
   startIndex
   endIndex
@@ -704,7 +755,7 @@ const print = (array, startIndex, endIndex) => {
 
 const lineFeed = () => {}
 
-// const input = '\x1B[22;16H'
+// const input = '\x1B[?25l'
 
 // const array = encodeString(input)
 
@@ -726,6 +777,7 @@ const lineFeed = () => {}
 //   lineFeed,
 //   setWindowTitle,
 //   setCursor,
+//   cursorHide,
 // })(array) //?
 
 // output
