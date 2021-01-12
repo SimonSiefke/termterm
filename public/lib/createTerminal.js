@@ -27,6 +27,7 @@ export const createTerminal = (
   let cursorXRelative = -COLS
   let foreground = '#ffffff'
   let background = '#000000'
+  let cursorVisible = true
   const dirty = {
     start: 0,
     end: 0,
@@ -164,6 +165,12 @@ export const createTerminal = (
         cursorYRelative = -ROWS + row
         cursorXRelative = -COLS + column
       }
+    },
+    cursorShow() {
+      cursorVisible = true
+    },
+    cursorHide() {
+      cursorVisible = false
     },
   }
 

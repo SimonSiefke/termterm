@@ -677,3 +677,11 @@ test('reset char attributes', () => {
     ['print'],
   ])
 })
+
+test.skip('function hideCursor', () => {
+  expect(operations(`\x1B[?25l`)).toEqual([])
+})
+
+test.skip('function showCursor', () => {
+  expect(operations(`\x1B[?25r`)).toEqual([])
+})
