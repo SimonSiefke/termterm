@@ -114,3 +114,5 @@ for code in {0..255}
 <!-- TODO e2e test for echo -e "\x1B[0;7m^C" -->
 
 <!-- TODO test https://tforgione.fr/posts/ansi-escape-codes/ -->
+
+<!-- TODO implement DECBKM (whatever that is) https://github.com/xtermjs/xterm.js/issues/3041 -->
