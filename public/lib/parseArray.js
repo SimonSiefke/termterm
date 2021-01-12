@@ -333,6 +333,7 @@ export const createParse = ({
               state = State.TopLevelContent
               break
             default:
+              i++
               break
           }
           break
