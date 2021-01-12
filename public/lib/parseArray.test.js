@@ -689,5 +689,5 @@ test('function cursorHide', () => {
 })
 
 test('function cursorShow', () => {
-  expect(operations(`\x1B[?25r`)).toEqual([['cursorShow']])
+  expect(operations(`\x1B[?25h`)).toEqual([['cursorShow']])
 })

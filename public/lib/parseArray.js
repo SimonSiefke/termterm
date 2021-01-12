@@ -327,7 +327,7 @@ export const createParse = ({
               i++
               state = State.TopLevelContent
               break
-            case /* r */ 114:
+            case /* h */ 104:
               cursorShow()
               i++
               state = State.TopLevelContent
