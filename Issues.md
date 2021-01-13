@@ -116,3 +116,5 @@ for code in {0..255}
 <!-- TODO test https://tforgione.fr/posts/ansi-escape-codes/ -->
 
 <!-- TODO implement DECBKM (whatever that is) https://github.com/xtermjs/xterm.js/issues/3041 -->
+
+<!-- TODO test with cal, less -->

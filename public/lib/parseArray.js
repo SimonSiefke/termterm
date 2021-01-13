@@ -54,6 +54,9 @@ export const createParse = ({
   cursorBackwardTabulation,
   insertLines,
   deleteLines,
+  scrollUp,
+  scrollDown,
+  eraseCharacters,
 }) => {
   let state = State.TopLevelContent
   let i = 0
@@ -529,7 +532,26 @@ export const createParse = ({
               i++
               break
             case /* P */ 80:
-              deleteCharacters(1)
+              params = []
+              deleteCharacters(params)
+              state = State.TopLevelContent
+              i++
+              break
+            case /* S */ 83:
+              params = []
+              scrollUp(params)
+              state = State.TopLevelContent
+              i++
+              break
+            case /* T */ 84:
+              params = []
+              scrollDown(params)
+              state = State.TopLevelContent
+              i++
+              break
+            case /* X */ 88:
+              params = []
+              eraseCharacters(params)
               state = State.TopLevelContent
               i++
               break
@@ -639,7 +661,26 @@ export const createParse = ({
               i++
               break
             case /* P */ 80:
-              deleteCharacters(1)
+              params.push(currentParam)
+              deleteCharacters(params)
+              state = State.TopLevelContent
+              i++
+              break
+            case /* S */ 83:
+              params.push(currentParam)
+              scrollUp(params)
+              state = State.TopLevelContent
+              i++
+              break
+            case /* T */ 84:
+              params.push(currentParam)
+              scrollDown(params)
+              state = State.TopLevelContent
+              i++
+              break
+            case /* X */ 88:
+              params.push(currentParam)
+              eraseCharacters(params)
               state = State.TopLevelContent
               i++
               break

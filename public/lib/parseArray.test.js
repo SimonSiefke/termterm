@@ -126,8 +126,8 @@ const operations = (input) => {
     cursorShow() {
       calls.push(['cursorShow'])
     },
-    deleteCharacters() {
-      calls.push(['deleteCharacters'])
+    deleteCharacters(params) {
+      calls.push(['deleteCharacters', params])
     },
     restoreCursor() {
       calls.push(['restoreCursor'])
@@ -158,6 +158,15 @@ const operations = (input) => {
     },
     deleteLines(params) {
       calls.push(['deleteLines', params])
+    },
+    scrollUp(params) {
+      calls.push(['scrollUp', params])
+    },
+    scrollDown(params) {
+      calls.push('scrollDown', params)
+    },
+    eraseCharacters(params) {
+      calls.push('eraseCharacters', params)
     },
   }
   const parse = createParse(terminal)
@@ -353,39 +362,43 @@ test('function deleteLines', () => {
  * Delete Ps Character(s) (default = 1) (DCH).
  */
 test('function deleteCharacters', () => {
-  // expect(operations(`\x1B[P`)).toEqual([['deleteCharacters']])
-  expect(operations(`\x1B[1P`)).toEqual([['deleteCharacters']])
-  expect(operations(`\x1B[2P`)).toEqual([['deleteCharacters']])
+  expect(operations(`\x1B[P`)).toEqual([['deleteCharacters', []]])
+  expect(operations(`\x1B[0P`)).toEqual([['deleteCharacters', [0]]])
+  expect(operations(`\x1B[1P`)).toEqual([['deleteCharacters', [1]]])
+  expect(operations(`\x1B[2P`)).toEqual([['deleteCharacters', [2]]])
 })
 
 /**
  * CSI Ps S
  * Scroll up Ps lines (default = 1) (SU), VT420, ECMA-48.
  */
-test.skip('function scrollUp', () => {
-  expect(operations(`\x1B[S`)).toEqual([['scrollUp']])
-  expect(operations(`\x1B[1S`)).toEqual([['scrollUp']])
-  expect(operations(`\x1B[2S`)).toEqual([['scrollUp']])
+test('function scrollUp', () => {
+  expect(operations(`\x1B[S`)).toEqual([['scrollUp', []]])
+  expect(operations(`\x1B[0S`)).toEqual([['scrollUp', [0]]])
+  expect(operations(`\x1B[1S`)).toEqual([['scrollUp', [1]]])
+  expect(operations(`\x1B[2S`)).toEqual([['scrollUp', [2]]])
 })
 
 /**
  * CSI Ps T
  * Scroll down Ps lines (default = 1) (SD), VT420.
  */
-test.skip('function scrollDown', () => {
-  expect(operations(`\x1B[T`)).toEqual(['scrollDown'])
-  expect(operations(`\x1B[1T`)).toEqual(['scrollDown'])
-  expect(operations(`\x1B[2T`)).toEqual(['scrollDown'])
+test('function scrollDown', () => {
+  expect(operations(`\x1B[T`)).toEqual(['scrollDown', []])
+  expect(operations(`\x1B[0T`)).toEqual(['scrollDown', [0]])
+  expect(operations(`\x1B[1T`)).toEqual(['scrollDown', [1]])
+  expect(operations(`\x1B[2T`)).toEqual(['scrollDown', [2]])
 })
 
 /**
  * CSI Ps X
  * Erase Ps Character(s) (default = 1) (ECH).
  */
-test.skip('function eraseCharacters', () => {
-  expect(operations(`\x1B[X`)).toEqual(['eraseCharacters'])
-  expect(operations(`\x1B[1X`)).toEqual(['eraseCharacters'])
-  expect(operations(`\x1B[2X`)).toEqual(['eraseCharacters'])
+test('function eraseCharacters', () => {
+  expect(operations(`\x1B[X`)).toEqual(['eraseCharacters', []])
+  expect(operations(`\x1B[0X`)).toEqual(['eraseCharacters', [0]])
+  expect(operations(`\x1B[1X`)).toEqual(['eraseCharacters', [1]])
+  expect(operations(`\x1B[2X`)).toEqual(['eraseCharacters', [2]])
 })
 
 /**
@@ -393,9 +406,10 @@ test.skip('function eraseCharacters', () => {
  * Cursor Backward Tabulation Ps tab stops (default = 1) (CBT).
  */
 test.skip('function cursorBackwardTabulation', () => {
-  expect(operations(`\x1B[Z`)).toEqual(['cursorBackwardTabulation'])
-  expect(operations(`\x1B[1Z`)).toEqual(['cursorBackwardTabulation'])
-  expect(operations(`\x1B[2Z`)).toEqual(['cursorBackwardTabulation'])
+  expect(operations(`\x1B[Z`)).toEqual(['cursorBackwardTabulation', []])
+  expect(operations(`\x1B[0Z`)).toEqual(['cursorBackwardTabulation', [0]])
+  expect(operations(`\x1B[1Z`)).toEqual(['cursorBackwardTabulation', [1]])
+  expect(operations(`\x1B[2Z`)).toEqual(['cursorBackwardTabulation', [2]])
 })
 
 /**
