@@ -2,9 +2,10 @@ const State = {
   TopLevelContent: 'TopLevelContent',
   Escaped: 'Escaped',
   Csi: 'Csi',
-  AfterEscape3: 'AfterEscape3',
+  CsiPs: 'CsiPs',
   Charset: 'Charset',
-  AfterEscape3AfterSemicolon: 'AfterEscape3AfterSemicolon',
+  CsiPm: 'CsiPm',
+  CsiPsSpace: 'CsiPsSpace',
   AfterEscape3AfterSemicolon2: 'AfterEscape3AfterSemicolon2',
   Osc: 'Osc',
   Dcs: 'Dcs',
@@ -63,6 +64,11 @@ export const createParse = ({
   sendDeviceAttributesPrimary,
   sendDeviceAttributesTertiary,
   linePositionAbsolute,
+  linePositionRelative,
+  horizontalAndVerticalPosition,
+  tabClear,
+  setMode,
+  setCursorStyle,
 }) => {
   let state = State.TopLevelContent
   let i = 0
@@ -75,6 +81,7 @@ export const createParse = ({
     printStartIndex = -1
 
     while (i < array.length) {
+      state
       switch (state) {
         case State.TopLevelContent:
           middle: switch (array[i]) {
@@ -437,6 +444,10 @@ export const createParse = ({
           break
         case State.Csi:
           switch (array[i]) {
+            // case /*   */ 32:
+            //   state = State.CsiPsSpace
+            //   i++
+            //   break
             case /* ! */ 33:
               state = State.AfterCsiAfterExclamationMark
               i++
@@ -453,7 +464,7 @@ export const createParse = ({
             case /* 9 */ 57:
               params = []
               currentParam = array[i] - 48
-              state = State.AfterEscape3
+              state = State.CsiPs
               i++
               break
             case /* ? */ 63:
@@ -608,8 +619,27 @@ export const createParse = ({
               state = State.TopLevelContent
               i++
               break
+            case /* e */ 101:
+              params = []
+              linePositionRelative(params)
+              state = State.TopLevelContent
+              i++
+              break
             case /* f */ 102:
-              goToHome()
+              params = []
+              horizontalAndVerticalPosition(params)
+              state = State.TopLevelContent
+              i++
+              break
+            case /* g */ 103:
+              params = []
+              tabClear(params)
+              state = State.TopLevelContent
+              i++
+              break
+            case /* h */ 104:
+              params = []
+              setMode(params)
               state = State.TopLevelContent
               i++
               break
@@ -628,8 +658,12 @@ export const createParse = ({
               break
           }
           break
-        case State.AfterEscape3:
+        case State.CsiPs:
           switch (array[i]) {
+            // case /*  */ 32:
+            //   state = State.CsiPsSpace
+            //   i++
+            //   break
             case /* 0 */ 48:
             case /* 1 */ 49:
             case /* 2 */ 50:
@@ -645,7 +679,7 @@ export const createParse = ({
               break
             case /* ; */ 59:
               params.push(currentParam)
-              state = State.AfterEscape3AfterSemicolon
+              state = State.CsiPm
               i++
               break
             case /* A */ 65:
@@ -786,6 +820,30 @@ export const createParse = ({
               state = State.TopLevelContent
               i++
               break
+            case /* e */ 101:
+              params.push(currentParam)
+              linePositionRelative(params)
+              state = State.TopLevelContent
+              i++
+              break
+            case /* f */ 102:
+              params.push(currentParam)
+              horizontalAndVerticalPosition(params)
+              state = State.TopLevelContent
+              i++
+              break
+            case /* g */ 103:
+              params.push(currentParam)
+              tabClear(params)
+              state = State.TopLevelContent
+              i++
+              break
+            case /* h */ 104:
+              params.push(currentParam)
+              setMode(params)
+              state = State.TopLevelContent
+              i++
+              break
             case /* m */ 109:
               params
               setCharAttributes([currentParam])
@@ -797,7 +855,20 @@ export const createParse = ({
               break
           }
           break
-        case State.AfterEscape3AfterSemicolon:
+        // case State.CsiPsSpace:
+        //   switch (array[i]) {
+        //     case /* q */ 113:
+        //       params.push(currentParam)
+        //       setCursorStyle(params)
+        //       state = State.TopLevelContent
+        //       i++
+        //       break
+        //     default:
+        //       i++
+        //       break
+        //   }
+        //   break
+        case State.CsiPm:
           switch (array[i]) {
             case /* 0 */ 48:
             case /* 1 */ 49:
@@ -810,7 +881,7 @@ export const createParse = ({
             case /* 8 */ 56:
             case /* 9 */ 57:
               currentParam = array[i] - 48
-              state = State.AfterEscape3AfterSemicolon2
+              state = State.CsiPm2
               currentParam
               i++
               break
@@ -819,7 +890,7 @@ export const createParse = ({
               break
           }
           break
-        case State.AfterEscape3AfterSemicolon2:
+        case State.CsiPm2:
           switch (array[i]) {
             case /* 0 */ 48:
             case /* 1 */ 49:
@@ -832,7 +903,7 @@ export const createParse = ({
             case /* 8 */ 56:
             case /* 9 */ 57:
               currentParam = currentParam * 10 + array[i] - 48
-              state = State.AfterEscape3AfterSemicolon2
+              state = State.CsiPm2
               i++
               break
             case /* m */ 109:
@@ -1013,7 +1084,11 @@ const cursorNextLine = () => {
   console.log('cursorNextLine')
 }
 
-// const input = '\x1B[3J'
+const setCursorStyle = () => {
+  console.log('set cursor style')
+}
+
+// const input = '\x1B[ q'
 
 // const array = encodeString(input)
 
@@ -1036,6 +1111,7 @@ const cursorNextLine = () => {
 //   cursorPosition,
 //   cursorHide,
 //   cursorNextLine,
+//   setCursorStyle,
 // })(array) //?
 
 // output

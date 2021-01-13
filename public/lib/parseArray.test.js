@@ -182,6 +182,21 @@ const operations = (input) => {
     linePositionAbsolute(params) {
       calls.push(['linePositionAbsolute', params])
     },
+    linePositionRelative(params) {
+      calls.push(['linePositionRelative', params])
+    },
+    horizontalAndVerticalPosition(params) {
+      calls.push(['horizontalAndVerticalPosition', params])
+    },
+    tabClear(params) {
+      calls.push(['tabClear', params])
+    },
+    setMode(params) {
+      calls.push(['setMode', params])
+    },
+    setCursorStyle(params) {
+      calls.push(['setCursorStyle', params])
+    },
   }
   const parse = createParse(terminal)
   const array = encodeText(input)
@@ -627,10 +642,11 @@ test('function linePositionAbsolute', () => {
  * CSI Ps e
  * Line Position Relative  [rows] (default = [row+1,column]) (VPR).
  */
-test.skip('function linePositionRelative', () => {
-  expect(operations(`\x1B[e`)).toEqual([['linePositionRelative']])
-  expect(operations(`\x1B[1e`)).toEqual([['linePositionRelative']])
-  expect(operations(`\x1B[2e`)).toEqual([['linePositionRelative']])
+test('function linePositionRelative', () => {
+  expect(operations(`\x1B[e`)).toEqual([['linePositionRelative', []]])
+  expect(operations(`\x1B[0e`)).toEqual([['linePositionRelative', [0]]])
+  expect(operations(`\x1B[1e`)).toEqual([['linePositionRelative', [1]]])
+  expect(operations(`\x1B[2e`)).toEqual([['linePositionRelative', [2]]])
 })
 
 /**
@@ -638,7 +654,13 @@ test.skip('function linePositionRelative', () => {
  * Horizontal and Vertical Position [row;column] (default = [1,1]) (HVP).
  */
 test.skip('function horizontalAndVerticalPosition', () => {
-  expect(operations(`\x1B[1;1f`)).toEqual([['horizontalAndVerticalPosition']])
+  expect(operations(`\x1B[f`)).toEqual([['horizontalAndVerticalPosition', []]])
+  expect(operations(`\x1B[1;1f`)).toEqual([
+    ['horizontalAndVerticalPosition', [1, 1]],
+  ])
+  expect(operations(`\x1B[2;2f`)).toEqual([
+    ['horizontalAndVerticalPosition', [2, 2]],
+  ])
 })
 
 /**
@@ -648,23 +670,30 @@ test.skip('function horizontalAndVerticalPosition', () => {
  * Ps = 0  ⇒  Clear Current Column (default).
  * Ps = 3  ⇒  Clear All.
  */
-test.skip('function tabClear', () => {
-  expect(operations(`\x1B[g`)).toEqual([['tabClear']])
-  expect(operations(`\x1B[0g`)).toEqual([['tabClear']])
-  expect(operations(`\x1B[3g`)).toEqual([['tabClear']])
+test('function tabClear', () => {
+  expect(operations(`\x1B[g`)).toEqual([['tabClear', []]])
+  expect(operations(`\x1B[0g`)).toEqual([['tabClear', [0]]])
+  expect(operations(`\x1B[3g`)).toEqual([['tabClear', [3]]])
 })
 
 /**
  * CSI Pm h
  * Set Mode (SM).
  *
- *  Ps = 2  ⇒  Keyboard Action Mode (KAM).
+ * Ps = 2  ⇒  Keyboard Action Mode (KAM).
  * Ps = 4  ⇒  Insert Mode (IRM).
  * Ps = 1 2  ⇒  Send/receive (SRM).
  * Ps = 2 0  ⇒  Automatic Newline (LNM).
  */
-test.skip('function setMode', () => {
-  expect(operations(`\x1B[2h`)).toEqual(['setMode'])
+test('function setMode', () => {
+  expect(operations(`\x1B[2h`)).toEqual([['setMode', [2]]])
+  expect(operations(`\x1B[4h`)).toEqual([['setMode', [4]]])
+  expect(operations(`\x1B[12h`)).toEqual([['setMode', [12]]])
+  expect(operations(`\x1B[20h`)).toEqual([['setMode', [20]]])
+})
+
+test.skip('function provideModeSet', () => {
+  expect(operations(`\x1B[?1h`).toEqual([[]]))
 })
 
 /**
@@ -686,45 +715,81 @@ test.skip('function resetMode', () => {
 /**
  * CSI Pm m
  * Character Attributes (SGR).
+ *
+ * Ps = 0  ⇒  Normal (default), VT100.
+ * Ps = 1  ⇒  Bold, VT100.
+ * Ps = 2  ⇒  Faint, decreased intensity, ECMA-48 2nd.
+ * Ps = 3  ⇒  Italicized, ECMA-48 2nd.
+ * Ps = 4  ⇒  Underlined, VT100.
+ * Ps = 5  ⇒  Blink, VT100. This appears as Bold in X11R6 xterm.
+ * Ps = 7  ⇒  Inverse, VT100.
+ * Ps = 8  ⇒  Invisible, i.e., hidden, ECMA-48 2nd, VT300.
+ * Ps = 9  ⇒  Crossed-out characters, ECMA-48 3rd.
+ * Ps = 2 1  ⇒  Doubly-underlined, ECMA-48 3rd.
+ * Ps = 2 2  ⇒  Normal (neither bold nor faint), ECMA-48 3rd.
+ * Ps = 2 3  ⇒  Not italicized, ECMA-48 3rd.
+ * Ps = 2 4  ⇒  Not underlined, ECMA-48 3rd.
+ * Ps = 2 5  ⇒  Steady (not blinking), ECMA-48 3rd.
+ * Ps = 2 7  ⇒  Positive (not inverse), ECMA-48 3rd.
+ * Ps = 2 8  ⇒  Visible, i.e., not hidden, ECMA-48 3rd, VT300.
+ * Ps = 2 9  ⇒  Not crossed-out, ECMA-48 3rd.
+ * Ps = 3 0  ⇒  Set foreground color to Black.
+ * Ps = 3 1  ⇒  Set foreground color to Red.
+ * Ps = 3 2  ⇒  Set foreground color to Green.
+ * Ps = 3 3  ⇒  Set foreground color to Yellow.
+ * Ps = 3 4  ⇒  Set foreground color to Blue.
+ * Ps = 3 5  ⇒  Set foreground color to Magenta.
+ * Ps = 3 6  ⇒  Set foreground color to Cyan.
+ * Ps = 3 7  ⇒  Set foreground color to White.
+ * Ps = 3 9  ⇒  Set foreground color to default, ECMA-48 3rd.
+ * Ps = 4 0  ⇒  Set background color to Black.
+ * Ps = 4 1  ⇒  Set background color to Red.
+ * Ps = 4 2  ⇒  Set background color to Green.
+ * Ps = 4 3  ⇒  Set background color to Yellow.
+ * Ps = 4 4  ⇒  Set background color to Blue.
+ * Ps = 4 5  ⇒  Set background color to Magenta.
+ * Ps = 4 6  ⇒  Set background color to Cyan.
+ * Ps = 4 7  ⇒  Set background color to White.
+ * Ps = 4 9  ⇒  Set background color to default, ECMA-48 3rd.
  */
 test.skip('function setCharacterAttributes', () => {
-  expect(operations(`\x1B[m`)).toEqual([['setCharacterAttributes']])
-  expect(operations(`\x1B[0m`)).toEqual([['setCharacterAttributes']])
-  expect(operations(`\x1B[1m`)).toEqual([['setCharacterAttributes']])
-  expect(operations(`\x1B[2m`)).toEqual([['setCharacterAttributes']])
-  expect(operations(`\x1B[3m`)).toEqual([['setCharacterAttributes']])
-  expect(operations(`\x1B[4m`)).toEqual([['setCharacterAttributes']])
-  expect(operations(`\x1B[5m`)).toEqual([['setCharacterAttributes']])
-  expect(operations(`\x1B[7m`)).toEqual([['setCharacterAttributes']])
-  expect(operations(`\x1B[8m`)).toEqual([['setCharacterAttributes']])
-  expect(operations(`\x1B[9m`)).toEqual([['setCharacterAttributes']])
-  expect(operations(`\x1B[21m`)).toEqual([['setCharacterAttributes']])
-  expect(operations(`\x1B[22m`)).toEqual([['setCharacterAttributes']])
-  expect(operations(`\x1B[23m`)).toEqual([['setCharacterAttributes']])
-  expect(operations(`\x1B[24m`)).toEqual([['setCharacterAttributes']])
-  expect(operations(`\x1B[25m`)).toEqual([['setCharacterAttributes']])
-  expect(operations(`\x1B[27m`)).toEqual([['setCharacterAttributes']])
-  expect(operations(`\x1B[28m`)).toEqual([['setCharacterAttributes']])
-  expect(operations(`\x1B[29m`)).toEqual([['setCharacterAttributes']])
-  expect(operations(`\x1B[30m`)).toEqual([['setCharacterAttributes']])
-  expect(operations(`\x1B[31m`)).toEqual([['setCharacterAttributes']])
-  expect(operations(`\x1B[32m`)).toEqual([['setCharacterAttributes']])
-  expect(operations(`\x1B[33m`)).toEqual([['setCharacterAttributes']])
-  expect(operations(`\x1B[34m`)).toEqual([['setCharacterAttributes']])
-  expect(operations(`\x1B[35m`)).toEqual([['setCharacterAttributes']])
-  expect(operations(`\x1B[36m`)).toEqual([['setCharacterAttributes']])
-  expect(operations(`\x1B[37m`)).toEqual([['setCharacterAttributes']])
-  expect(operations(`\x1B[38m`)).toEqual([['setCharacterAttributes']])
-  expect(operations(`\x1B[39m`)).toEqual([['setCharacterAttributes']])
-  expect(operations(`\x1B[40m`)).toEqual([['setCharacterAttributes']])
-  expect(operations(`\x1B[41m`)).toEqual([['setCharacterAttributes']])
-  expect(operations(`\x1B[42m`)).toEqual([['setCharacterAttributes']])
-  expect(operations(`\x1B[43m`)).toEqual([['setCharacterAttributes']])
-  expect(operations(`\x1B[44m`)).toEqual([['setCharacterAttributes']])
-  expect(operations(`\x1B[45m`)).toEqual([['setCharacterAttributes']])
-  expect(operations(`\x1B[46m`)).toEqual([['setCharacterAttributes']])
-  expect(operations(`\x1B[47m`)).toEqual([['setCharacterAttributes']])
-  expect(operations(`\x1B[49m`)).toEqual([['setCharacterAttributes']])
+  expect(operations(`\x1B[m`)).toEqual([['setCharacterAttributes', []]])
+  expect(operations(`\x1B[0m`)).toEqual([['setCharacterAttributes', [0]]])
+  expect(operations(`\x1B[1m`)).toEqual([['setCharacterAttributes', [1]]])
+  expect(operations(`\x1B[2m`)).toEqual([['setCharacterAttributes', [2]]])
+  expect(operations(`\x1B[3m`)).toEqual([['setCharacterAttributes', [3]]])
+  expect(operations(`\x1B[4m`)).toEqual([['setCharacterAttributes', [4]]])
+  expect(operations(`\x1B[5m`)).toEqual([['setCharacterAttributes', [5]]])
+  expect(operations(`\x1B[7m`)).toEqual([['setCharacterAttributes', [7]]])
+  expect(operations(`\x1B[8m`)).toEqual([['setCharacterAttributes', [8]]])
+  expect(operations(`\x1B[9m`)).toEqual([['setCharacterAttributes', 9]])
+  expect(operations(`\x1B[21m`)).toEqual([['setCharacterAttributes', [21]]])
+  expect(operations(`\x1B[22m`)).toEqual([['setCharacterAttributes', 22]])
+  expect(operations(`\x1B[23m`)).toEqual([['setCharacterAttributes', [23]]])
+  expect(operations(`\x1B[24m`)).toEqual([['setCharacterAttributes', [24]]])
+  expect(operations(`\x1B[25m`)).toEqual([['setCharacterAttributes', [25]]])
+  expect(operations(`\x1B[27m`)).toEqual([['setCharacterAttributes', [27]]])
+  expect(operations(`\x1B[28m`)).toEqual([['setCharacterAttributes', [28]]])
+  expect(operations(`\x1B[29m`)).toEqual([['setCharacterAttributes', [29]]])
+  expect(operations(`\x1B[30m`)).toEqual([['setCharacterAttributes', [30]]])
+  expect(operations(`\x1B[31m`)).toEqual([['setCharacterAttributes', 31]])
+  expect(operations(`\x1B[32m`)).toEqual([['setCharacterAttributes', [32]]])
+  expect(operations(`\x1B[33m`)).toEqual([['setCharacterAttributes', [33]]])
+  expect(operations(`\x1B[34m`)).toEqual([['setCharacterAttributes', [34]]])
+  expect(operations(`\x1B[35m`)).toEqual([['setCharacterAttributes', [35]]])
+  expect(operations(`\x1B[36m`)).toEqual([['setCharacterAttributes', [36]]])
+  expect(operations(`\x1B[37m`)).toEqual([['setCharacterAttributes', [37]]])
+  expect(operations(`\x1B[38m`)).toEqual([['setCharacterAttributes', [38]]])
+  expect(operations(`\x1B[39m`)).toEqual([['setCharacterAttributes', [39]]])
+  expect(operations(`\x1B[40m`)).toEqual([['setCharacterAttributes', [40]]])
+  expect(operations(`\x1B[41m`)).toEqual([['setCharacterAttributes', [41]]])
+  expect(operations(`\x1B[42m`)).toEqual([['setCharacterAttributes', [42]]])
+  expect(operations(`\x1B[43m`)).toEqual([['setCharacterAttributes', [43]]])
+  expect(operations(`\x1B[44m`)).toEqual([['setCharacterAttributes', [44]]])
+  expect(operations(`\x1B[45m`)).toEqual([['setCharacterAttributes', [45]]])
+  expect(operations(`\x1B[46m`)).toEqual([['setCharacterAttributes', [46]]])
+  expect(operations(`\x1B[47m`)).toEqual([['setCharacterAttributes', [47]]])
+  expect(operations(`\x1B[49m`)).toEqual([['setCharacterAttributes', [49]]])
 })
 
 /**
@@ -748,7 +813,14 @@ test('function softTerminalReset', () => {
  * Ps = 6  ⇒  steady bar, xterm.
  */
 test.skip('function setCursorStyle', () => {
-  expect(operations(``)).toEqual([[]])
+  // TODO there should be no undefined
+  expect(operations(`\x1B[ q`)).toEqual([['setCursorStyle', [undefined]]])
+  expect(operations(`\x1B[1 q`)).toEqual([['setCursorStyle', [1]]])
+  expect(operations(`\x1B[2 q`)).toEqual([['setCursorStyle', [2]]])
+  expect(operations(`\x1B[3 q`)).toEqual([['setCursorStyle', [3]]])
+  expect(operations(`\x1B[4 q`)).toEqual([['setCursorStyle', [4]]])
+  expect(operations(`\x1B[5 q`)).toEqual([['setCursorStyle', [5]]])
+  expect(operations(`\x1B[6 q`)).toEqual([['setCursorStyle', [6]]])
 })
 
 /**
