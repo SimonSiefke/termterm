@@ -49,7 +49,6 @@ const noop_terminal = {
   bell: noop,
   eraseInDisplay: noop,
   eraseInLine: noop,
-  goToHome: noop,
   setCharAttributes: noop,
   cursorUp: noop,
   cursorDown: noop,
@@ -63,6 +62,7 @@ const noop_terminal = {
   setCursor: noop,
   cursorShow: noop,
   cursorHide: noop,
+  cursorPosition: noop,
 }
 
 const fixtureLs = fs

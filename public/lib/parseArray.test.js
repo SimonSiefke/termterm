@@ -19,7 +19,6 @@ const runTest = (
     bell = noop,
     eraseInDisplay = noop,
     eraseInLine = noop,
-    goToHome = noop,
     setCharAttributes = noop,
     cursorUp = noop,
     cursorDown = noop,
@@ -43,7 +42,6 @@ const runTest = (
   const parse = createParse({
     eraseInDisplay,
     eraseInLine,
-    goToHome,
     setCharAttributes,
     cursorUp,
     cursorDown,
@@ -75,7 +73,6 @@ const getOutputLines = (input) => {
     bell: noop,
     eraseInDisplay: noop,
     eraseInLine: noop,
-    goToHome: noop,
     setCharAttributes: noop,
     cursorUp: noop,
     cursorDown: noop,
@@ -102,7 +99,6 @@ const operations = (input) => {
   const terminal = {
     bell: () => calls.push(['bell']),
     eraseInLine: (params) => calls.push(['eraseInLine', params]),
-    goToHome: () => calls.push(['goToHome']),
     setCharAttributes: () => calls.push(['setCharAttributes']),
     cursorUp: (params) => calls.push(['cursorUp', params]),
     cursorDown: (params) => calls.push(['cursorDown', params]),
@@ -117,8 +113,8 @@ const operations = (input) => {
         'setWindowTitle',
         decodeText(array.slice(startIndex, endIndex)),
       ]),
-    setCursor(params) {
-      calls.push(['setCursor', params])
+    cursorPosition(params) {
+      calls.push(['cursorPosition', params])
     },
     cursorHide() {
       calls.push(['cursorHide'])
@@ -167,6 +163,24 @@ const operations = (input) => {
     },
     eraseCharacters(params) {
       calls.push('eraseCharacters', params)
+    },
+    characterPositionAbsolute(params) {
+      calls.push(['characterPositionAbsolute', params])
+    },
+    characterPositionRelative(params) {
+      calls.push(['characterPositionRelative', params])
+    },
+    repeatPrecedingGraphicCharacter(params) {
+      calls.push(['repeatPrecedingGraphicCharacter', params])
+    },
+    sendDeviceAttributesPrimary(params) {
+      calls.push(['sendDeviceAttributesPrimary', params])
+    },
+    sendDeviceAttributesTertiary(params) {
+      calls.push(['sendDeviceAttributesTertiary', params])
+    },
+    linePositionAbsolute(params) {
+      calls.push(['linePositionAbsolute', params])
     },
   }
   const parse = createParse(terminal)
@@ -304,6 +318,16 @@ test('function cursorForwardTabulation', () => {
 })
 
 /**
+ * CSI Ps ; Ps H
+ * Cursor Position [row;column] (default = [1,1]) (CUP).
+ */
+test('function cursorPosition', () => {
+  expect(operations(`\x1B[H`)).toEqual([['cursorPosition', []]])
+  expect(operations(`\x1B[1;1H`)).toEqual([['cursorPosition', [1, 1]]])
+  expect(operations(`\x1B[22;16H`)).toEqual([['cursorPosition', [22, 16]]])
+})
+
+/**
  * CSI Ps J
  * Erase in Display (ED), VT100.
  *
@@ -321,6 +345,23 @@ test('function eraseInDisplay', () => {
 })
 
 /**
+ * CSI ? Ps J
+ * Erase in Display (DECSED), VT220.
+ *
+ * Ps = 0  ⇒  Selective Erase Below (default).
+ * Ps = 1  ⇒  Selective Erase Above.
+ * Ps = 2  ⇒  Selective Erase All.
+ * Ps = 3  ⇒  Selective Erase Saved Lines, xterm.
+ */
+test.skip('function eraseInDisplay (alternative)', () => {
+  expect(operations(`\x1B[?J`)).toEqual([['eraseInDisplay', []]])
+  expect(operations(`\x1B[?0J`)).toEqual([['eraseInDisplay', [0]]])
+  expect(operations(`\x1B[?1J`)).toEqual([['eraseInDisplay', [1]]])
+  expect(operations(`\x1B[?2J`)).toEqual([['eraseInDisplay', [2]]])
+  expect(operations(`\x1B[?3J`)).toEqual([['eraseInDisplay', [3]]])
+})
+
+/**
  * CSI Ps K
  * Erase in Line (EL), VT100.
  *
@@ -333,6 +374,21 @@ test('function eraseInLine', () => {
   expect(operations(`\x1B[0K`)).toEqual([['eraseInLine', [0]]])
   expect(operations(`\x1B[1K`)).toEqual([['eraseInLine', [1]]])
   expect(operations(`\x1B[2K`)).toEqual([['eraseInLine', [2]]])
+})
+
+/**
+ * CSI ? Ps K
+ * Erase in Line (DECSEL), VT220.
+ *
+ * Ps = 0  ⇒  Selective Erase to Right (default).
+ * Ps = 1  ⇒  Selective Erase to Left.
+ * Ps = 2  ⇒  Selective Erase All.
+ */
+test.skip('function eraseInLine (alternative)', () => {
+  expect(operations(`\x1B[?K`)).toEqual([['eraseInLine', []]])
+  expect(operations(`\x1B[?0K`)).toEqual([['eraseInLine', [0]]])
+  expect(operations(`\x1B[?1K`)).toEqual([['eraseInLine', [1]]])
+  expect(operations(`\x1B[?2K`)).toEqual([['eraseInLine', [2]]])
 })
 
 /**
@@ -413,23 +469,158 @@ test.skip('function cursorBackwardTabulation', () => {
 })
 
 /**
+ * CSI Ps ^
+ * Scroll down Ps lines (default = 1) (SD), ECMA-48.
+ * This was a publication error in the original ECMA-48 5th edition (1991) corrected in 2003.
+ */
+test('function scrollDown (alternative)', () => {
+  expect(operations(`\x1B[^`)).toEqual(['scrollDown', []])
+  expect(operations(`\x1B[0^`)).toEqual(['scrollDown', [0]])
+  expect(operations(`\x1B[1^`)).toEqual(['scrollDown', [1]])
+  expect(operations(`\x1B[2^`)).toEqual(['scrollDown', [2]])
+})
+
+/**
+ * CSI Ps `
+ * Character Position Absolute  [column] (default = [row,1])
+ * (HPA).
+ */
+test('function characterPositionAbsolute', () => {
+  expect(operations('\x1B[`')).toEqual([['characterPositionAbsolute', []]])
+  expect(operations('\x1B[0`')).toEqual([['characterPositionAbsolute', [0]]])
+  expect(operations('\x1B[1`')).toEqual([['characterPositionAbsolute', [1]]])
+  expect(operations('\x1B[2`')).toEqual([['characterPositionAbsolute', [2]]])
+})
+
+/**
+ * CSI Ps a
+ * Character Position Relative  [columns] (default = [row,col+1])
+ * (HPR).
+ */
+test('function characterPositionRelative', () => {
+  expect(operations('\x1B[a')).toEqual([['characterPositionRelative', []]])
+  expect(operations('\x1B[0a')).toEqual([['characterPositionRelative', [0]]])
+  expect(operations('\x1B[1a')).toEqual([['characterPositionRelative', [1]]])
+  expect(operations('\x1B[2a')).toEqual([['characterPositionRelative', [2]]])
+})
+
+/**
  * CSI Ps b
  * Repeat the preceding graphic character Ps times (REP).
  */
-test.skip('function repeatPrecedingGraphicCharacter', () => {
-  expect(operations(`\x1B[b`)).toEqual([])
-  expect(operations(`\x1B[1b`)).toEqual([])
-  expect(operations(`\x1B[2b`)).toEqual([])
+test('function repeatPrecedingGraphicCharacter', () => {
+  expect(operations(`\x1B[b`)).toEqual([
+    ['repeatPrecedingGraphicCharacter', []],
+  ])
+  expect(operations(`\x1B[0b`)).toEqual([
+    ['repeatPrecedingGraphicCharacter', [0]],
+  ])
+  expect(operations(`\x1B[1b`)).toEqual([
+    ['repeatPrecedingGraphicCharacter', [1]],
+  ])
+  expect(operations(`\x1B[2b`)).toEqual([
+    ['repeatPrecedingGraphicCharacter', [2]],
+  ])
 })
+
+/**
+ * CSI Ps c
+ * Send Device Attributes (Primary DA).
+ *
+ * Ps = 0  or omitted ⇒  request attributes from terminal.
+ *
+ * The response depends on the decTerminalID resource setting.
+ * ⇒  CSI ? 1 ; 2 c  ("VT100 with Advanced Video Option")
+ * ⇒  CSI ? 1 ; 0 c  ("VT101 with No Options")
+ * ⇒  CSI ? 4 ; 6 c  ("VT132 with Advanced Video and Graphics")
+ * ⇒  CSI ? 6 c  ("VT102")
+ * ⇒  CSI ? 7 c  ("VT131")
+ * ⇒  CSI ? 1 2 ; Ps c  ("VT125")
+ * ⇒  CSI ? 6 2 ; Ps c  ("VT220")
+ * ⇒  CSI ? 6 3 ; Ps c  ("VT320")
+ * ⇒  CSI ? 6 4 ; Ps c  ("VT420")
+ *
+ * The VT100-style response parameters do not mean anything by
+ * themselves.  VT220 (and higher) parameters do, telling the
+ * host what features the terminal supports:
+ *   Ps = 1  ⇒  132-columns.
+ *   Ps = 2  ⇒  Printer.
+ *   Ps = 3  ⇒  ReGIS graphics.
+ *   Ps = 4  ⇒  Sixel graphics.
+ *   Ps = 6  ⇒  Selective erase.
+ *   Ps = 8  ⇒  User-defined keys.
+ *   Ps = 9  ⇒  National Replacement Character sets.
+ *   Ps = 1 5  ⇒  Technical characters.
+ *   Ps = 1 6  ⇒  Locator port.
+ *   Ps = 1 7  ⇒  Terminal state interrogation.
+ *   Ps = 1 8  ⇒  User windows.
+ *   Ps = 2 1  ⇒  Horizontal scrolling.
+ *   Ps = 2 2  ⇒  ANSI color, e.g., VT525.
+ *   Ps = 2 8  ⇒  Rectangular editing.
+ *   Ps = 2 9  ⇒  ANSI text locator (i.e., DEC Locator mode).
+ *
+ * XTerm supports part of the User windows feature, providing a
+ * single page (which corresponds to its visible window).  Rather
+ * than resizing the font to change the number of lines/columns
+ * in a fixed-size display, xterm uses the window extension
+ * controls (DECSNLS, DECSCPP, DECSLPP) to adjust its visible
+ * window's size.  The "cursor coupling" controls (DECHCCM,
+ * DECPCCM, DECVCCM) are ignored.
+ */
+test('function sendDeviceAttributesPrimary', () => {
+  expect(operations(`\x1B[c`)).toEqual([['sendDeviceAttributesPrimary', []]])
+  expect(operations(`\x1B[0c`)).toEqual([['sendDeviceAttributesPrimary', [0]]])
+})
+
+/**
+ * CSI = Ps c
+ * Send Device Attributes (Tertiary DA).
+ *   Ps = 0  ⇒  report Terminal Unit ID (default), VT400.  XTerm
+ *              uses zeros for the site code and serial number in its DECRPTUI
+ *              response.
+ */
+test.skip('function sendDeviceAttributesTertiary', () => {
+  expect(operations(`\x1B[=0c`)).toEqual([['sendDeviceAttributesTertiary', []]])
+})
+
+/**
+ * CSI > Ps c
+ *
+ * Send Device Attributes (Secondary DA).
+ *   Ps = 0  or omitted ⇒  request the terminal's identification
+ * code.  The response depends on the decTerminalID resource
+ * setting.  It should apply only to VT220 and up, but xterm
+ * extends this to VT100.
+ *   ⇒  CSI  > Pp ; Pv ; Pc c
+ * where Pp denotes the terminal type
+ *   Pp = 0  ⇒  "VT100".
+ *   Pp = 1  ⇒  "VT220".
+ *   Pp = 2  ⇒  "VT240" or "VT241".
+ *   Pp = 1 8  ⇒  "VT330".
+ *   Pp = 1 9  ⇒  "VT340".
+ *   Pp = 2 4  ⇒  "VT320".
+ *   Pp = 3 2  ⇒  "VT382".
+ *   Pp = 4 1  ⇒  "VT420".
+ *   Pp = 6 1  ⇒  "VT510".
+ *   Pp = 6 4  ⇒  "VT520".
+ *   Pp = 6 5  ⇒  "VT525".
+ *
+ * and Pv is the firmware version (for xterm, this was originally
+ * the XFree86 patch number, starting with 95).  In a DEC
+ * terminal, Pc indicates the ROM cartridge registration number
+ * and is always zero.
+ */
+test.skip('function sendDeviceAttributesSecondary', () => {})
 
 /**
  * CSI Ps d
  * Line Position Absolute  [row] (default = [1,column]) (VPA).
  */
-test.skip('function linePositionAbsolute', () => {
-  expect(operations(`\x1B[d`)).toEqual([['linePositionAbsolute']])
-  expect(operations(`\x1B[1d`)).toEqual([['linePositionAbsolute']])
-  expect(operations(`\x1B[2d`)).toEqual([['linePositionAbsolute']])
+test('function linePositionAbsolute', () => {
+  expect(operations(`\x1B[d`)).toEqual([['linePositionAbsolute', []]])
+  expect(operations(`\x1B[0d`)).toEqual([['linePositionAbsolute', [0]]])
+  expect(operations(`\x1B[1d`)).toEqual([['linePositionAbsolute', [1]]])
+  expect(operations(`\x1B[2d`)).toEqual([['linePositionAbsolute', [2]]])
 })
 
 /**
@@ -602,12 +793,6 @@ test('function - setCharAttributes with white background', () => {
   expect(operations(`\x1B[0;7m^C`)).toEqual([['setCharAttributes'], ['print']])
 })
 
-test('function - goToHome', () => {
-  const goToHome = jest.fn()
-  runTest('\u001b[H', { goToHome })
-  expect(goToHome).toHaveBeenCalledTimes(1)
-})
-
 test('function - eraseInLine', () => {
   const eraseInLine = jest.fn()
   runTest('\u001b[K', { eraseInLine })
@@ -696,10 +881,6 @@ test('function - carriage return', () => {
   const carriageReturn = jest.fn()
   runTest('\r', { carriageReturn })
   expect(carriageReturn).toHaveBeenCalledTimes(1)
-})
-
-test('function - setCursor', () => {
-  expect(operations(`\x1B[22;16H`)).toEqual([['setCursor', [22, 16]]])
 })
 
 // test.only('function - newline 2', () => {

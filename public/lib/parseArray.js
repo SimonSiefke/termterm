@@ -14,12 +14,12 @@ const State = {
   AfterCsiAfterQuestionMarkAfter2: 'AfterCsiAfterQuestionMarkAfter2',
   AfterCsiAfterQuestionMarkAfter25: 'AfterCsiAfterQuestionMarkAfter25',
   AfterCsiAfterExclamationMark: 'AfterCsiAfterExclamationMark',
+  AfterCsiAfterEqualSign: 'AfterCsiAfterEqualSign',
 }
 
 export const createParse = ({
   eraseInDisplay,
   eraseInLine,
-  goToHome,
   setCharAttributes,
   bell,
   cursorUp,
@@ -43,7 +43,7 @@ export const createParse = ({
   carriageReturn,
   deleteCharacters,
   setWindowTitle,
-  setCursor,
+  cursorPosition,
   cursorHide,
   cursorShow,
   softTerminalReset,
@@ -57,6 +57,12 @@ export const createParse = ({
   scrollUp,
   scrollDown,
   eraseCharacters,
+  characterPositionAbsolute,
+  characterPositionRelative,
+  repeatPrecedingGraphicCharacter,
+  sendDeviceAttributesPrimary,
+  sendDeviceAttributesTertiary,
+  linePositionAbsolute,
 }) => {
   let state = State.TopLevelContent
   let i = 0
@@ -454,6 +460,10 @@ export const createParse = ({
               state = State.AfterCsiAfterQuestionMark
               i++
               break
+            case /* = */ 64:
+              state = State.AfterCsiAfterEqualSign
+              i++
+              break
             case /* A */ 65:
               params = []
               cursorUp(params)
@@ -497,7 +507,8 @@ export const createParse = ({
               i++
               break
             case /* H */ 72:
-              goToHome()
+              params = []
+              cursorPosition(params)
               state = State.TopLevelContent
               i++
               break
@@ -561,6 +572,42 @@ export const createParse = ({
               state = State.TopLevelContent
               i++
               break
+            case /* ^ */ 94:
+              params = []
+              scrollDown(params)
+              state = State.TopLevelContent
+              i++
+              break
+            case /* ` */ 96:
+              params = []
+              characterPositionAbsolute(params)
+              state = State.TopLevelContent
+              i++
+              break
+            case /* a */ 97:
+              params = []
+              characterPositionRelative(params)
+              state = State.TopLevelContent
+              i++
+              break
+            case /* b */ 98:
+              params = []
+              repeatPrecedingGraphicCharacter(params)
+              state = State.TopLevelContent
+              i++
+              break
+            case /* c */ 99:
+              params = []
+              sendDeviceAttributesPrimary(params)
+              state = State.TopLevelContent
+              i++
+              break
+            case /* d */ 100:
+              params = []
+              linePositionAbsolute(params)
+              state = State.TopLevelContent
+              i++
+              break
             case /* f */ 102:
               goToHome()
               state = State.TopLevelContent
@@ -583,6 +630,19 @@ export const createParse = ({
           break
         case State.AfterEscape3:
           switch (array[i]) {
+            case /* 0 */ 48:
+            case /* 1 */ 49:
+            case /* 2 */ 50:
+            case /* 3 */ 51:
+            case /* 4 */ 52:
+            case /* 5 */ 53:
+            case /* 6 */ 54:
+            case /* 7 */ 55:
+            case /* 8 */ 56:
+            case /* 9 */ 57:
+              currentParam = currentParam * 10 + array[i] - 48
+              i++
+              break
             case /* ; */ 59:
               params.push(currentParam)
               state = State.AfterEscape3AfterSemicolon
@@ -690,20 +750,42 @@ export const createParse = ({
               state = State.TopLevelContent
               i++
               break
-            case /* 0 */ 48:
-            case /* 1 */ 49:
-            case /* 2 */ 50:
-            case /* 3 */ 51:
-            case /* 4 */ 52:
-            case /* 5 */ 53:
-            case /* 6 */ 54:
-            case /* 7 */ 55:
-            case /* 8 */ 56:
-            case /* 9 */ 57:
-              currentParam = currentParam * 10 + array[i] - 48
+            case /* ^ */ 94:
+              params.push(currentParam)
+              scrollDown(params)
+              state = State.TopLevelContent
               i++
               break
-
+            case /* ` */ 96:
+              params.push(currentParam)
+              characterPositionAbsolute(params)
+              state = State.TopLevelContent
+              i++
+              break
+            case /* a */ 97:
+              params.push(currentParam)
+              characterPositionRelative(params)
+              state = State.TopLevelContent
+              i++
+              break
+            case /* b */ 98:
+              params.push(currentParam)
+              repeatPrecedingGraphicCharacter(params)
+              state = State.TopLevelContent
+              i++
+              break
+            case /* c */ 99:
+              params.push(currentParam)
+              sendDeviceAttributesPrimary(params)
+              state = State.TopLevelContent
+              i++
+              break
+            case /* d */ 100:
+              params.push(currentParam)
+              linePositionAbsolute(params)
+              state = State.TopLevelContent
+              i++
+              break
             case /* m */ 109:
               params
               setCharAttributes([currentParam])
@@ -761,7 +843,7 @@ export const createParse = ({
               break
             case /* H */ 72:
               params.push(currentParam)
-              setCursor(params)
+              cursorPosition(params)
               state = State.TopLevelContent
               i++
               break
@@ -856,10 +938,6 @@ const eraseInLine = () => {
   console.log('erase to end of line')
 }
 
-const goToHome = () => {
-  console.log('go to home')
-}
-
 const setCharAttributes = () => {
   console.log('set char attributes')
 }
@@ -914,7 +992,7 @@ const encodeString = (input) => {
   return new Uint8Array(Buffer.from(input, 'utf-8'))
 }
 
-const setCursor = (params) => {
+const cursorPosition = (params) => {
   console.log(params)
 }
 
@@ -942,7 +1020,6 @@ const cursorNextLine = () => {
 // createParse({
 //   eraseInDisplay,
 //   eraseInLine,
-//   goToHome,
 //   setCharAttributes,
 //   cursorUp,
 //   cursorDown,
@@ -956,7 +1033,7 @@ const cursorNextLine = () => {
 //   carriageReturn,
 //   lineFeed,
 //   setWindowTitle,
-//   setCursor,
+//   cursorPosition,
 //   cursorHide,
 //   cursorNextLine,
 // })(array) //?

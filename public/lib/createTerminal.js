@@ -72,9 +72,6 @@ export const createTerminal = (
   }
 
   const callbackFns = {
-    goToHome() {
-      console.log('go to home')
-    },
     eraseInLine() {
       const y = bufferYEnd + cursorYRelative
       const x = COLS + cursorXRelative
@@ -158,7 +155,7 @@ export const createTerminal = (
       cursorXRelative = -COLS
     },
     setWindowTitle,
-    setCursor(params) {
+    cursorPosition(params) {
       if (params.length === 2) {
         const row = params[0]
         const column = params[1]
