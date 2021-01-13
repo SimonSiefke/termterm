@@ -118,3 +118,7 @@ for code in {0..255}
 <!-- TODO implement DECBKM (whatever that is) https://github.com/xtermjs/xterm.js/issues/3041 -->
 
 <!-- TODO test with cal, less -->
+
+<!-- TODO parseArray speed was at 8.07ms https://github.com/SimonSiefke/termterm/commit/56e67ccf70f86f1fb0bcb75565c2b4c94d803329
+now at 12-13ms https://github.com/SimonSiefke/termterm/commit/d270d0e52751962fe3166a8ed4c8145eaeef7e22
+ -->
