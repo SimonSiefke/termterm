@@ -33,7 +33,7 @@ const createHandleData = (webSocket, delay) => {
     }
   }
   const sendBuffer = (data) => {
-    // console.log({ data: data.toString() })
+    console.log({ data: data.toString() })
     switch (state) {
       case 'default':
         webSocket.send(data)

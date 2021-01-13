@@ -80,7 +80,7 @@ export const createTerminal = (
       const x = COLS + cursorXRelative
       offsets[y] = x
     },
-    eraseInDisplay2() {
+    eraseInDisplay() {
       offsets.fill(0)
       cursorYRelative = -ROWS + 1
       cursorXRelative = -COLS

@@ -47,7 +47,7 @@ const test_terminal = {
 
 const noop_terminal = {
   bell: noop,
-  eraseInDisplay2: noop,
+  eraseInDisplay: noop,
   eraseToEndOfLine: noop,
   goToHome: noop,
   setCharAttributes: noop,

@@ -13,10 +13,11 @@ const State = {
   AfterCsiAfterQuestionMark: 'AfterCsiAfterQuestionMark',
   AfterCsiAfterQuestionMarkAfter2: 'AfterCsiAfterQuestionMarkAfter2',
   AfterCsiAfterQuestionMarkAfter25: 'AfterCsiAfterQuestionMarkAfter25',
+  AfterCsiAfterExclamationMark: 'AfterCsiAfterExclamationMark',
 }
 
 export const createParse = ({
-  eraseInDisplay2,
+  eraseInDisplay,
   eraseToEndOfLine,
   goToHome,
   setCharAttributes,
@@ -40,11 +41,16 @@ export const createParse = ({
   lineFeed,
   newline,
   carriageReturn,
-  deleteChars,
+  deleteCharacters,
   setWindowTitle,
   setCursor,
   cursorHide,
   cursorShow,
+  softTerminalReset,
+  cursorNextLine,
+  cursorPrecedingLine,
+  cursorCharacterAbsolute,
+  cursorForwardTabulation,
 }) => {
   let state = State.TopLevelContent
   let i = 0
@@ -57,7 +63,6 @@ export const createParse = ({
     printStartIndex = -1
 
     while (i < array.length) {
-      state
       switch (state) {
         case State.TopLevelContent:
           middle: switch (array[i]) {
@@ -420,8 +425,26 @@ export const createParse = ({
           }
           break
         case State.Csi:
-          // console.log('csi')
           switch (array[i]) {
+            case /* ! */ 33:
+              state = State.AfterCsiAfterExclamationMark
+              i++
+              break
+            case /* 0 */ 48:
+            case /* 1 */ 49:
+            case /* 2 */ 50:
+            case /* 3 */ 51:
+            case /* 4 */ 52:
+            case /* 5 */ 53:
+            case /* 6 */ 54:
+            case /* 7 */ 55:
+            case /* 8 */ 56:
+            case /* 9 */ 57:
+              params = []
+              currentParam = array[i] - 48
+              state = State.AfterEscape3
+              i++
+              break
             case /* ? */ 63:
               state = State.AfterCsiAfterQuestionMark
               i++
@@ -446,13 +469,38 @@ export const createParse = ({
               state = State.TopLevelContent
               i++
               break
+            case /* E */ 69:
+              cursorNextLine()
+              state = State.TopLevelContent
+              i++
+              break
+            case /* F */ 70:
+              cursorPrecedingLine()
+              state = State.TopLevelContent
+              i++
+              break
+            case /* G */ 71:
+              cursorCharacterAbsolute()
+              state = State.TopLevelContent
+              i++
+              break
             case /* H */ 72:
               goToHome()
               state = State.TopLevelContent
               i++
               break
+            case /* I */ 73:
+              cursorForwardTabulation()
+              state = State.TopLevelContent
+              i++
+              break
+            case /* J */ 74:
+              eraseInDisplay(params)
+              state = State.TopLevelContent
+              i++
+              break
             case /* P */ 80:
-              deleteChars(1)
+              deleteCharacters(1)
               state = State.TopLevelContent
               i++
               break
@@ -471,19 +519,9 @@ export const createParse = ({
               state = State.TopLevelContent
               i++
               break
-            case /* 0 */ 48:
-            case /* 1 */ 49:
-            case /* 2 */ 50:
-            case /* 3 */ 51:
-            case /* 4 */ 52:
-            case /* 5 */ 53:
-            case /* 6 */ 54:
-            case /* 7 */ 55:
-            case /* 8 */ 56:
-            case /* 9 */ 57:
-              params = []
-              currentParam = array[i] - 48
-              state = State.AfterEscape3
+            case /* u */ 117:
+              restoreCursor()
+              state = State.TopLevelContent
               i++
               break
             default:
@@ -519,12 +557,13 @@ export const createParse = ({
               i++
               break
             case /* J */ 74:
-              eraseInDisplay2()
+              params.push(currentParam)
+              eraseInDisplay(params)
               state = State.TopLevelContent
               i++
               break
             case /* P */ 80:
-              deleteChars(1)
+              deleteCharacters(1)
               state = State.TopLevelContent
               i++
               break
@@ -659,6 +698,18 @@ export const createParse = ({
               break
           }
           break
+        case State.AfterCsiAfterExclamationMark:
+          switch (array[i]) {
+            case /* p */ 112:
+              softTerminalReset()
+              i++
+              state = State.TopLevelContent
+              break
+            default:
+              i++
+              break
+          }
+          break
         default:
           i++
           console.warn('invalid state')
@@ -673,8 +724,9 @@ export const createParse = ({
   return parse
 }
 
-const eraseInDisplay2 = () => {
-  console.log('erase in display 2')
+const eraseInDisplay = (params) => {
+  console.log('erase in display')
+  console.log(params)
 }
 
 const eraseToEndOfLine = () => {
@@ -756,12 +808,16 @@ const print = (array, startIndex, endIndex) => {
 
 const lineFeed = () => {}
 
-// const input = '\x1B[?25l'
+const cursorNextLine = () => {
+  console.log('cursorNextLine')
+}
+
+// const input = '\x1B[3J'
 
 // const array = encodeString(input)
 
 // createParse({
-//   eraseInDisplay2,
+//   eraseInDisplay,
 //   eraseToEndOfLine,
 //   goToHome,
 //   setCharAttributes,
@@ -779,6 +835,7 @@ const lineFeed = () => {}
 //   setWindowTitle,
 //   setCursor,
 //   cursorHide,
+//   cursorNextLine,
 // })(array) //?
 
 // output
