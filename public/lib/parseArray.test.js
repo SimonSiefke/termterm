@@ -104,10 +104,10 @@ const operations = (input) => {
     eraseToEndOfLine: () => calls.push(['eraseToEndOfLine']),
     goToHome: () => calls.push(['goToHome']),
     setCharAttributes: () => calls.push(['setCharAttributes']),
-    cursorUp: () => calls.push(['cursorUp']),
-    cursorDown: () => calls.push(['cursorDown']),
-    cursorRight: () => calls.push(['cursorRight']),
-    cursorLeft: () => calls.push(['cursorLeft']),
+    cursorUp: (params) => calls.push(['cursorUp', params]),
+    cursorDown: (params) => calls.push(['cursorDown', params]),
+    cursorRight: (params) => calls.push(['cursorRight', params]),
+    cursorLeft: (params) => calls.push(['cursorLeft', params]),
     backspace: () => calls.push(['backspace']),
     print: (startIndex, endIndex) => calls.push(['print']),
     lineFeed: () => calls.push(['lineFeed']),
@@ -135,11 +135,11 @@ const operations = (input) => {
     softTerminalReset() {
       calls.push(['softTerminalReset'])
     },
-    cursorNextLine() {
-      calls.push(['cursorNextLine'])
+    cursorNextLine(params) {
+      calls.push(['cursorNextLine', params])
     },
-    cursorPrecedingLine() {
-      calls.push(['cursorPrecedingLine'])
+    cursorPrecedingLine(params) {
+      calls.push(['cursorPrecedingLine', params])
     },
     cursorCharacterAbsolute() {
       calls.push(['cursorCharacterAbsolute'])
@@ -173,25 +173,19 @@ test('function - bell (with text)', () => {
  * Cursor Up Ps Times (default = 1) (CUU).
  */
 test('function - cursorUp', () => {
-  const cursorUp = jest.fn()
-  runTest('\u001b[A', { cursorUp })
-  expect(cursorUp).toHaveBeenCalledTimes(1)
-})
-
-test('function - cursorUp (with text)', () => {
-  const lines = getOutputLines('sample \u001b[A text')
-  expect(lines).toEqual(['sample  text'])
-})
-
-test('function - cursorUp (multiple)', () => {
-  const cursorUp = jest.fn()
-  runTest('\u001b[2A', { cursorUp })
-  expect(cursorUp).toHaveBeenCalledTimes(1)
-})
-
-test('function - cursorUp (multiple, with text)', () => {
-  const lines = getOutputLines('sample \u001b[2A text')
-  expect(lines).toEqual(['sample  text'])
+  expect(operations('\u001b[A')).toEqual([['cursorUp', []]])
+  expect(operations('\u001b[1A')).toEqual([['cursorUp', [1]]])
+  expect(operations('\u001b[2A')).toEqual([['cursorUp', [2]]])
+  expect(operations(`sample \u001b[A text`)).toEqual([
+    ['print'],
+    ['cursorUp', []],
+    ['print'],
+  ])
+  expect(operations(`sample \u001b[2A text`)).toEqual([
+    ['print'],
+    ['cursorUp', [2]],
+    ['print'],
+  ])
 })
 
 /**
@@ -199,25 +193,19 @@ test('function - cursorUp (multiple, with text)', () => {
  * Cursor Down Ps Times (default = 1) (CUD).
  */
 test('function - cursorDown', () => {
-  const cursorDown = jest.fn()
-  runTest('\u001b[B', { cursorDown })
-  expect(cursorDown).toHaveBeenCalledTimes(1)
-})
-
-test('function - cursorDown (with text)', () => {
-  const lines = getOutputLines('sample \u001b[B text')
-  expect(lines).toEqual(['sample  text'])
-})
-
-test('function - cursorDown (multiple)', () => {
-  const cursorDown = jest.fn()
-  runTest('\u001b[2B', { cursorDown })
-  expect(cursorDown).toHaveBeenCalledTimes(1)
-})
-
-test('function - cursorDown (multiple, with text)', () => {
-  const lines = getOutputLines('sample \u001b[2B text')
-  expect(lines).toEqual(['sample  text'])
+  expect(operations(`\u001b[B`)).toEqual([['cursorDown', []]])
+  expect(operations(`\u001b[1B`)).toEqual([['cursorDown', [1]]])
+  expect(operations(`\u001b[2B`)).toEqual([['cursorDown', [2]]])
+  expect(operations(`sample \u001b[B text`)).toEqual([
+    ['print'],
+    ['cursorDown', []],
+    ['print'],
+  ])
+  expect(operations(`sample \u001b[2B text`)).toEqual([
+    ['print'],
+    ['cursorDown', [2]],
+    ['print'],
+  ])
 })
 
 /**
@@ -225,25 +213,19 @@ test('function - cursorDown (multiple, with text)', () => {
  * Cursor Forward Ps Times (default = 1) (CUF).
  */
 test('function - cursorRight', () => {
-  const cursorRight = jest.fn()
-  runTest('\u001b[C', { cursorRight })
-  expect(cursorRight).toHaveBeenCalledTimes(1)
-})
-
-test('function - cursorRight (with text)', () => {
-  const lines = getOutputLines('sample \u001b[C text')
-  expect(lines).toEqual(['sample  text'])
-})
-
-test('function - cursorRight (multiple)', () => {
-  const cursorRight = jest.fn()
-  runTest('\u001b[2C', { cursorRight })
-  expect(cursorRight).toHaveBeenCalledTimes(1)
-})
-
-test('function - cursorRight (multiple, with text)', () => {
-  const lines = getOutputLines('sample \u001b[2C text')
-  expect(lines).toEqual(['sample  text'])
+  expect(operations(`\u001b[C`)).toEqual([['cursorRight', []]])
+  expect(operations(`\u001b[1C`)).toEqual([['cursorRight', [1]]])
+  expect(operations(`\u001b[2C`)).toEqual([['cursorRight', [2]]])
+  expect(operations(`sample \u001b[C text`)).toEqual([
+    ['print'],
+    ['cursorRight', []],
+    ['print'],
+  ])
+  expect(operations(`sample \u001b[2C text`)).toEqual([
+    ['print'],
+    ['cursorRight', [2]],
+    ['print'],
+  ])
 })
 
 /**
@@ -251,25 +233,19 @@ test('function - cursorRight (multiple, with text)', () => {
  * Cursor Backward Ps Times (default = 1) (CUB).
  */
 test('function - cursorLeft', () => {
-  const cursorLeft = jest.fn()
-  runTest('\u001b[D', { cursorLeft })
-  expect(cursorLeft).toHaveBeenCalledTimes(1)
-})
-
-test('function - cursorLeft (with text)', () => {
-  const lines = getOutputLines('sample \u001b[D text')
-  expect(lines).toEqual(['sample  text'])
-})
-
-test('function - cursorLeft (multiple)', () => {
-  const cursorLeft = jest.fn()
-  runTest('\u001b[2D', { cursorLeft })
-  expect(cursorLeft).toHaveBeenCalledTimes(1)
-})
-
-test('function - cursorLeft (multiple, with text)', () => {
-  const lines = getOutputLines('sample \u001b[2D text')
-  expect(lines).toEqual(['sample  text'])
+  expect(operations(`\u001b[D`)).toEqual([['cursorLeft', []]])
+  expect(operations(`\u001b[1D`)).toEqual([['cursorLeft', [1]]])
+  expect(operations(`\u001b[2D`)).toEqual([['cursorLeft', [2]]])
+  expect(operations(`sample \u001b[D text`)).toEqual([
+    ['print'],
+    ['cursorLeft', []],
+    ['print'],
+  ])
+  expect(operations(`sample \u001b[2D text`)).toEqual([
+    ['print'],
+    ['cursorLeft', [2]],
+    ['print'],
+  ])
 })
 
 /**
@@ -277,10 +253,9 @@ test('function - cursorLeft (multiple, with text)', () => {
  * Cursor Next Line Ps Times (default = 1) (CNL).
  */
 test('function cursorNextLine', () => {
-  expect(operations(`\x1B[E`)).toEqual([['cursorNextLine']])
-  // TODO
-  // expect(operations(`\x1B[1E`)).toEqual([['cursorNextLine']])
-  // expect(operations(`\x1B[2E`)).toEqual([['cursorNextLine']])
+  expect(operations(`\x1B[E`)).toEqual([['cursorNextLine', []]])
+  expect(operations(`\x1B[1E`)).toEqual([['cursorNextLine', [1]]])
+  expect(operations(`\x1B[2E`)).toEqual([['cursorNextLine', [2]]])
 })
 
 /**
@@ -288,10 +263,9 @@ test('function cursorNextLine', () => {
  * Cursor Preceding Line Ps Times (default = 1) (CPL).
  */
 test('function cursorPrecedingLine', () => {
-  expect(operations(`\x1B[F`)).toEqual([['cursorPrecedingLine']])
-  // TODO
-  // expect(operations(`\x1B[1F`)).toEqual([['cursorPrecedingLine']])
-  // expect(operations(`\x1B[2F`)).toEqual([['cursorPrecedingLine']])
+  expect(operations(`\x1B[F`)).toEqual([['cursorPrecedingLine', []]])
+  expect(operations(`\x1B[1F`)).toEqual([['cursorPrecedingLine', [1]]])
+  expect(operations(`\x1B[2F`)).toEqual([['cursorPrecedingLine', [2]]])
 })
 
 /**

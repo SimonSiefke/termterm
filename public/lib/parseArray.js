@@ -450,32 +450,38 @@ export const createParse = ({
               i++
               break
             case /* A */ 65:
-              cursorUp(1)
+              params = []
+              cursorUp(params)
               state = State.TopLevelContent
               i++
               break
             case /* B */ 66:
-              cursorDown(1)
+              params = []
+              cursorDown(params)
               state = State.TopLevelContent
               i++
               break
             case /* C */ 67:
-              cursorRight(1)
+              params = []
+              cursorRight(params)
               state = State.TopLevelContent
               i++
               break
             case /* D */ 68:
-              cursorLeft(1)
+              params = []
+              cursorLeft(params)
               state = State.TopLevelContent
               i++
               break
             case /* E */ 69:
-              cursorNextLine()
+              params = []
+              cursorNextLine(params)
               state = State.TopLevelContent
               i++
               break
             case /* F */ 70:
-              cursorPrecedingLine()
+              params = []
+              cursorPrecedingLine(params)
               state = State.TopLevelContent
               i++
               break
@@ -537,22 +543,38 @@ export const createParse = ({
               i++
               break
             case /* A */ 65:
-              cursorUp(1)
+              params.push(currentParam)
+              cursorUp(params)
               state = State.TopLevelContent
               i++
               break
             case /* B */ 66:
-              cursorDown(1)
+              params.push(currentParam)
+              cursorDown(params)
               state = State.TopLevelContent
               i++
               break
             case /* C */ 67:
-              cursorRight(1)
+              params.push(currentParam)
+              cursorRight(params)
               state = State.TopLevelContent
               i++
               break
             case /* D */ 68:
-              cursorLeft(1)
+              params.push(currentParam)
+              cursorLeft(params)
+              state = State.TopLevelContent
+              i++
+              break
+            case /* E */ 69:
+              params.push(currentParam)
+              cursorNextLine(params)
+              state = State.TopLevelContent
+              i++
+              break
+            case /* F */ 70:
+              params.push(currentParam)
+              cursorPrecedingLine(params)
               state = State.TopLevelContent
               i++
               break
