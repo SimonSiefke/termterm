@@ -172,6 +172,8 @@ export const createTerminal = (
     cursorHide() {
       cursorVisible = false
     },
+    insertLines() {},
+    deleteLines() {},
   }
 
   const parse = createParse(callbackFns)

@@ -150,9 +150,14 @@ const operations = (input) => {
     cursorBackwardTabulation(params) {
       calls.push(['cursorBackwardTabulation', params])
     },
-
     eraseInDisplay(params) {
       calls.push(['eraseInDisplay', params])
+    },
+    insertLines(params) {
+      calls.push(['insertLines', params])
+    },
+    deleteLines(params) {
+      calls.push(['deleteLines', params])
     },
   }
   const parse = createParse(terminal)
@@ -160,17 +165,6 @@ const operations = (input) => {
   parse(array)
   return calls
 }
-
-test('function - bell', () => {
-  const bell = jest.fn()
-  runTest('\u0007', { bell })
-  expect(bell).toHaveBeenCalledTimes(1)
-})
-
-test('function - bell (with text)', () => {
-  const lines = getOutputLines('sample \u0007 text')
-  expect(lines).toEqual(['sample  text'])
-})
 
 /**
  * CSI Ps A
@@ -336,20 +330,22 @@ test('function eraseInLine', () => {
  * CSI Ps L
  * Insert Ps Line(s) (default = 1) (IL).
  */
-test.skip('function insertLines', () => {
-  expect(operations(`\x1B[L`)).toEqual([['insertLines']])
-  expect(operations(`\x1B[1L`)).toEqual([['insertLines']])
-  expect(operations(`\x1B[2L`)).toEqual([['insertLines']])
+test('function insertLines', () => {
+  expect(operations(`\x1B[L`)).toEqual([['insertLines', []]])
+  expect(operations(`\x1B[0L`)).toEqual([['insertLines', [0]]])
+  expect(operations(`\x1B[1L`)).toEqual([['insertLines', [1]]])
+  expect(operations(`\x1B[2L`)).toEqual([['insertLines', [2]]])
 })
 
 /**
  * CSI Ps M
  * Delete Ps Line(s) (default = 1) (DL).
  */
-test.skip('function deleteLines', () => {
-  expect(operations(`\x1B[M`)).toEqual([['deleteLines']])
-  expect(operations(`\x1B[1M`)).toEqual([['deleteLines']])
-  expect(operations(`\x1B[2M`)).toEqual([['deleteLines']])
+test('function deleteLines', () => {
+  expect(operations(`\x1B[M`)).toEqual([['deleteLines', []]])
+  expect(operations(`\x1B[0M`)).toEqual([['deleteLines', [0]]])
+  expect(operations(`\x1B[1M`)).toEqual([['deleteLines', [1]]])
+  expect(operations(`\x1B[2M`)).toEqual([['deleteLines', [2]]])
 })
 
 /**
@@ -1033,4 +1029,13 @@ test.skip('special', () => {
 
 test.skip('special', () => {
   expect(operations(`\x1B[?1l`)).toEqual([[]])
+})
+
+test('function - bell', () => {
+  expect(operations(`\u0007`)).toEqual([['bell']])
+  expect(operations(`sample \u0007 text`)).toEqual([
+    ['print'],
+    ['bell'],
+    ['print'],
+  ])
 })

@@ -52,6 +52,8 @@ export const createParse = ({
   cursorCharacterAbsolute,
   cursorForwardTabulation,
   cursorBackwardTabulation,
+  insertLines,
+  deleteLines,
 }) => {
   let state = State.TopLevelContent
   let i = 0
@@ -514,6 +516,18 @@ export const createParse = ({
               state = State.TopLevelContent
               i++
               break
+            case /* L */ 76:
+              params = []
+              insertLines(params)
+              state = State.TopLevelContent
+              i++
+              break
+            case /* M */ 77:
+              params = []
+              deleteLines(params)
+              state = State.TopLevelContent
+              i++
+              break
             case /* P */ 80:
               deleteCharacters(1)
               state = State.TopLevelContent
@@ -609,6 +623,18 @@ export const createParse = ({
             case /* K */ 75:
               params.push(currentParam)
               eraseInLine(params)
+              state = State.TopLevelContent
+              i++
+              break
+            case /* L */ 76:
+              params.push(currentParam)
+              insertLines(params)
+              state = State.TopLevelContent
+              i++
+              break
+            case /* M */ 77:
+              params.push(currentParam)
+              deleteLines(params)
               state = State.TopLevelContent
               i++
               break
