@@ -75,7 +75,7 @@ export const createTerminal = (
     goToHome() {
       console.log('go to home')
     },
-    eraseToEndOfLine() {
+    eraseInLine() {
       const y = bufferYEnd + cursorYRelative
       const x = COLS + cursorXRelative
       offsets[y] = x

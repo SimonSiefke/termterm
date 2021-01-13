@@ -18,7 +18,7 @@ const State = {
 
 export const createParse = ({
   eraseInDisplay,
-  eraseToEndOfLine,
+  eraseInLine,
   goToHome,
   setCharAttributes,
   bell,
@@ -51,6 +51,7 @@ export const createParse = ({
   cursorPrecedingLine,
   cursorCharacterAbsolute,
   cursorForwardTabulation,
+  cursorBackwardTabulation,
 }) => {
   let state = State.TopLevelContent
   let i = 0
@@ -123,7 +124,6 @@ export const createParse = ({
                     state = State.TopLevelContent
                     i++
                     break middle
-
                   default:
                     // console.log(String.fromCharCode(array[i]) === '\r')
                     // console.log(String.fromCharCode(array[i]) === '\n')
@@ -486,7 +486,8 @@ export const createParse = ({
               i++
               break
             case /* G */ 71:
-              cursorCharacterAbsolute()
+              params = []
+              cursorCharacterAbsolute(params)
               state = State.TopLevelContent
               i++
               break
@@ -496,17 +497,31 @@ export const createParse = ({
               i++
               break
             case /* I */ 73:
-              cursorForwardTabulation()
+              params = []
+              cursorForwardTabulation(params)
               state = State.TopLevelContent
               i++
               break
             case /* J */ 74:
+              params = []
               eraseInDisplay(params)
+              state = State.TopLevelContent
+              i++
+              break
+            case /* K */ 75:
+              params = []
+              eraseInLine(params)
               state = State.TopLevelContent
               i++
               break
             case /* P */ 80:
               deleteCharacters(1)
+              state = State.TopLevelContent
+              i++
+              break
+            case /* Z */ 90:
+              params = []
+              cursorBackwardTabulation(params)
               state = State.TopLevelContent
               i++
               break
@@ -519,11 +534,6 @@ export const createParse = ({
               setCharAttributes([])
               i++
               state = State.TopLevelContent
-              break
-            case /* K */ 75:
-              eraseToEndOfLine()
-              state = State.TopLevelContent
-              i++
               break
             case /* u */ 117:
               restoreCursor()
@@ -578,14 +588,38 @@ export const createParse = ({
               state = State.TopLevelContent
               i++
               break
+            case /* G */ 71:
+              params.push(currentParam)
+              cursorCharacterAbsolute(params)
+              state = State.TopLevelContent
+              i++
+              break
+            case /* I */ 73:
+              params.push(currentParam)
+              cursorForwardTabulation(params)
+              state = State.TopLevelContent
+              i++
+              break
             case /* J */ 74:
               params.push(currentParam)
               eraseInDisplay(params)
               state = State.TopLevelContent
               i++
               break
+            case /* K */ 75:
+              params.push(currentParam)
+              eraseInLine(params)
+              state = State.TopLevelContent
+              i++
+              break
             case /* P */ 80:
               deleteCharacters(1)
+              state = State.TopLevelContent
+              i++
+              break
+            case /* Z */ 90:
+              params.push(currentParam)
+              cursorBackwardTabulation(params)
               state = State.TopLevelContent
               i++
               break
@@ -751,7 +785,7 @@ const eraseInDisplay = (params) => {
   console.log(params)
 }
 
-const eraseToEndOfLine = () => {
+const eraseInLine = () => {
   console.log('erase to end of line')
 }
 
@@ -840,7 +874,7 @@ const cursorNextLine = () => {
 
 // createParse({
 //   eraseInDisplay,
-//   eraseToEndOfLine,
+//   eraseInLine,
 //   goToHome,
 //   setCharAttributes,
 //   cursorUp,

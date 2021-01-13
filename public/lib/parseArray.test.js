@@ -18,7 +18,7 @@ const runTest = (
   {
     bell = noop,
     eraseInDisplay = noop,
-    eraseToEndOfLine = noop,
+    eraseInLine = noop,
     goToHome = noop,
     setCharAttributes = noop,
     cursorUp = noop,
@@ -42,7 +42,7 @@ const runTest = (
 ) => {
   const parse = createParse({
     eraseInDisplay,
-    eraseToEndOfLine,
+    eraseInLine,
     goToHome,
     setCharAttributes,
     cursorUp,
@@ -74,7 +74,7 @@ const getOutputLines = (input) => {
   const parse = createParse({
     bell: noop,
     eraseInDisplay: noop,
-    eraseToEndOfLine: noop,
+    eraseInLine: noop,
     goToHome: noop,
     setCharAttributes: noop,
     cursorUp: noop,
@@ -101,7 +101,7 @@ const operations = (input) => {
   const calls = []
   const terminal = {
     bell: () => calls.push(['bell']),
-    eraseToEndOfLine: () => calls.push(['eraseToEndOfLine']),
+    eraseInLine: (params) => calls.push(['eraseInLine', params]),
     goToHome: () => calls.push(['goToHome']),
     setCharAttributes: () => calls.push(['setCharAttributes']),
     cursorUp: (params) => calls.push(['cursorUp', params]),
@@ -141,12 +141,16 @@ const operations = (input) => {
     cursorPrecedingLine(params) {
       calls.push(['cursorPrecedingLine', params])
     },
-    cursorCharacterAbsolute() {
-      calls.push(['cursorCharacterAbsolute'])
+    cursorCharacterAbsolute(params) {
+      calls.push(['cursorCharacterAbsolute', params])
     },
-    cursorForwardTabulation() {
-      calls.push(['cursorForwardTabulation'])
+    cursorForwardTabulation(params) {
+      calls.push(['cursorForwardTabulation', params])
     },
+    cursorBackwardTabulation(params) {
+      calls.push(['cursorBackwardTabulation', params])
+    },
+
     eraseInDisplay(params) {
       calls.push(['eraseInDisplay', params])
     },
@@ -174,6 +178,7 @@ test('function - bell (with text)', () => {
  */
 test('function - cursorUp', () => {
   expect(operations('\u001b[A')).toEqual([['cursorUp', []]])
+  expect(operations('\u001b[0A')).toEqual([['cursorUp', [0]]])
   expect(operations('\u001b[1A')).toEqual([['cursorUp', [1]]])
   expect(operations('\u001b[2A')).toEqual([['cursorUp', [2]]])
   expect(operations(`sample \u001b[A text`)).toEqual([
@@ -194,6 +199,7 @@ test('function - cursorUp', () => {
  */
 test('function - cursorDown', () => {
   expect(operations(`\u001b[B`)).toEqual([['cursorDown', []]])
+  expect(operations(`\u001b[0B`)).toEqual([['cursorDown', [0]]])
   expect(operations(`\u001b[1B`)).toEqual([['cursorDown', [1]]])
   expect(operations(`\u001b[2B`)).toEqual([['cursorDown', [2]]])
   expect(operations(`sample \u001b[B text`)).toEqual([
@@ -214,6 +220,7 @@ test('function - cursorDown', () => {
  */
 test('function - cursorRight', () => {
   expect(operations(`\u001b[C`)).toEqual([['cursorRight', []]])
+  expect(operations(`\u001b[0C`)).toEqual([['cursorRight', [0]]])
   expect(operations(`\u001b[1C`)).toEqual([['cursorRight', [1]]])
   expect(operations(`\u001b[2C`)).toEqual([['cursorRight', [2]]])
   expect(operations(`sample \u001b[C text`)).toEqual([
@@ -234,6 +241,7 @@ test('function - cursorRight', () => {
  */
 test('function - cursorLeft', () => {
   expect(operations(`\u001b[D`)).toEqual([['cursorLeft', []]])
+  expect(operations(`\u001b[0D`)).toEqual([['cursorLeft', [0]]])
   expect(operations(`\u001b[1D`)).toEqual([['cursorLeft', [1]]])
   expect(operations(`\u001b[2D`)).toEqual([['cursorLeft', [2]]])
   expect(operations(`sample \u001b[D text`)).toEqual([
@@ -254,6 +262,7 @@ test('function - cursorLeft', () => {
  */
 test('function cursorNextLine', () => {
   expect(operations(`\x1B[E`)).toEqual([['cursorNextLine', []]])
+  expect(operations(`\x1B[0E`)).toEqual([['cursorNextLine', [0]]])
   expect(operations(`\x1B[1E`)).toEqual([['cursorNextLine', [1]]])
   expect(operations(`\x1B[2E`)).toEqual([['cursorNextLine', [2]]])
 })
@@ -264,6 +273,7 @@ test('function cursorNextLine', () => {
  */
 test('function cursorPrecedingLine', () => {
   expect(operations(`\x1B[F`)).toEqual([['cursorPrecedingLine', []]])
+  expect(operations(`\x1B[0F`)).toEqual([['cursorPrecedingLine', [0]]])
   expect(operations(`\x1B[1F`)).toEqual([['cursorPrecedingLine', [1]]])
   expect(operations(`\x1B[2F`)).toEqual([['cursorPrecedingLine', [2]]])
 })
@@ -273,10 +283,10 @@ test('function cursorPrecedingLine', () => {
  * Cursor Character Absolute  [column] (default = [row,1]) (CHA).
  */
 test('function cursorCharacterAbsolute', () => {
-  expect(operations(`\x1B[G`)).toEqual([['cursorCharacterAbsolute']])
-  // TODO
-  // expect(operations(`\x1B[1G`)).toEqual([['cursorCharacterAbsolute']])
-  // expect(operations(`\x1B[2G`)).toEqual([['cursorCharacterAbsolute']])
+  expect(operations(`\x1B[G`)).toEqual([['cursorCharacterAbsolute', []]])
+  expect(operations(`\x1B[0G`)).toEqual([['cursorCharacterAbsolute', [0]]])
+  expect(operations(`\x1B[1G`)).toEqual([['cursorCharacterAbsolute', [1]]])
+  expect(operations(`\x1B[2G`)).toEqual([['cursorCharacterAbsolute', [2]]])
 })
 
 /**
@@ -284,10 +294,10 @@ test('function cursorCharacterAbsolute', () => {
  * Cursor Forward Tabulation Ps tab stops (default = 1) (CHT).
  */
 test('function cursorForwardTabulation', () => {
-  expect(operations(`\x1B[I`)).toEqual([['cursorForwardTabulation']])
-  // TODO
-  // expect(operations(`\x1B[1I`)).toEqual([['cursorForwardTabulation']])
-  // expect(operations(`\x1B[2I`)).toEqual([['cursorForwardTabulation']])
+  expect(operations(`\x1B[I`)).toEqual([['cursorForwardTabulation', []]])
+  expect(operations(`\x1B[0I`)).toEqual([['cursorForwardTabulation', [0]]])
+  expect(operations(`\x1B[1I`)).toEqual([['cursorForwardTabulation', [1]]])
+  expect(operations(`\x1B[2I`)).toEqual([['cursorForwardTabulation', [2]]])
 })
 
 /**
@@ -315,10 +325,11 @@ test('function eraseInDisplay', () => {
  * Ps = 1  ⇒  Erase to Left.
  * Ps = 2  ⇒  Erase All.
  */
-test.skip('function eraseInLine', () => {
-  expect(operations(`\x1B[0K`)).toEqual([['eraseInLine', 0]])
-  expect(operations(`\x1B[1K`)).toEqual([['eraseInLine', 1]])
-  expect(operations(`\x1B[2K`)).toEqual([['eraseInLine', 2]])
+test('function eraseInLine', () => {
+  expect(operations(`\x1B[K`)).toEqual([['eraseInLine', []]])
+  expect(operations(`\x1B[0K`)).toEqual([['eraseInLine', [0]]])
+  expect(operations(`\x1B[1K`)).toEqual([['eraseInLine', [1]]])
+  expect(operations(`\x1B[2K`)).toEqual([['eraseInLine', [2]]])
 })
 
 /**
@@ -587,10 +598,10 @@ test('function - goToHome', () => {
   expect(goToHome).toHaveBeenCalledTimes(1)
 })
 
-test('function - eraseToEndOfLine', () => {
-  const eraseToEndOfLine = jest.fn()
-  runTest('\u001b[K', { eraseToEndOfLine })
-  expect(eraseToEndOfLine).toHaveBeenCalledTimes(1)
+test('function - eraseInLine', () => {
+  const eraseInLine = jest.fn()
+  runTest('\u001b[K', { eraseInLine })
+  expect(eraseInLine).toHaveBeenCalledTimes(1)
 })
 
 test('function - backspace', () => {
@@ -807,14 +818,14 @@ test('program ls', () => {
 })
 
 test('cursor left and delete', () => {
-  const eraseToEndOfLine = jest.fn()
+  const eraseInLine = jest.fn()
   const backspace = jest.fn()
   runTest(
     `\u0008\u0008\u0008\u0008\u0008\u0008\u0008\u0008\u0008\u0008d\u001b[K`,
-    { backspace, eraseToEndOfLine },
+    { backspace, eraseInLine },
   )
   expect(backspace).toHaveBeenCalledTimes(10)
-  expect(eraseToEndOfLine).toHaveBeenCalledTimes(1)
+  expect(eraseInLine).toHaveBeenCalledTimes(1)
 })
 
 test.skip('delete 2', () => {
