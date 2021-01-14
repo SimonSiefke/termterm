@@ -8,7 +8,8 @@
     "test:watch": "NODE_OPTIONS=--experimental-vm-modules jest --watch",
     "dev": "nodemon server.js",
     "benchmark:parseArray": "node public/lib/parseArray.benchmark.js",
-    "benchmark:handleKeyDown": "node public/lib/handleKeyDown.benchmark.js"
+    "benchmark:handleKeyDown": "node public/lib/handleKeyDown.benchmark.js",
+    "bundle": "microbundle public/lib/parseArrayFaster.js -f modern -o dist"
   },
   "keywords": [],
   "author": "",

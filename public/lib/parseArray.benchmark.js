@@ -3,7 +3,8 @@ import { dirname } from 'path'
 import { performance } from 'perf_hooks'
 import { StringDecoder } from 'string_decoder'
 import { fileURLToPath } from 'url'
-import { createParse } from './parseArray.js'
+// import { createParse } from './parseArrayFaster.js'
+import { createParse } from '../../dist/termterm.modern.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
