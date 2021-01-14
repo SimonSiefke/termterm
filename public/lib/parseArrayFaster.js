@@ -66,11 +66,12 @@ export const createParse = ({
             default:
               printStartIndex = i++
               while (i < array.length) {
-                if (array[i] >= 32 && array[i] < 126) {
+                const element = array[i]
+                if (element >= 32 && element < 126) {
                   i++
                   continue
                 }
-                switch (array[i]) {
+                switch (element) {
                   case /* \u001b */ 27:
                     print(printStartIndex, i)
                     state = State.Escaped
