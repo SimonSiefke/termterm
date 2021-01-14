@@ -37,7 +37,7 @@ const supportsTransferToImageBitMap = (() => {
 self.supportsTransferToImageBitMap = supportsTransferToImageBitMap
 
 const tmpCanvas = supportsOffscreenCanvas
-  ? new OffscreenCanvas(CHAR_WIDTH, CHAR_HEIGHT)
+  ? new OffscreenCanvas(CHAR_WIDTH * 2, CHAR_HEIGHT * 1)
   : (() => {
       const canvas = document.createElement('canvas')
       canvas.width = CHAR_WIDTH
@@ -50,7 +50,10 @@ const tmpCtx = tmpCanvas.getContext('2d', {
   alpha: false, // perf
 })
 
+tmpCtx.font = `${CHAR_HEIGHT}px monospace`
+
 const bitmapCache = Object.create(null)
+const widthCache = Object.create(null)
 
 export const createDrawLines = (
   canvas,
@@ -66,6 +69,14 @@ export const createDrawLines = (
     alpha: false, // perf
   })
 
+  self.tmpCtx = tmpCtx
+  const getWidth = (char) => {
+    const textMetrics = tmpCtx.measureText(char)
+    return (textMetrics.width / CHAR_WIDTH + 1) | 0
+  }
+
+  self.getWidth = getWidth
+
   const drawChar = (char, x, y, background, foreground) => {
     if (char === ' ' && background === '#000000') {
       return
@@ -74,7 +85,6 @@ export const createDrawLines = (
     if (!(cacheKey in bitmapCache)) {
       tmpCtx.fillStyle = background
       tmpCtx.fillRect(0, 0, CHAR_WIDTH, CHAR_HEIGHT)
-      tmpCtx.font = `${CHAR_HEIGHT}px monospace`
       tmpCtx.fillStyle = foreground
       tmpCtx.fillText(char, 0, CHAR_HEIGHT)
       bitmapCache[cacheKey] = supportsTransferToImageBitMap
@@ -102,13 +112,15 @@ export const createDrawLines = (
       foreground: '#ffffff',
       background: '#000000',
     }
+    let posX = 0
     while (++x < chars.length) {
       currentAttributes = attributesOnLine[x] || currentAttributes
       // const { char, background, foreground } = chars[x]
       const char = chars[x]
       const background = currentAttributes.background || '#000000'
       const foreground = currentAttributes.foreground || '#ffffff'
-      drawChar(char, x, positionY, background, foreground)
+      drawChar(char, posX, positionY, background, foreground)
+      posX += getWidth(char)
     }
   }
 
