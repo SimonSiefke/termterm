@@ -42,13 +42,10 @@ export const createParse = ({
     let printStartIndex = -1
     const push = () => params.push(currentParam)
     while (i < array.length) {
+      state
       switch (state) {
         case State.TopLevelContent:
           middle: switch (array[i]) {
-            case /* \u001b */ 27:
-              state = State.Escaped
-              i++
-              break
             case /* \u0007 */ 7:
               bell()
               state = State.TopLevelContent
@@ -61,6 +58,10 @@ export const createParse = ({
               break
             case /* \r */ 13:
               state = State.TopLevelContent
+              i++
+              break
+            case /* \u001b */ 27:
+              state = State.Escaped
               i++
               break
             default:
@@ -78,14 +79,12 @@ export const createParse = ({
                     i++
                     break middle
                   case /* \u0007 */ 7:
-                    console.log('bell')
                     print(printStartIndex, i)
                     bell()
                     state = State.TopLevelContent
                     i++
                     break middle
                   case /* \u0008 */ 8:
-                    console.log('backspace')
                     print(printStartIndex, i)
                     backspace()
                     state = State.TopLevelContent
@@ -107,6 +106,9 @@ export const createParse = ({
           break
         case State.Escaped:
           switch (array[i]) {
+            case /* ( */ 40:
+              state = State.Charset
+              break
             case /* [ */ 91:
               params = []
               state = State.Csi
@@ -128,52 +130,6 @@ export const createParse = ({
             case /* D */ 68:
               index()
               break
-            case /* M */ 77:
-              break
-            case /* % */ 37:
-              setGLevel(0)
-              state = State.TopLevelContent
-              break
-            case /* ( */ 40:
-              state = State.Charset
-              break
-            case /* ) */ 41:
-              state = State.Charset
-              break
-            case /* * */ 42:
-              state = State.Charset
-              break
-            case /* + */ 43:
-              state = State.Charset
-              break
-            case /* - */ 44:
-              state = State.Charset
-              break
-            case /* . */ 45:
-              state = State.Charset
-              break
-            case /* > */ 62:
-              state = State.TopLevelContent
-              break
-            case /* N */ 78:
-              break
-            case /* O */ 79:
-              break
-            case /* n */ 110:
-              setGLevel(2)
-              break
-            case /* o */ 111:
-              setGLevel(3)
-              break
-            case /* | */ 124:
-              setGLevel(3)
-              break
-            case /* } */ 125:
-              setGLevel(2)
-              break
-            case /* ~ */ 126:
-              setGLevel(1)
-              break
             case /* 7 */ 55:
               saveCursor()
               state = State.TopLevelContent
@@ -182,22 +138,16 @@ export const createParse = ({
               restoreCursor()
               state = State.TopLevelContent
               break
-            case /* # */ 35:
-              state = State.TopLevelContent
-              break
             case /* H */ 72:
               tabSet()
-              break
-            case /* = */ 61:
-              state = State.TopLevelContent
-              break
-            case /* > */ 62:
-              state = State.TopLevelContent
               break
             default:
               state = State.TopLevelContent
               break
           }
+          i++
+          break
+        case State.Charset:
           i++
           break
         case State.Csi:
@@ -215,6 +165,26 @@ export const createParse = ({
               params = []
               currentParam = array[i] - 48
               state = State.AfterEscape3
+              break
+            case /* A */ 65:
+              params = []
+              cursorUp(params)
+              state = State.TopLevelContent
+              break
+            case /* B */ 66:
+              params = []
+              cursorDown(params)
+              state = State.TopLevelContent
+              break
+            case /* C */ 67:
+              params = []
+              cursorRight(params)
+              state = State.TopLevelContent
+              break
+            case /* D */ 68:
+              params = []
+              cursorLeft(params)
+              state = State.TopLevelContent
               break
           }
           i++
@@ -236,6 +206,26 @@ export const createParse = ({
             case /* 8 */ 56:
             case /* 9 */ 57:
               currentParam = currentParam * 10 + array[i] - 48
+              break
+            case /* A */ 65:
+              params.push(currentParam)
+              cursorUp(params)
+              state = State.TopLevelContent
+              break
+            case /* B */ 66:
+              params.push(currentParam)
+              cursorDown(params)
+              state = State.TopLevelContent
+              break
+            case /* C */ 67:
+              params.push(currentParam)
+              cursorRight(params)
+              state = State.TopLevelContent
+              break
+            case /* D */ 68:
+              params.push(currentParam)
+              cursorLeft(params)
+              state = State.TopLevelContent
               break
             case /* m */ 109:
               setCharAttributes([currentParam])
@@ -293,3 +283,12 @@ export const createParse = ({
   }
   return parse
 }
+
+// const demo = () => {
+//   const input = `\u001b[0B`
+//   createParse({
+//     cursorDown: () => console.log('cursor down'),
+//   })(new Uint8Array(Buffer.from(input, 'utf-8')))
+// }
+
+// demo()

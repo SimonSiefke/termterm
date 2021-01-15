@@ -1,9 +1,9 @@
+// DEPRECATED
 const State = {
   TopLevelContent: 'TopLevelContent',
   Escaped: 'Escaped',
   Csi: 'Csi',
   AfterEscape3: 'AfterEscape3',
-  Charset: 'Charset',
   AfterEscape3AfterSemicolon: 'AfterEscape3AfterSemicolon',
   AfterEscape3AfterSemicolon2: 'AfterEscape3AfterSemicolon2',
   Osc: 'Osc',
@@ -23,7 +23,6 @@ export const createParse = ({
   backspace,
   print,
   newline,
-  setGLevel,
   saveCursor,
   restoreCursor,
   index,
@@ -34,21 +33,19 @@ export const createParse = ({
   fullReset,
   nextLine,
 }) => {
+  console.log('hello')
   const parse = (array) => {
     let state = State.TopLevelContent
     let i = 0
     let currentParam
     let params = []
     let printStartIndex = -1
+    let element = -1
     while (i < array.length) {
-      state
+      element = array[i]
       switch (state) {
         case State.TopLevelContent:
-          middle: switch (array[i]) {
-            case /* \u001b */ 27:
-              state = State.Escaped
-              i++
-              break
+          middle: switch (element) {
             case /* \u0007 */ 7:
               bell()
               state = State.TopLevelContent
@@ -68,10 +65,15 @@ export const createParse = ({
               state = State.TopLevelContent
               i++
               break
+            case /* \u001b */ 27:
+              state = State.Escaped
+              i++
+              break
             default:
               const printStartIndex = i++
               while (i < array.length) {
-                switch (array[i]) {
+                element = array[i]
+                switch (element) {
                   case /* \u001b */ 27:
                     print(array, printStartIndex, i)
                     state = State.Escaped
@@ -113,239 +115,67 @@ export const createParse = ({
           }
           break
         case State.Escaped:
-          switch (array[i]) {
-            // ESC [ Control Sequence Introducer ( CSI is 0x9b).
+          switch (element) {
             case /* [ */ 91:
               params = []
               state = State.Csi
               i++
               break
-            // ESC ] Operating System Command ( OSC is 0x9d).
             case /* ] */ 93:
               state = State.Osc
               i++
               break
-            // ESC P Device Control String ( DCS is 0x90).
             case /* P */ 80:
               state = State.Dcs
               i++
               break
-            // ESC _ Application Program Command ( APC is 0x9f).
             case /* _ */ 95:
               i++
               break
-            // ESC ^ Privacy Message ( PM is 0x9e).
             case /* ^ */ 94:
               i++
               break
-            // ESC c Full Reset (RIS).
             case /* c */ 99:
               i++
               break
-            // ESC E Next Line ( NEL is 0x85).
             case /* E */ 69:
               nextLine()
               i++
               break
-            // ESC D Index ( IND is 0x84).
             case /* D */ 68:
               index()
               i++
               break
-            // ESC M Reverse Index ( RI is 0x8d).
             case /* M */ 77:
               i++
               break
-            // ESC % Select default/utf-8 character set.
-            // @ = default, G = utf-8
-            case /* % */ 37:
-              setGLevel(0)
-              state = State.TopLevelContent
-              i++
-              break
-            // ESC (,),*,+,-,. Designate G0-G2 Character Set.
-            case /* ( */ 40:
-              state = State.Charset
-              i++
-              break
-            case /* ) */ 41:
-              state = State.Charset
-              i++
-              break
-            case /* * */ 42:
-              state = State.Charset
-              i++
-              break
-            case /* + */ 43:
-              state = State.Charset
-              i++
-              break
-            case /* - */ 44:
-              state = State.Charset
-              i++
-              break
-            case /* . */ 45:
-              state = State.Charset
-              i++
-              break
-            // ESC > Normal Keypad (DECPNM).
             case /* > */ 62:
               state = State.TopLevelContent
               i++
               break
-            // ESC N
-            // Single Shift Select of G2 Character Set
-            // ( SS2 is 0x8e). This affects next character only.
-            case /* N */ 78:
-              i++
-              break
-            // ESC O
-            // Single Shift Select of G3 Character Set
-            // ( SS3 is 0x8f). This affects next character only.
-            case /* O */ 79:
-              i++
-              break
-            // ESC n
-            // Invoke the G2 Character Set as GL (LS2).
-            case /* n */ 110:
-              setGLevel(2)
-              i++
-              break
-            // ESC o
-            // Invoke the G3 Character Set as GL (LS3).
-            case /* o */ 111:
-              setGLevel(3)
-              i++
-              break
-            // ESC |
-            // Invoke the G3 Character Set as GR (LS3R).
-            case /* | */ 124:
-              setGLevel(3)
-              i++
-              break
-            // ESC }
-            // Invoke the G2 Character Set as GR (LS2R).
-            case /* } */ 125:
-              setGLevel(2)
-              i++
-              break
-            // ESC ~
-            // Invoke the G1 Character Set as GR (LS1R).
-            case /* ~ */ 126:
-              setGLevel(1)
-              i++
-              break
-            // ESC 7 Save Cursor (DECSC).
             case /* 7 */ 55:
               saveCursor()
               state = State.TopLevelContent
               i++
               break
-            // ESC 8 Restore Cursor (DECRC).
             case /* 8 */ 56:
               restoreCursor()
               state = State.TopLevelContent
               i++
               break
-            // ESC # 3 DEC line height/width
             case /* # */ 35:
               state = State.TopLevelContent
               i++
               break
-            // ESC H Tab Set (HTS is 0x88).
             case /* H */ 72:
               tabSet()
               i++
               break
-            // ESC = Application Keypad (DECPAM).
             case /* = */ 61:
               state = State.TopLevelContent
               i++
               break
-            // ESC > Normal Keypad (DECPNM).
             case /* > */ 62:
-              state = State.TopLevelContent
-              i++
-              break
-            default:
-              state = State.TopLevelContent
-              i++
-              break
-          }
-          break
-        case State.Charset:
-          switch (array[i]) {
-            // DEC Special Character and Line Drawing Set.
-            case /* 0 */ 48:
-              state = State.TopLevelContent
-              i++
-              break
-            // UK
-            case /* A */ 65:
-              state = State.TopLevelContent
-              i++
-              break
-            // United States (USASCII).
-            case /* B */ 66:
-              // TODO do something
-              state = State.TopLevelContent
-              i++
-              break
-            // Dutch
-            case /* 4 */ 52:
-              state = State.TopLevelContent
-              i++
-              break
-            // Finnish
-            case /* C */ 67:
-            case /* 5 */ 53:
-              state = State.TopLevelContent
-              i++
-              break
-            // French
-            case /* R */ 82:
-              state = State.TopLevelContent
-              i++
-              break
-            // FrenchCanadian
-            case /* Q */ 81:
-              state = State.TopLevelContent
-              i++
-              break
-            // German
-            case /* K */ 75:
-              state = State.TopLevelContent
-              i++
-              break
-            // Italian
-            case /* Y */ 89:
-              state = State.TopLevelContent
-              i++
-              break
-            // NorwegianDanish
-            case /* E */ 69:
-            case /* 6 */ 54:
-              state = State.TopLevelContent
-              i++
-              break
-            // Spanish
-            case /* Z */ 90:
-              state = State.TopLevelContent
-              i++
-              break
-            // Swedish
-            case /* H */ 72:
-            case /* 7 */ 55:
-              state = State.TopLevelContent
-              i++
-              break
-            // Swiss
-            case /* = */ 61:
-              state = State.TopLevelContent
-              i++
-              break
-            // ISOLatin (actually /A)
-            case /* / */ 47:
               state = State.TopLevelContent
               i++
               break
@@ -356,7 +186,7 @@ export const createParse = ({
           }
           break
         case State.Csi:
-          switch (array[i]) {
+          switch (element) {
             case /* A */ 65:
               cursorUp(1)
               state = State.TopLevelContent
@@ -408,7 +238,7 @@ export const createParse = ({
             case /* 8 */ 56:
             case /* 9 */ 57:
               params = []
-              currentParam = array[i] - 48
+              currentParam = element - 48
               state = State.AfterEscape3
               i++
               break
@@ -418,7 +248,7 @@ export const createParse = ({
           }
           break
         case State.AfterEscape3:
-          switch (array[i]) {
+          switch (element) {
             case /* ; */ 59:
               params.push(currentParam)
               state = State.AfterEscape3AfterSemicolon
@@ -459,7 +289,7 @@ export const createParse = ({
             case /* 7 */ 55:
             case /* 8 */ 56:
             case /* 9 */ 57:
-              currentParam = currentParam * 10 + array[i] - 48
+              currentParam = currentParam * 10 + element - 48
               i++
               break
             case /* m */ 109:
@@ -474,7 +304,7 @@ export const createParse = ({
           }
           break
         case State.AfterEscape3AfterSemicolon:
-          switch (array[i]) {
+          switch (element) {
             case /* 0 */ 48:
             case /* 1 */ 49:
             case /* 2 */ 50:
@@ -485,7 +315,7 @@ export const createParse = ({
             case /* 7 */ 55:
             case /* 8 */ 56:
             case /* 9 */ 57:
-              currentParam = array[i] - 48
+              currentParam = element - 48
               state = State.AfterEscape3AfterSemicolon2
               currentParam
               i++
@@ -496,7 +326,7 @@ export const createParse = ({
           }
           break
         case State.AfterEscape3AfterSemicolon2:
-          switch (array[i]) {
+          switch (element) {
             case /* 0 */ 48:
             case /* 1 */ 49:
             case /* 2 */ 50:
@@ -507,7 +337,7 @@ export const createParse = ({
             case /* 7 */ 55:
             case /* 8 */ 56:
             case /* 9 */ 57:
-              currentParam = currentParam * 10 + array[i] - 48
+              currentParam = currentParam * 10 + element - 48
               state = State.AfterEscape3AfterSemicolon2
               i++
               break
@@ -526,10 +356,6 @@ export const createParse = ({
         default:
           throw new Error('invalid state')
       }
-    }
-    if (printStartIndex !== -1) {
-      console.log('printing end')
-      print(array, printStartIndex, i)
     }
   }
   return parse
@@ -575,10 +401,6 @@ const newline = () => {
   console.log('newline')
 }
 
-const setGLevel = () => {
-  console.log('set g level')
-}
-
 let output = ''
 
 const decodeString = (string) => {
@@ -613,7 +435,6 @@ const input = `sample \u0007 text`
 //   cursorLeft,
 //   print,
 //   newline,
-//   setGLevel,
 //   bell,
 // })(array) //?
 
