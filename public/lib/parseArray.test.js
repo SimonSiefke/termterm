@@ -438,7 +438,7 @@ test('function scrollUp', () => {
  * CSI Ps T
  * Scroll down Ps lines (default = 1) (SD), VT420.
  */
-test('function scrollDown', () => {
+test.only('function scrollDown', () => {
   expect(operations(`\x1B[T`)).toEqual(['scrollDown', []])
   expect(operations(`\x1B[0T`)).toEqual(['scrollDown', [0]])
   expect(operations(`\x1B[1T`)).toEqual(['scrollDown', [1]])

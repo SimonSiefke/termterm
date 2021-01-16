@@ -46,7 +46,7 @@ const test_terminal = {
 
 const noop_terminal = {
   bell: noop,
-  eraseInDisplay2: noop,
+  eraseInDisplay: noop,
   eraseToEndOfLine: noop,
   goToHome: noop,
   setCharAttributes: noop,
@@ -57,6 +57,8 @@ const noop_terminal = {
   backspace: noop,
   print: noop,
   newline: noop,
+  cursorPosition: noop,
+  eraseInLine: noop,
 }
 
 const fixtureLs = fs
