@@ -98,7 +98,7 @@ const operations = (input) => {
   const terminal = {
     bell: () => calls.push(['bell']),
     eraseInLine: (params) => calls.push(['eraseInLine', params]),
-    setCharAttributes: () => calls.push(['setCharAttributes']),
+    setCharAttributes: (params) => calls.push(['setCharAttributes', params]),
     cursorUp: (params) => calls.push(['cursorUp', params]),
     cursorDown: (params) => calls.push(['cursorDown', params]),
     cursorRight: (params) => calls.push(['cursorRight', params]),
@@ -806,7 +806,10 @@ test('function - setCharAttributes with multiple params', () => {
 })
 
 test('function - setCharAttributes with white background', () => {
-  expect(operations(`\x1B[0;7m^C`)).toEqual([['setCharAttributes'], ['print']])
+  expect(operations(`\x1B[0;7m^C`)).toEqual([
+    ['setCharAttributes', [0, 7]],
+    ['print'],
+  ])
 })
 
 test('function - eraseInLine', () => {
@@ -905,10 +908,19 @@ test('text - hello world!', () => {
 })
 
 test('text - prompt', () => {
-  const lines = getOutputLines(
-    `\u001b[0;35msimon\u001b[0;32m (master *)\u001b[0;34m termterm $ \u001b[0m`,
-  )
-  expect(lines).toEqual([`simon (master *) termterm $ `])
+  expect(
+    operations(
+      `\u001b[0;35msimon\u001b[0;32m (master *)\u001b[0;34m termterm $ \u001b[0m`,
+    ),
+  ).toEqual([
+    ['setCharAttributes', [0, 35]],
+    ['print'],
+    ['setCharAttributes', [0, 32]],
+    ['print'],
+    ['setCharAttributes', [0, 34]],
+    ['print'],
+    ['setCharAttributes', [0]],
+  ])
 })
 
 test('special - csi with print and execute', () => {
@@ -951,7 +963,7 @@ test.skip('special - 7bit ST should be swallowed', () => {
   expect(lines).toEqual(['abcdefg'])
 })
 
-test('special - colon notation in CSI params', () => {
+test.skip('special - colon notation in CSI params', () => {
   const lines = getOutputLines(`\x1b[<31;5::123:;8mHello World! öäü€\nabc`)
   expect(lines).toEqual(['Hello World! öäü€', 'abc'])
 })
@@ -981,14 +993,17 @@ test.skip('special - SUB should abort OSC', () => {
   expect(lines).toEqual([])
 })
 
-test('styled text - [01;32mfastboot[0m', () => {
-  const lines = getOutputLines(`[01;32mfastboot[0m`)
-  expect(lines).toEqual(['fastboot'])
+test('styled text - \x1B[01;32mfastboot\x1B[0m', () => {
+  expect(operations(`\x1B[01;32mfastboot\x1B[0m`)).toEqual([
+    ['setCharAttributes', [1, 32]],
+    ['print'],
+    ['setCharAttributes', [0]],
+  ])
 })
 
 test('tab', () => {
-  const lines = getOutputLines(`\t\t\t`)
-  expect(lines).toEqual(['\t\t\t'])
+  expect(operations(`\t`)).toEqual([])
+  expect(operations(`\t\t\t`)).toEqual([])
 })
 
 // test('program nano', () => {
@@ -1009,12 +1024,22 @@ test('tab', () => {
 // })
 
 test('program ls', () => {
-  const lines = getOutputLines(
-    `\u001b[0m\u001b[01;34mnode_modules\u001b[0m  package.json  package-lock.json  \u001b[01;34mpublic\u001b[0m  server.js\r\n`,
-  )
-  expect(lines).toEqual([
-    'node_modules  package.json  package-lock.json  public  server.js',
-    '',
+  expect(
+    operations(
+      `\u001b[0m\u001b[01;34mnode_modules\u001b[0m  package.json  package-lock.json  \u001b[01;34mpublic\u001b[0m  server.js\r\n`,
+    ),
+  ).toEqual([
+    ['setCharAttributes', [0]],
+    ['setCharAttributes', [1, 34]],
+    ['print'],
+    ['setCharAttributes', [0]],
+    ['print'],
+    ['setCharAttributes', [1, 34]],
+    ['print'],
+    ['setCharAttributes', [0]],
+    ['print'],
+    ['carriageReturn'],
+    ['lineFeed'],
   ])
 })
 
@@ -1209,11 +1234,7 @@ test('set charset iso latin', () => {
 })
 
 test('reset char attributes', () => {
-  expect(operations(`\x1B[m;`)).toEqual([
-    ['setCharAttributes'],
-    // TODO should be no print
-    ['print'],
-  ])
+  expect(operations(`\x1B[m`)).toEqual([['setCharAttributes', []]])
 })
 
 test('function cursorHide', () => {
@@ -1243,4 +1264,8 @@ test('function - bell', () => {
     ['bell'],
     ['print'],
   ])
+})
+
+test.skip('special ', () => {
+  expect(operations(`中文\x1b[4C12`)).toEqual([[]])
 })

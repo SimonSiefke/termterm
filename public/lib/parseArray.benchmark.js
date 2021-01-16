@@ -56,7 +56,7 @@ const noop_terminal = {
   cursorLeft: noop,
   backspace: noop,
   print: noop,
-  newline: noop,
+  lineFeed: noop,
   cursorPosition: noop,
   eraseInLine: noop,
 }
