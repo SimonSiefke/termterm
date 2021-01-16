@@ -46,3 +46,5 @@ showkey -a to get ascii output of keyboard shortcuts
 <!-- TODO investigate if desynchronized canvas can be faster https://developers.google.com/web/updates/2019/05/desynchronized -->
 
 <!-- TODO chunking ws https://stackoverflow.com/questions/13010354/chunking-websocket-transmission -->
+
+<!-- intersting terminal simular with react and typescript https://www.reddit.com/r/typescript/comments/g7hfvy/a_terminal_emulator_built_with_ts_react/ -->
