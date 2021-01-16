@@ -224,6 +224,7 @@ export const createParse = ({
               print(array, printStartIndex, i)
               break
             default:
+              // TODO this is slow
               throw new Error('no')
           }
           break
