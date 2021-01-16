@@ -56,6 +56,11 @@ export const createParse = ({
   sendDeviceAttributesTertiary,
   linePositionAbsolute,
   eraseInLine,
+  linePositionRelative,
+  horizontalAndVerticalPosition,
+  tabClear,
+  setMode,
+  resetMode,
 }) => {
   const parse = (array) => {
     let state = State.TopLevelContent
@@ -70,23 +75,117 @@ export const createParse = ({
           middle: switch (array[i]) {
             case /* \u0007 */ 7:
               bell()
-              state = State.TopLevelContent
+              i++
+              break
+            case /* \u0008 */ 8:
+              backspace()
               i++
               break
             case /* \n */ 10:
               newline()
-              state = State.TopLevelContent
               i++
               break
             case /* \r */ 13:
-              state = State.TopLevelContent
               i++
               break
             case /* \u001b */ 27:
               state = State.Escaped
               i++
               break
-            default:
+            case 32:
+            case 33:
+            case 34:
+            case 35:
+            case 36:
+            case 37:
+            case 38:
+            case 39:
+            case 40:
+            case 41:
+            case 42:
+            case 43:
+            case 44:
+            case 45:
+            case 46:
+            case 47:
+            case 48:
+            case 49:
+            case 50:
+            case 51:
+            case 52:
+            case 53:
+            case 54:
+            case 55:
+            case 56:
+            case 57:
+            case 58:
+            case 59:
+            case 60:
+            case 61:
+            case 62:
+            case 63:
+            case 64:
+            case 65:
+            case 66:
+            case 67:
+            case 68:
+            case 69:
+            case 70:
+            case 71:
+            case 72:
+            case 73:
+            case 74:
+            case 75:
+            case 76:
+            case 77:
+            case 78:
+            case 79:
+            case 80:
+            case 81:
+            case 82:
+            case 83:
+            case 84:
+            case 85:
+            case 86:
+            case 87:
+            case 88:
+            case 89:
+            case 90:
+            case 91:
+            case 92:
+            case 93:
+            case 94:
+            case 95:
+            case 96:
+            case 97:
+            case 98:
+            case 99:
+            case 100:
+            case 101:
+            case 102:
+            case 103:
+            case 104:
+            case 105:
+            case 106:
+            case 107:
+            case 108:
+            case 109:
+            case 110:
+            case 111:
+            case 112:
+            case 113:
+            case 114:
+            case 115:
+            case 116:
+            case 117:
+            case 118:
+            case 119:
+            case 120:
+            case 121:
+            case 122:
+            case 123:
+            case 124:
+            case 125:
               printStartIndex = i++
               while (i < array.length) {
                 const element = array[i]
@@ -124,6 +223,8 @@ export const createParse = ({
               }
               print(array, printStartIndex, i)
               break
+            default:
+              throw new Error('no')
           }
           break
         case State.Escaped:
@@ -173,7 +274,6 @@ export const createParse = ({
           i++
           break
         case State.Csi:
-          params = []
           switch (array[i]) {
             case /* 0 */ 48:
             case /* 1 */ 49:
@@ -250,6 +350,50 @@ export const createParse = ({
               break
             case /* T */ 84:
               scrollDown(params)
+              state = State.TopLevelContent
+              break
+            case /* X */ 88:
+              eraseCharacters(params)
+              state = State.TopLevelContent
+              break
+            case /* Z */ 90:
+              cursorBackwardTabulation(params)
+              state = State.TopLevelContent
+              break
+            case /* ` */ 96:
+              characterPositionAbsolute(params)
+              state = State.TopLevelContent
+              break
+            case /* a */ 97:
+              characterPositionRelative(params)
+              state = State.TopLevelContent
+              break
+            case /* b */ 98:
+              repeatPrecedingGraphicCharacter(params)
+              state = State.TopLevelContent
+              break
+            case /* d */ 100:
+              linePositionAbsolute(params)
+              state = State.TopLevelContent
+              break
+            case /* e */ 101:
+              linePositionRelative(params)
+              state = State.TopLevelContent
+              break
+            case /* f */ 102:
+              horizontalAndVerticalPosition(params)
+              state = State.TopLevelContent
+              break
+            case /* g */ 103:
+              tabClear(params)
+              state = State.TopLevelContent
+              break
+            case /* h */ 104:
+              setMode(params)
+              state = State.TopLevelContent
+              break
+            case /* l */ 108:
+              resetMode(params)
               state = State.TopLevelContent
               break
           }
@@ -353,8 +497,67 @@ export const createParse = ({
               scrollDown(params)
               state = State.TopLevelContent
               break
+            case /* X */ 88:
+              paramsPush()
+              eraseCharacters(params)
+              state = State.TopLevelContent
+              break
+            case /* Z */ 90:
+              paramsPush()
+              cursorBackwardTabulation(params)
+              state = State.TopLevelContent
+              break
+            case /* ` */ 96:
+              paramsPush()
+              characterPositionAbsolute(params)
+              state = State.TopLevelContent
+              break
+            case /* a */ 97:
+              paramsPush()
+              characterPositionRelative(params)
+              state = State.TopLevelContent
+              break
+            case /* b */ 98:
+              paramsPush()
+              repeatPrecedingGraphicCharacter(params)
+              state = State.TopLevelContent
+              break
+            case /* d */ 100:
+              paramsPush()
+              linePositionAbsolute(params)
+              state = State.TopLevelContent
+              break
+            case /* e */ 101:
+              paramsPush()
+              linePositionRelative(params)
+              state = State.TopLevelContent
+              break
+            case /* f */ 102:
+              paramsPush()
+              horizontalAndVerticalPosition(params)
+              state = State.TopLevelContent
+              break
+            case /* g */ 103:
+              paramsPush()
+              tabClear(params)
+              state = State.TopLevelContent
+              break
+            case /* h */ 104:
+              paramsPush()
+              setMode(params)
+              state = State.TopLevelContent
+              break
+            case /* l */ 108:
+              paramsPush()
+              resetMode(params)
+              state = State.TopLevelContent
+              break
             case /* m */ 109:
-              setCharAttributes([currentParam])
+              paramsPush()
+              setCharAttributes(params)
+              state = State.TopLevelContent
+              break
+            default:
               state = State.TopLevelContent
               break
           }
@@ -388,11 +591,12 @@ export const createParse = ({
 }
 
 // const demo = () => {
-//   const input = `\x1B[G`
+//   const input = `\u001b[0;35m`
 //   createParse({
 //     cursorDown: () => console.log('cursor down'),
 //     cursorNextLine: () => console.log('cursor next line'),
 //     cursorCharacterAbsolute: () => console.log('cursor character absolute'),
+//     setCharAttributes:()=>console.log('set char')
 //   })(new Uint8Array(Buffer.from(input, 'utf-8')))
 // }
 
