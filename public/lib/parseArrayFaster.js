@@ -37,8 +37,6 @@ export const createParse = ({
   deleteCharacters,
   setWindowTitle,
   cursorPosition,
-  cursorHide,
-  cursorShow,
   softTerminalReset,
   cursorNextLine,
   cursorPrecedingLine,
@@ -63,14 +61,89 @@ export const createParse = ({
   setMode,
   resetMode,
   lineFeed,
+  privateModeSet,
 }) => {
+  let state = State.TopLevelContent
+  let i = 0
+  let currentParam
+  let params = []
+  let printStartIndex = -1
+
+  const parseAfterQuestionMark = () => {
+    const State = {
+      Default: 1,
+      AfterSemicolon: 2,
+      AfterNumber: 3,
+    }
+    let state = State.Default
+    i++
+    params = []
+    while (i < array.length) {
+      state //?
+      currentParam
+      switch (state) {
+        case State.Default:
+          switch (array[i]) {
+            case /* 0 */ 48:
+            case /* 1 */ 49:
+            case /* 2 */ 50:
+            case /* 3 */ 51:
+            case /* 4 */ 52:
+            case /* 5 */ 53:
+            case /* 6 */ 54:
+            case /* 7 */ 55:
+            case /* 8 */ 56:
+            case /* 9 */ 57:
+              currentParam = array[i] - 48
+              state = State.AfterNumber
+              break
+            case /* h */ 104:
+              console.log(privateModeSet)
+              params
+              privateModeSet(params)
+              break
+            case /* l */ 108:
+              privateModeReset()
+              break
+          }
+          break
+        case State.AfterNumber:
+          switch (array[i]) {
+            case /* 0 */ 48:
+            case /* 1 */ 49:
+            case /* 2 */ 50:
+            case /* 3 */ 51:
+            case /* 4 */ 52:
+            case /* 5 */ 53:
+            case /* 6 */ 54:
+            case /* 7 */ 55:
+            case /* 8 */ 56:
+            case /* 9 */ 57:
+              currentParam = currentParam * 10 + array[i] - 48
+              break
+            case /* h */ 104:
+              params.push(currentParam)
+              privateModeSet(params)
+              break
+            case /* l */ 108:
+              params.push(currentParam)
+              privateModeReset()
+              break
+            default:
+              break
+          }
+      }
+      i++
+    }
+    i++
+  }
+
   const parse = (array) => {
     let state = State.TopLevelContent
     let i = 0
     let currentParam
     let params = []
     let printStartIndex = -1
-    const paramsPush = () => params.push(currentParam)
     while (i < array.length) {
       switch (state) {
         case State.TopLevelContent:
@@ -329,9 +402,9 @@ export const createParse = ({
               currentParam = array[i] - 48
               state = State.AfterEscape3
               break
-            // case /* ? */ 63:
-            //   state = State.CsiAfterQuestionMark1
-            //   break
+            case /* ? */ 63:
+              console.log(parseAfterQuestionMark)
+              break
             case /* A */ 65:
               cursorUp(params)
               state = State.TopLevelContent
@@ -450,7 +523,7 @@ export const createParse = ({
         case State.AfterEscape3:
           switch (array[i]) {
             case /* ; */ 59:
-              paramsPush()
+              params.push(currentParam)
               state = State.AfterEscape3AfterSemicolon
               break
             case /* 0 */ 48:
@@ -466,142 +539,142 @@ export const createParse = ({
               currentParam = currentParam * 10 + array[i] - 48
               break
             case /* A */ 65:
-              paramsPush()
+              params.push(currentParam)
               cursorUp(params)
               state = State.TopLevelContent
               break
             case /* B */ 66:
-              paramsPush()
+              params.push(currentParam)
               cursorDown(params)
               state = State.TopLevelContent
               break
             case /* C */ 67:
-              paramsPush()
+              params.push(currentParam)
               cursorRight(params)
               state = State.TopLevelContent
               break
             case /* D */ 68:
-              paramsPush()
+              params.push(currentParam)
               cursorLeft(params)
               state = State.TopLevelContent
               break
             case /* E */ 69:
-              paramsPush()
+              params.push(currentParam)
               cursorNextLine(params)
               state = State.TopLevelContent
               break
             case /* F */ 70:
-              paramsPush()
+              params.push(currentParam)
               cursorPrecedingLine(params)
               state = State.TopLevelContent
               break
             case /* G */ 71:
-              paramsPush()
+              params.push(currentParam)
               cursorCharacterAbsolute(params)
               state = State.TopLevelContent
               break
             case /* H */ 72:
-              paramsPush()
+              params.push(currentParam)
               cursorPosition(params)
               state = State.TopLevelContent
               break
             case /* I */ 73:
-              paramsPush()
+              params.push(currentParam)
               cursorForwardTabulation(params)
               state = State.TopLevelContent
               break
             case /* J */ 74:
-              paramsPush()
+              params.push(currentParam)
               eraseInDisplay(params)
               state = State.TopLevelContent
               break
             case /* K */ 75:
-              paramsPush()
+              params.push(currentParam)
               eraseInLine(params)
               state = State.TopLevelContent
               break
             case /* L */ 76:
-              paramsPush()
+              params.push(currentParam)
               insertLines(params)
               state = State.TopLevelContent
               break
             case /* M */ 77:
-              paramsPush()
+              params.push(currentParam)
               deleteLines(params)
               state = State.TopLevelContent
               break
             case /* P */ 80:
-              paramsPush()
+              params.push(currentParam)
               deleteCharacters(params)
               state = State.TopLevelContent
               break
             case /* S */ 83:
-              paramsPush()
+              params.push(currentParam)
               scrollUp(params)
               state = State.TopLevelContent
               break
             case /* T */ 84:
-              paramsPush()
+              params.push(currentParam)
               scrollDown(params)
               state = State.TopLevelContent
               break
             case /* X */ 88:
-              paramsPush()
+              params.push(currentParam)
               eraseCharacters(params)
               state = State.TopLevelContent
               break
             case /* Z */ 90:
-              paramsPush()
+              params.push(currentParam)
               cursorBackwardTabulation(params)
               state = State.TopLevelContent
               break
             case /* ` */ 96:
-              paramsPush()
+              params.push(currentParam)
               characterPositionAbsolute(params)
               state = State.TopLevelContent
               break
             case /* a */ 97:
-              paramsPush()
+              params.push(currentParam)
               characterPositionRelative(params)
               state = State.TopLevelContent
               break
             case /* b */ 98:
-              paramsPush()
+              params.push(currentParam)
               repeatPrecedingGraphicCharacter(params)
               state = State.TopLevelContent
               break
             case /* d */ 100:
-              paramsPush()
+              params.push(currentParam)
               linePositionAbsolute(params)
               state = State.TopLevelContent
               break
             case /* e */ 101:
-              paramsPush()
+              params.push(currentParam)
               linePositionRelative(params)
               state = State.TopLevelContent
               break
             case /* f */ 102:
-              paramsPush()
+              params.push(currentParam)
               horizontalAndVerticalPosition(params)
               state = State.TopLevelContent
               break
             case /* g */ 103:
-              paramsPush()
+              params.push(currentParam)
               tabClear(params)
               state = State.TopLevelContent
               break
             case /* h */ 104:
-              paramsPush()
+              params.push(currentParam)
               setMode(params)
               state = State.TopLevelContent
               break
             case /* l */ 108:
-              paramsPush()
+              params.push(currentParam)
               resetMode(params)
               state = State.TopLevelContent
               break
             case /* m */ 109:
-              paramsPush()
+              params.push(currentParam)
               setCharAttributes(params)
               state = State.TopLevelContent
               break
@@ -642,7 +715,7 @@ export const createParse = ({
 //     cursorNextLine: () => console.log('cursor next line'),
 //     cursorCharacterAbsolute: () => console.log('cursor character absolute'),
 //     setCharAttributes: (params) => console.log('set char attributes', params),
-//     cursorShow: () => console.log('cursor show'),
+//     privateModeSet: (params) => console.log('private mode set', params),
 //   })(new Uint8Array(Buffer.from(input, 'utf-8')))
 // }
 

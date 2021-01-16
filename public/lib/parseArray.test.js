@@ -196,7 +196,11 @@ const operations = (input) => {
     resetMode(params) {
       calls.push(['resetMode', params])
     },
+    privateModeSet(params) {
+      calls.push(['privateModeSet', params])
+    },
   }
+  console.log(terminal.privateModeSet)
   const parse = createParse(terminal)
   const array = encodeText(input)
   parse(array)
@@ -599,25 +603,20 @@ test.skip('function sendDeviceAttributesTertiary', () => {
 
 /**
  * CSI > Ps c
- *
  * Send Device Attributes (Secondary DA).
- *   Ps = 0  or omitted ⇒  request the terminal's identification
- * code.  The response depends on the decTerminalID resource
- * setting.  It should apply only to VT220 and up, but xterm
- * extends this to VT100.
- *   ⇒  CSI  > Pp ; Pv ; Pc c
- * where Pp denotes the terminal type
- *   Pp = 0  ⇒  "VT100".
- *   Pp = 1  ⇒  "VT220".
- *   Pp = 2  ⇒  "VT240" or "VT241".
- *   Pp = 1 8  ⇒  "VT330".
- *   Pp = 1 9  ⇒  "VT340".
- *   Pp = 2 4  ⇒  "VT320".
- *   Pp = 3 2  ⇒  "VT382".
- *   Pp = 4 1  ⇒  "VT420".
- *   Pp = 6 1  ⇒  "VT510".
- *   Pp = 6 4  ⇒  "VT520".
- *   Pp = 6 5  ⇒  "VT525".
+ *
+ * Ps = 0  or omitted ⇒  request the terminal's identification code.  The response depends on the decTerminalID resource setting.  It should apply only to VT220 and up, but xterm extends this to VT100.   ⇒  CSI  > Pp ; Pv ; Pc c where Pp denotes the terminal type
+ * Pp = 0  ⇒  "VT100".
+ * Pp = 1  ⇒  "VT220".
+ * Pp = 2  ⇒  "VT240" or "VT241".
+ * Pp = 1 8  ⇒  "VT330".
+ * Pp = 1 9  ⇒  "VT340".
+ * Pp = 2 4  ⇒  "VT320".
+ * Pp = 3 2  ⇒  "VT382".
+ * Pp = 4 1  ⇒  "VT420".
+ * Pp = 6 1  ⇒  "VT510".
+ * Pp = 6 4  ⇒  "VT520".
+ * Pp = 6 5  ⇒  "VT525".
  *
  * and Pv is the firmware version (for xterm, this was originally
  * the XFree86 patch number, starting with 95).  In a DEC
@@ -681,6 +680,104 @@ test('function tabClear', () => {
 test('function setMode', () => {
   expect(operations(`\x1B[2h`)).toEqual([['setMode', [2]]])
   expect(operations(`\x1B[4h`)).toEqual([['setMode', [4]]])
+})
+
+/**
+ * CSI ? Pm h
+ * DEC Private Mode Set (DECSET).
+ *
+ * Ps = 1  ⇒  Application Cursor Keys (DECCKM), VT100.
+ * Ps = 2  ⇒  Designate USASCII for character sets G0-G3 (DECANM), VT100, and set VT100 mode.
+ * Ps = 3  ⇒  132 Column Mode (DECCOLM), VT100.
+ * Ps = 4  ⇒  Smooth (Slow) Scroll (DECSCLM), VT100.
+ * Ps = 5  ⇒  Reverse Video (DECSCNM), VT100.
+ * Ps = 6  ⇒  Origin Mode (DECOM), VT100.
+ * Ps = 7  ⇒  Auto-Wrap Mode (DECAWM), VT100.
+ * Ps = 8  ⇒  Auto-Repeat Keys (DECARM), VT100.
+ * Ps = 9  ⇒  Send Mouse X & Y on button press.  See the section Mouse Tracking.  This is the X10 xterm mouse protocol.
+ * Ps = 1 0  ⇒  Show toolbar (rxvt).
+ * Ps = 1 2  ⇒  Start blinking cursor (AT&T 610).
+ * Ps = 1 3  ⇒  Start blinking cursor (set only via resource or menu).
+ * Ps = 1 4  ⇒  Enable XOR of blinking cursor control sequence and menu.
+ * Ps = 1 8  ⇒  Print Form Feed (DECPFF), VT220.
+ * Ps = 1 9  ⇒  Set print extent to full screen (DECPEX), VT220.
+ * Ps = 2 5  ⇒  Show cursor (DECTCEM), VT220.
+ * Ps = 3 0  ⇒  Show scrollbar (rxvt).
+ * Ps = 3 5  ⇒  Enable font-shifting functions (rxvt).
+ * Ps = 3 8  ⇒  Enter Tektronix mode (DECTEK), VT240, xterm.
+ * Ps = 4 0  ⇒  Allow 80 ⇒  132 mode, xterm.
+ * Ps = 4 1  ⇒  more(1) fix (see curses resource).
+ * Ps = 4 2  ⇒  Enable National Replacement Character sets (DECNRCM), VT220.
+ * Ps = 4 3  ⇒  Enable Graphics Expanded Print Mode (DECGEPM).
+ * Ps = 4 4  ⇒  Turn on margin bell, xterm.
+ * Ps = 4 4  ⇒  Enable Graphics Print Color Mode (DECGPCM).
+ * Ps = 4 5  ⇒  Reverse-wraparound mode, xterm.
+ * Ps = 4 5  ⇒  Enable Graphics Print ColorSpace (DECGPCS).
+ * Ps = 4 6  ⇒  Start logging, xterm.  This is normally disabled by a compile-time option.
+ * Ps = 4 7  ⇒  Use Alternate Screen Buffer, xterm.  This may be disabled by the titeInhibit resource.
+ * Ps = 4 7  ⇒  Enable Graphics Rotated Print Mode (DECGRPM).
+ * Ps = 6 6  ⇒  Application keypad mode (DECNKM), VT320.
+ * Ps = 6 7  ⇒  Backarrow key sends backspace (DECBKM), VT340, VT420.  This sets the backarrowKey resource to "true".
+ * Ps = 6 9  ⇒  Enable left and right margin mode (DECLRMM), VT420 and up.
+ * Ps = 8 0  ⇒  Enable Sixel Scrolling (DECSDM).
+ * Ps = 9 5  ⇒  Do not clear screen when DECCOLM is set/reset (DECNCSM), VT510 and up.
+ * Ps = 1 0 0 0  ⇒  Send Mouse X & Y on button press and release.  See the section Mouse Tracking.  This is the X11 xterm mouse protocol.
+ * Ps = 1 0 0 1  ⇒  Use Hilite Mouse Tracking, xterm.
+ * Ps = 1 0 0 2  ⇒  Use Cell Motion Mouse Tracking, xterm.  See the section Button-event tracking.
+ * Ps = 1 0 0 3  ⇒  Use All Motion Mouse Tracking, xterm.  See the section Any-event tracking.
+ * Ps = 1 0 0 4  ⇒  Send FocusIn/FocusOut events, xterm.
+ * Ps = 1 0 0 5  ⇒  Enable UTF-8 Mouse Mode, xterm.
+ * Ps = 1 0 0 6  ⇒  Enable SGR Mouse Mode, xterm.
+ * Ps = 1 0 0 7  ⇒  Enable Alternate Scroll Mode, xterm.  This corresponds to the alternateScroll resource.
+ * Ps = 1 0 1 0  ⇒  Scroll to bottom on tty output (rxvt). This sets the scrollTtyOutput resource to "true".
+ * Ps = 1 0 1 1  ⇒  Scroll to bottom on key press (rxvt).  This sets the scrollKey resource to "true".
+ * Ps = 1 0 1 5  ⇒  Enable urxvt Mouse Mode.
+ * Ps = 1 0 1 6  ⇒  Enable SGR Mouse PixelMode, xterm.
+ * Ps = 1 0 3 4  ⇒  Interpret "meta" key, xterm.  This sets the eighth bit of keyboard input (and enables the eightBitInput resource).
+ * Ps = 1 0 3 5  ⇒  Enable special modifiers for Alt and NumLock keys, xterm.  This enables the numLock resource.
+ * Ps = 1 0 3 6  ⇒  Send ESC   when Meta modifies a key, xterm. This enables the metaSendsEscape resource.
+ * Ps = 1 0 3 7  ⇒  Send DEL from the editing-keypad Delete key, xterm.
+ * Ps = 1 0 3 9  ⇒  Send ESC  when Alt modifies a key, xterm. This enables the altSendsEscape resource, xterm.
+ * Ps = 1 0 4 0  ⇒  Keep selection even if not highlighted, xterm.  This enables the keepSelection resource.
+ * Ps = 1 0 4 1  ⇒  Use the CLIPBOARD selection, xterm.  This enables the selectToClipboard resource.
+ * Ps = 1 0 4 2  ⇒  Enable Urgency window manager hint when Control-G is received, xterm.  This enables the bellIsUrgent resource.
+ * Ps = 1 0 4 3  ⇒  Enable raising of the window when Control-G is received, xterm.  This enables the popOnBell resource.
+ * Ps = 1 0 4 4  ⇒  Reuse the most recent data copied to CLIPBOARD, xterm.  This enables the keepClipboard resource.
+ * Ps = 1 0 4 6  ⇒  Enable switching to/from Alternate Screen Buffer, xterm.  This works for terminfo-based systems, updating the titeInhibit resource.
+ * Ps = 1 0 4 7  ⇒  Use Alternate Screen Buffer, xterm.  This may be disabled by the titeInhibit resource.
+ * Ps = 1 0 4 8  ⇒  Save cursor as in DECSC, xterm.  This may be disabled by the titeInhibit resource.
+ * Ps = 1 0 4 9  ⇒  Save cursor as in DECSC, xterm.  After saving the cursor, switch to the Alternate Screen Buffer, clearing it first.  This may be disabled by the titeInhibit resource.  This control combines the effects of the 1 0 4 7 and 1 0 4 8  modes.  Use this with terminfo-based applications rather than the 4 7  mode.
+ * Ps = 1 0 5 0  ⇒  Set terminfo/termcap function-key mode, xterm.
+ * Ps = 1 0 5 1  ⇒  Set Sun function-key mode, xterm.
+ * Ps = 1 0 5 2  ⇒  Set HP function-key mode, xterm.
+ * Ps = 1 0 5 3  ⇒  Set SCO function-key mode, xterm.
+ * Ps = 1 0 6 0  ⇒  Set legacy keyboard emulation, i.e, X11R6, xterm.
+ * Ps = 1 0 6 1  ⇒  Set VT220 keyboard emulation, xterm.
+ * Ps = 2 0 0 4  ⇒  Set bracketed paste mode, xterm.
+ */
+test.only('function privateModeSet', () => {
+  expect(operations(`\x1B[?1h`)).toEqual([['privateModeSet', [1]]])
+  expect(operations(`\x1B[?2h`)).toEqual([['privateModeSet', [2]]])
+  expect(operations(`\x1B[?3h`)).toEqual([['privateModeSet', [3]]])
+  expect(operations(`\x1B[?4h`)).toEqual([['privateModeSet', [4]]])
+  expect(operations(`\x1B[?5h`)).toEqual([['privateModeSet', [5]]])
+  expect(operations(`\x1B[?6h`)).toEqual([['privateModeSet', [6]]])
+  expect(operations(`\x1B[?7h`)).toEqual([['privateModeSet', [7]]])
+  expect(operations(`\x1B[?8h`)).toEqual([['privateModeSet', [8]]])
+  expect(operations(`\x1B[?9h`)).toEqual([['privateModeSet', [9]]])
+  expect(operations(`\x1B[?10h`)).toEqual([['privateModeSet', [10]]])
+  expect(operations(`\x1B[?12h`)).toEqual([['privateModeSet', [12]]])
+  expect(operations(`\x1B[?13h`)).toEqual([['privateModeSet', [13]]])
+  expect(operations(`\x1B[?14h`)).toEqual([['privateModeSet', [14]]])
+  expect(operations(`\x1B[?18h`)).toEqual([['privateModeSet', [18]]])
+  expect(operations(`\x1B[?19h`)).toEqual([['privateModeSet', [19]]])
+  expect(operations(`\x1B[?25h`)).toEqual([['privateModeSet', [25]]])
+  expect(operations(`\x1B[?30h`)).toEqual([['privateModeSet', [30]]])
+  expect(operations(`\x1B[?35h`)).toEqual([['privateModeSet', [35]]])
+  expect(operations(`\x1B[?38h`)).toEqual([['privateModeSet', [38]]])
+  expect(operations(`\x1B[?40h`)).toEqual([['privateModeSet', [40]]])
+  expect(operations(`\x1B[?41h`)).toEqual([['privateModeSet', [41]]])
+  expect(operations(`\x1B[?42h`)).toEqual([['privateModeSet', [42]]])
 })
 
 /**
