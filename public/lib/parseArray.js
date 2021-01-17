@@ -250,24 +250,30 @@ export const createParse = ({
                   case /* \u001b */ 27:
                     print(array, printStartIndex, i)
                     state = State.Escaped
+                    i++
                     break middle
                   case /* \u0007 */ 7:
                     print(array, printStartIndex, i)
                     bell()
+                    i++
                     state = State.TopLevelContent
                     break middle
                   case /* \u0008 */ 8:
                     print(array, printStartIndex, i)
                     backspace()
+                    i++
                     state = State.TopLevelContent
                     break middle
                   case /* \r */ 13:
                     print(array, printStartIndex, i)
                     carriageReturn()
+                    i++
                     state = State.TopLevelContent
                     break middle
+                  default:
+                    i++
+                    break
                 }
-                i++
               }
               print(array, printStartIndex, i)
               break
