@@ -33,6 +33,7 @@ const createHandleData = (webSocket, delay) => {
     }
   }
   const sendBuffer = (data) => {
+    console.log({ data: data.toString() })
     switch (state) {
       case 'default':
         webSocket.send(data)
@@ -78,7 +79,7 @@ wss.on('connection', (socket) => {
   const handleData = createHandleData(socket, 8)
   readStream.on('data', handleData)
   socket.on('message', (data) => {
-    console.log({ data })
+    // console.log({ data })
     readStream.write(data)
   })
   socket.on('error', (error) => {

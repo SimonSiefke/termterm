@@ -41,7 +41,9 @@ const test_terminal = {
   backspace: () => calls.push(['backspace']),
   print: (startIndex, endIndex) =>
     calls.push(['print', decodeText(array.slice(startIndex, endIndex))]),
-  newline: () => calls.push(['newline']),
+  lineFeed: () => calls.push(['lineFeed']),
+  carriageReturn: () => calls.push(['carriageReturn']),
+  setCursor: () => calls.push(['setCursor']),
 }
 
 const noop_terminal = {
