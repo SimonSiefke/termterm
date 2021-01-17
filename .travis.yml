@@ -18,4 +18,5 @@ jobs:
         - npm test
     - stage: benchmark
       script:
+        - npm i -g microbundle
         - npm run bundle-and-benchmark
