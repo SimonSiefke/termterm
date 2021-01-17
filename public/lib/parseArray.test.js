@@ -372,7 +372,7 @@ test('function eraseInDisplay', () => {
  * Ps = 2  ⇒  Selective Erase All.
  * Ps = 3  ⇒  Selective Erase Saved Lines, xterm.
  */
-test.skip('function eraseInDisplay (alternative)', () => {
+test('function eraseInDisplay (alternative)', () => {
   expect(operations(`\x1B[?J`)).toEqual([['eraseInDisplay', []]])
   expect(operations(`\x1B[?0J`)).toEqual([['eraseInDisplay', [0]]])
   expect(operations(`\x1B[?1J`)).toEqual([['eraseInDisplay', [1]]])
@@ -652,8 +652,11 @@ test('function linePositionRelative', () => {
  * CSI Ps ; Ps f
  * Horizontal and Vertical Position [row;column] (default = [1,1]) (HVP).
  */
-test.skip('function horizontalAndVerticalPosition', () => {
-  expect(operations(`\x1B[1;1f`)).toEqual([['horizontalAndVerticalPosition']])
+test('function horizontalAndVerticalPosition', () => {
+  expect(operations(`\x1B[f`)).toEqual([['horizontalAndVerticalPosition', []]])
+  expect(operations(`\x1B[1;1f`)).toEqual([
+    ['horizontalAndVerticalPosition', [1, 1]],
+  ])
 })
 
 /**
@@ -852,7 +855,70 @@ test('function privateModeSet', () => {
  * Ps = 1 0 6 1  ⇒  Reset keyboard emulation to Sun/PC style, xterm.
  * Ps = 2 0 0 4  ⇒  Reset bracketed paste mode, xterm.
  */
-test('function privateModeReset', () => {})
+test('function privateModeReset', () => {
+  expect(operations(`\x1B[?1l`)).toEqual([['privateModeReset', [1]]])
+  expect(operations(`\x1B[?2l`)).toEqual([['privateModeReset', [2]]])
+  expect(operations(`\x1B[?3l`)).toEqual([['privateModeReset', [3]]])
+  expect(operations(`\x1B[?4l`)).toEqual([['privateModeReset', [4]]])
+  expect(operations(`\x1B[?5l`)).toEqual([['privateModeReset', [5]]])
+  expect(operations(`\x1B[?6l`)).toEqual([['privateModeReset', [6]]])
+  expect(operations(`\x1B[?7l`)).toEqual([['privateModeReset', [7]]])
+  expect(operations(`\x1B[?8l`)).toEqual([['privateModeReset', [8]]])
+  expect(operations(`\x1B[?9l`)).toEqual([['privateModeReset', [9]]])
+  expect(operations(`\x1B[?10l`)).toEqual([['privateModeReset', [10]]])
+  expect(operations(`\x1B[?12l`)).toEqual([['privateModeReset', [12]]])
+  expect(operations(`\x1B[?13l`)).toEqual([['privateModeReset', [13]]])
+  expect(operations(`\x1B[?14l`)).toEqual([['privateModeReset', [14]]])
+  expect(operations(`\x1B[?18l`)).toEqual([['privateModeReset', [18]]])
+  expect(operations(`\x1B[?19l`)).toEqual([['privateModeReset', [19]]])
+  expect(operations(`\x1B[?25l`)).toEqual([['privateModeReset', [25]]])
+  expect(operations(`\x1B[?30l`)).toEqual([['privateModeReset', [30]]])
+  expect(operations(`\x1B[?35l`)).toEqual([['privateModeReset', [35]]])
+  expect(operations(`\x1B[?40l`)).toEqual([['privateModeReset', [40]]])
+  expect(operations(`\x1B[?41l`)).toEqual([['privateModeReset', [41]]])
+  expect(operations(`\x1B[?42l`)).toEqual([['privateModeReset', [42]]])
+  expect(operations(`\x1B[?43l`)).toEqual([['privateModeReset', [43]]])
+  expect(operations(`\x1B[?44l`)).toEqual([['privateModeReset', [44]]])
+  expect(operations(`\x1B[?45l`)).toEqual([['privateModeReset', [45]]])
+  expect(operations(`\x1B[?46l`)).toEqual([['privateModeReset', [46]]])
+  expect(operations(`\x1B[?47l`)).toEqual([['privateModeReset', [47]]])
+  expect(operations(`\x1B[?66l`)).toEqual([['privateModeReset', [66]]])
+  expect(operations(`\x1B[?67l`)).toEqual([['privateModeReset', [67]]])
+  expect(operations(`\x1B[?69l`)).toEqual([['privateModeReset', [69]]])
+  expect(operations(`\x1B[?80l`)).toEqual([['privateModeReset', [80]]])
+  expect(operations(`\x1B[?95l`)).toEqual([['privateModeReset', [95]]])
+  expect(operations(`\x1B[?1000l`)).toEqual([['privateModeReset', [1000]]])
+  expect(operations(`\x1B[?1001l`)).toEqual([['privateModeReset', [1001]]])
+  expect(operations(`\x1B[?1002l`)).toEqual([['privateModeReset', [1002]]])
+  expect(operations(`\x1B[?1003l`)).toEqual([['privateModeReset', [1003]]])
+  expect(operations(`\x1B[?1004l`)).toEqual([['privateModeReset', [1004]]])
+  expect(operations(`\x1B[?1005l`)).toEqual([['privateModeReset', [1005]]])
+  expect(operations(`\x1B[?1006l`)).toEqual([['privateModeReset', [1006]]])
+  expect(operations(`\x1B[?1007l`)).toEqual([['privateModeReset', [1007]]])
+  expect(operations(`\x1B[?1010l`)).toEqual([['privateModeReset', [1010]]])
+  expect(operations(`\x1B[?1011l`)).toEqual([['privateModeReset', [1011]]])
+  expect(operations(`\x1B[?1015l`)).toEqual([['privateModeReset', [1015]]])
+  expect(operations(`\x1B[?1016l`)).toEqual([['privateModeReset', [1016]]])
+  expect(operations(`\x1B[?1035l`)).toEqual([['privateModeReset', [1035]]])
+  expect(operations(`\x1B[?1036l`)).toEqual([['privateModeReset', [1036]]])
+  expect(operations(`\x1B[?1037l`)).toEqual([['privateModeReset', [1037]]])
+  expect(operations(`\x1B[?1039l`)).toEqual([['privateModeReset', [1039]]])
+  expect(operations(`\x1B[?1040l`)).toEqual([['privateModeReset', [1040]]])
+  expect(operations(`\x1B[?1041l`)).toEqual([['privateModeReset', [1041]]])
+  expect(operations(`\x1B[?1042l`)).toEqual([['privateModeReset', [1042]]])
+  expect(operations(`\x1B[?1043l`)).toEqual([['privateModeReset', [1043]]])
+  expect(operations(`\x1B[?1046l`)).toEqual([['privateModeReset', [1046]]])
+  expect(operations(`\x1B[?1047l`)).toEqual([['privateModeReset', [1047]]])
+  expect(operations(`\x1B[?1048l`)).toEqual([['privateModeReset', [1048]]])
+  expect(operations(`\x1B[?1049l`)).toEqual([['privateModeReset', [1049]]])
+  expect(operations(`\x1B[?1050l`)).toEqual([['privateModeReset', [1050]]])
+  expect(operations(`\x1B[?1051l`)).toEqual([['privateModeReset', [1051]]])
+  expect(operations(`\x1B[?1052l`)).toEqual([['privateModeReset', [1052]]])
+  expect(operations(`\x1B[?1053l`)).toEqual([['privateModeReset', [1053]]])
+  expect(operations(`\x1B[?1060l`)).toEqual([['privateModeReset', [1060]]])
+  expect(operations(`\x1B[?1061l`)).toEqual([['privateModeReset', [1061]]])
+  expect(operations(`\x1B[?2004l`)).toEqual([['privateModeReset', [2004]]])
+})
 
 /**
  * CSI Pm l

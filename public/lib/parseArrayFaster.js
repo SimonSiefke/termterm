@@ -64,6 +64,7 @@ export const createParse = ({
   resetMode,
   lineFeed,
   privateModeSet,
+  privateModeReset,
 }) => {
   // let state = State.TopLevelContent
   // let i = 0
@@ -650,6 +651,9 @@ export const createParse = ({
               currentParam = array[i] - 48
               state = State.AfterQuestionMark2
               break
+            case /* J */ 74:
+              eraseInDisplay(params)
+              break
             case /* h */ 104:
               privateModeSet(params)
               break
@@ -676,6 +680,10 @@ export const createParse = ({
             case /* ; */ 59:
               params.push(currentParam)
               state = State.AfterQuestionMark
+              break
+            case /* J */ 74:
+              params.push(currentParam)
+              eraseInDisplay(params)
               break
             case /* h */ 104:
               params.push(currentParam)
