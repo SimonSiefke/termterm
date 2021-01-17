@@ -313,7 +313,7 @@ export const createParse = ({
               state = State.TopLevelContent
               break
             case /* 8 */ 56:
-              restoreCursor()
+              backspace()
               state = State.TopLevelContent
               break
             case /* H */ 72:
