@@ -207,12 +207,40 @@ const operations = (input) => {
     setCursorStyle(params) {
       calls.push(['setCursorStyle', params])
     },
+    shiftLeftColumns(params) {
+      calls.push(['shiftLeftColumns', params])
+    },
+    insertBlankCharacters(params) {
+      calls.push(['insertBlankCharacters', params])
+    },
   }
   const parse = createParse(terminal)
   const array = encodeText(input)
   parse(array)
   return calls
 }
+
+/**
+ * CSI Ps @
+ * Insert Ps (Blank) Character(s) (default = 1) (ICH).
+ */
+test('function insertBlankCharacters', () => {
+  expect(operations(`\x1B[@`)).toEqual([['insertBlankCharacters', []]])
+  expect(operations(`\x1B[0@`)).toEqual([['insertBlankCharacters', [0]]])
+  expect(operations(`\x1B[1@`)).toEqual([['insertBlankCharacters', [1]]])
+  expect(operations(`\x1B[2@`)).toEqual([['insertBlankCharacters', [2]]])
+})
+
+/**
+ * CSI Ps SP @
+ * Shift left Ps columns(s) (default = 1) (SL), ECMA-48.
+ */
+test('function shiftLeftColumns', () => {
+  expect(operations(`\x1B[ @`)).toEqual([['shiftLeftColumns', []]])
+  expect(operations(`\x1B[0 @`)).toEqual([['shiftLeftColumns', [0]]])
+  expect(operations(`\x1B[1 @`)).toEqual([['shiftLeftColumns', [1]]])
+  expect(operations(`\x1B[2 @`)).toEqual([['shiftLeftColumns', [2]]])
+})
 
 /**
  * CSI Ps A
@@ -1025,16 +1053,46 @@ test('function setCursorStyle', () => {
  * Ps = 2 , 3  or 4  ⇒  low.
  * Ps = 5 , 6 , 7 , or 8  ⇒  high.
  */
-test.skip('function setWarningBellVolume', () => {
-  expect(operations(``)).toEqual([[]])
+test('function setWarningBellVolume', () => {
+  expect(operations(`\x1B[ t`)).toEqual([])
+  expect(operations(`\x1B[0 t`)).toEqual([])
+  expect(operations(`\x1B[1 t`)).toEqual([])
+  expect(operations(`\x1B[2 t`)).toEqual([])
+  expect(operations(`\x1B[3 t`)).toEqual([])
+  expect(operations(`\x1B[4 t`)).toEqual([])
+  expect(operations(`\x1B[5 t`)).toEqual([])
+  expect(operations(`\x1B[6 t`)).toEqual([])
+  expect(operations(`\x1B[7 t`)).toEqual([])
+  expect(operations(`\x1B[8 t`)).toEqual([])
 })
 
 /**
  * CSI u
  * Restore cursor (SCORC, also ANSI.SYS).
  */
-test.skip('function restoreCursor', () => {
+test('function restoreCursor (alternative)', () => {
   expect(operations(`\x1B[u`)).toEqual([['restoreCursor']])
+})
+
+/**
+ * CSI Ps SP u
+ * Set margin-bell volume (DECSMBV), VT520.
+ *
+ * Ps = 0 , 5 , 6 , 7 , or 8  ⇒  high.
+ * Ps = 1  ⇒  off.
+ * Ps = 2 , 3  or 4  ⇒  low.
+ */
+test('function setMarginBellVolume', () => {
+  expect(operations(`\x1B[ u`)).toEqual([])
+  expect(operations(`\x1B[ 0u`)).toEqual([])
+  expect(operations(`\x1B[ 1u`)).toEqual([])
+  expect(operations(`\x1B[ 2u`)).toEqual([])
+  expect(operations(`\x1B[ 3u`)).toEqual([])
+  expect(operations(`\x1B[ 4u`)).toEqual([])
+  expect(operations(`\x1B[ 5u`)).toEqual([])
+  expect(operations(`\x1B[ 6u`)).toEqual([])
+  expect(operations(`\x1B[ 7u`)).toEqual([])
+  expect(operations(`\x1B[ 8u`)).toEqual([])
 })
 
 test('function - setCharAttributes', () => {

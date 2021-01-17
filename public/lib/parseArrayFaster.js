@@ -70,6 +70,8 @@ export const createParse = ({
   privateModeSet,
   privateModeReset,
   setCursorStyle,
+  shiftLeftColumns,
+  insertBlankCharacters,
 }) => {
   // let state = State.TopLevelContent
   // let i = 0
@@ -350,6 +352,10 @@ export const createParse = ({
             case /* ? */ 63:
               state = State.AfterQuestionMark
               break
+            case /* @ */ 64:
+              insertBlankCharacters(params)
+              state = State.TopLevelContent
+              break
             case /* A */ 65:
               cursorUp(params)
               state = State.TopLevelContent
@@ -466,6 +472,10 @@ export const createParse = ({
               setCharAttributes(params)
               state = State.TopLevelContent
               break
+            case /* u */ 117:
+              restoreCursor()
+              state = State.TopLevelContent
+              break
           }
           i++
           break
@@ -490,6 +500,11 @@ export const createParse = ({
             case /* 8 */ 56:
             case /* 9 */ 57:
               currentParam = currentParam * 10 + array[i] - 48
+              break
+            case /* @ */ 64:
+              params.push(currentParam)
+              insertBlankCharacters(params)
+              state = State.TopLevelContent
               break
             case /* A */ 65:
               params.push(currentParam)
@@ -746,8 +761,15 @@ export const createParse = ({
           break
         case State.AfterSpace:
           switch (array[i]) {
+            case /* @ */ 64:
+              shiftLeftColumns(params)
+              state = State.TopLevelContent
+              break
             case /* q */ 113:
               setCursorStyle(params)
+              state = State.TopLevelContent
+              break
+            case /* t */ 116:
               state = State.TopLevelContent
               break
           }
@@ -760,7 +782,7 @@ export const createParse = ({
 }
 
 // const demo = () => {
-//   const input = `\x1B[0 q`
+//   const input = `\x1B[ @`
 //   createParse({
 //     cursorDown: () => console.log('cursor down'),
 //     cursorNextLine: () => console.log('cursor next line'),
@@ -770,6 +792,8 @@ export const createParse = ({
 //     setMode: (params) => console.log('setMode', params),
 //     softTerminalReset: () => console.log('soft terminal reset'),
 //     setCursorStyle: (params) => console.log('set cursor style', params),
+//     restoreCursor: (params) => console.log('restore cursor', params),
+//     shiftLeftColumns: (params) => console.log('shiftLeftColumns', params),
 //   })(new Uint8Array(Buffer.from(input, 'utf-8')))
 // }
 
