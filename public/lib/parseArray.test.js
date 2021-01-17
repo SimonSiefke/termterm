@@ -1591,3 +1591,7 @@ test.skip('special ', () => {
 test.skip('special long numbers', () => {
   expect(operations(`１０`)).toEqual([['print']])
 })
+
+test('special ', () => {
+  expect(operations(`\x1B]0;`)).toEqual([])
+})

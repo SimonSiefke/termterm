@@ -15,6 +15,7 @@ const State = {
   AfterExclamationMark2: 13,
   AfterSpace: 14,
   AfterSpace2: 15,
+  Osc2: 16,
 }
 
 export const createParse = ({
@@ -775,6 +776,45 @@ export const createParse = ({
           }
           i++
           break
+        case State.Osc:
+          switch (array[i]) {
+            case /* 0 */ 48:
+            case /* 1 */ 49:
+            case /* 2 */ 50:
+            case /* 3 */ 51:
+            case /* 4 */ 52:
+            case /* 5 */ 53:
+            case /* 6 */ 54:
+            case /* 7 */ 55:
+            case /* 8 */ 56:
+            case /* 9 */ 57:
+              currentParam = array[i] - 48
+              state = State.Osc2
+              break
+          }
+          i++
+          break
+        case State.Osc2:
+          switch (array[i]) {
+            case /* 0 */ 48:
+            case /* 1 */ 49:
+            case /* 2 */ 50:
+            case /* 3 */ 51:
+            case /* 4 */ 52:
+            case /* 5 */ 53:
+            case /* 6 */ 54:
+            case /* 7 */ 55:
+            case /* 8 */ 56:
+            case /* 9 */ 57:
+              currentParam = currentParam * 10 + array[i] - 48
+              break
+            case /* ; */ 59:
+              params.push(currentParam)
+              state = State.AfterQuestionMark
+              break
+          }
+          i++
+          break
       }
     }
   }
@@ -782,7 +822,7 @@ export const createParse = ({
 }
 
 // const demo = () => {
-//   const input = `\x1B[ @`
+//   const input = `\x1B]0;`
 //   createParse({
 //     cursorDown: () => console.log('cursor down'),
 //     cursorNextLine: () => console.log('cursor next line'),
@@ -794,6 +834,9 @@ export const createParse = ({
 //     setCursorStyle: (params) => console.log('set cursor style', params),
 //     restoreCursor: (params) => console.log('restore cursor', params),
 //     shiftLeftColumns: (params) => console.log('shiftLeftColumns', params),
+//     print: (params) => console.log('print', params),
+//     lineFeed: () => console.log('lineFeed'),
+//     bell: () => console.log('bell'),
 //   })(new Uint8Array(Buffer.from(input, 'utf-8')))
 // }
 
