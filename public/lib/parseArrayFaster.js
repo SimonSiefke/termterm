@@ -411,6 +411,10 @@ export const createParse = ({
               cursorBackwardTabulation(params)
               state = State.TopLevelContent
               break
+            case /* ^ */ 94:
+              scrollDown(params)
+              state = State.TopLevelContent
+              break
             case /* ` */ 96:
               characterPositionAbsolute(params)
               state = State.TopLevelContent
@@ -562,6 +566,11 @@ export const createParse = ({
               cursorBackwardTabulation(params)
               state = State.TopLevelContent
               break
+            case /* ^ */ 94:
+              params.push(currentParam)
+              scrollDown(params)
+              state = State.TopLevelContent
+              break
             case /* ` */ 96:
               params.push(currentParam)
               characterPositionAbsolute(params)
@@ -653,12 +662,19 @@ export const createParse = ({
               break
             case /* J */ 74:
               eraseInDisplay(params)
+              state = State.TopLevelContent
+              break
+            case /* K */ 75:
+              eraseInLine(params)
+              state = State.TopLevelContent
               break
             case /* h */ 104:
               privateModeSet(params)
+              state = State.TopLevelContent
               break
             case /* l */ 108:
               privateModeReset(params)
+              state = State.TopLevelContent
               break
           }
           i++
@@ -684,14 +700,22 @@ export const createParse = ({
             case /* J */ 74:
               params.push(currentParam)
               eraseInDisplay(params)
+              state = State.TopLevelContent
+              break
+            case /* K */ 75:
+              params.push(currentParam)
+              eraseInLine(params)
+              state = State.TopLevelContent
               break
             case /* h */ 104:
               params.push(currentParam)
               privateModeSet(params)
+              state = State.TopLevelContent
               break
             case /* l */ 108:
               params.push(currentParam)
               privateModeReset(params)
+              state = State.TopLevelContent
               break
           }
           i++

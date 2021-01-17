@@ -403,7 +403,7 @@ test('function eraseInLine', () => {
  * Ps = 1  ⇒  Selective Erase to Left.
  * Ps = 2  ⇒  Selective Erase All.
  */
-test.skip('function eraseInLine (alternative)', () => {
+test('function eraseInLine (alternative)', () => {
   expect(operations(`\x1B[?K`)).toEqual([['eraseInLine', []]])
   expect(operations(`\x1B[?0K`)).toEqual([['eraseInLine', [0]]])
   expect(operations(`\x1B[?1K`)).toEqual([['eraseInLine', [1]]])
@@ -492,7 +492,7 @@ test('function cursorBackwardTabulation', () => {
  * Scroll down Ps lines (default = 1) (SD), ECMA-48.
  * This was a publication error in the original ECMA-48 5th edition (1991) corrected in 2003.
  */
-test.skip('function scrollDown (alternative)', () => {
+test('function scrollDown (alternative)', () => {
   expect(operations(`\x1B[^`)).toEqual([['scrollDown', []]])
   expect(operations(`\x1B[0^`)).toEqual([['scrollDown', [0]]])
   expect(operations(`\x1B[1^`)).toEqual([['scrollDown', [1]]])
