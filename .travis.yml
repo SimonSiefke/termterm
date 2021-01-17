@@ -18,4 +18,4 @@ jobs:
         - npm test
     - stage: benchmark
       script:
-        - npm run benchmark:parseArray
+        - npm run bundle-and-benchmark
