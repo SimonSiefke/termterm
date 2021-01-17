@@ -68,6 +68,11 @@ const array = new Uint8Array(fixtureLs.split('').map((x) => x.charCodeAt()))
 
 const parse = createParse(noop_terminal)
 let total = 0
+for (let i = 0; i < 5; i++) {
+  calls.length = 0
+  parse(array)
+}
+
 for (let i = 0; i < 1000; i++) {
   calls.length = 0
   console.log(bytesToSize(fixtureLs.length))
