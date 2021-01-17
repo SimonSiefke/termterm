@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="../../public/termterm.css" />
+  </head>
+  <body>
+    <div id="Terminal">
+      <canvas id="CanvasText"></canvas>
+      <canvas id="CanvasCursor"></canvas>
+    </div>
+
+    <script type="module">
+      import { createTerminal } from '../../public/lib/createTerminal.js'
+
+      const canvasText = document.getElementById('CanvasText')
+      const canvasCursor = document.getElementById('CanvasCursor')
+      const terminal = createTerminal(canvasText, canvasCursor, {})
+
+      terminal.pasteText(
+        `\n\x1B[0;35msimon\x1B[0;32m (master *)\x1B[0;34m termterm $ \x1B[0m`,
+      )
+    </script>
+  </body>
+</html>

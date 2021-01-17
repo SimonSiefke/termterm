@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="../../public/termterm.css" />
+  </head>
+  <body>
+    <div id="Terminal">
+      <canvas id="CanvasText"></canvas>
+      <canvas id="CanvasCursor"></canvas>
+    </div>
+
+    <script type="module">
+      import { createTerminal } from '../../public/lib/createTerminal.js'
+
+      const canvasText = document.getElementById('CanvasText')
+      const canvasCursor = document.getElementById('CanvasCursor')
+      const terminal = createTerminal(canvasText, canvasCursor, {})
+
+      terminal.pasteText(
+        `/usr/lib/bolt:
+total 276
+-rwxr-xr-x 1 root root 281264 Sep 10 10:53 [01;32mboltd[0m
+
+/usr/lib/brltty:
+total 1040
+-rw-r--r-- 1 root root 38984 Mar  3  2020 libbrlttybal.so
+-rw-r--r-- 1 root root 26696 Mar  3  2020 libbrlttybat.so
+-rw-r--r-- 1 root root 14408 Mar  3  2020 libbrlttybba.so
+-rw-r--r-- 1 root root 14408 Mar  3  2020 libbrlttybbc.so
+-rw-r--r-- 1 root root 14416 Mar  3  2020 libbrlttybbd.so
+-rw-r--r-- 1 root root 18504 Mar  3  2020 libbrlttybbg.so
+-rw-r--r-- 1 root root 18504 Mar  3  2020 libbrlttybbl.so
+-rw-r--r-- 1 root root 51352 Mar  3  2020 libbrlttybbm.so
+-rw-r--r-- 1 root root 22600 Mar  3  2020 libbrlttybbn.so
+-rw-r--r-- 1 root root 14408 Mar  3  2020 libbrlttybcb.so
+-rw-r--r-- 1 root root 18504 Mar  3  2020 libbrlttybce.so
+-rw-r--r-- 1 root root 14528 Mar  3  2020 libbrlttybec.so
+-rw-r--r-- 1 root root 38984 Mar  3  2020 libbrlttybeu.so
+-rw-r--r-- 1 root root 26696 Mar  3  2020 libbrlttybfs.so
+-rw-r--r-- 1 root root 18504 Mar  3  2020 libbrlttybhd.so
+-rw-r--r-- 1 root root 22656 Mar  3  2020 libbrlttybhm.so
+-rw-r--r-- 1 root root 43080 Mar  3  2020 libbrlttybht.so
+-rw-r--r-- 1 root root 22600 Mar  3  2020 libbrlttybhw.so
+-rw-r--r-- 1 root root 14408 Mar  3  2020 libbrlttybic.so
+-rw-r--r-- 1 root root 30792 Mar  3  2020 libbrlttybir.so
+-rw-r--r-- 1 root root 18784 Mar  3  2020 libbrlttyblt.so
+-rw-r--r-- 1 root root 14408 Mar  3  2020 libbrlttybmb.so
+-rw-r--r-- 1 root root 18504 Mar  3  2020 libbrlttybmd.so
+-rw-r--r-- 1 root root 18504 Mar  3  2020 libbrlttybmm.so
+-rw-r--r-- 1 root root 14408 Mar  3  2020 libbrlttybmn.so
+-rw-r--r-- 1 root root 18504 Mar  3  2020 libbrlttybmt.so
+-rw-r--r-- 1 root root 14408 Mar  3  2020 libbrlttybnp.so
+-rw-r--r-- 1 root root 22600 Mar  3  2020 libbrlttybpg.so
+-rw-r--r-- 1 root root 38984 Mar  3  2020 libbrlttybpm.so
+-rw-r--r-- 1 root root 26696 Mar  3  2020 libbrlttybsk.so
+-rw-r--r-- 1 root root 14408 Mar  3  2020 libbrlttybtn.so
+-rw-r--r-- 1 root root 26696 Mar  3  2020 libbrlttybts.so
+-rw-r--r-- 1 root root 14408 Mar  3  2020 libbrlttybtt.so
+-rw-r--r-- 1 root root 14408 Mar  3  2020 libbrlttybvd.so
+-rw-r--r-- 1 root root 26696 Mar  3  2020 libbrlttybvo.so
+-rw-r--r-- 1 root root 26696 Mar  3  2020 libbrlttybvr.so
+-rw-r--r-- 1 root root 14512 Mar  3  2020 libbrlttybvs.so
+-rw-r--r-- 1 root root 18504 Mar  3  2020 libbrlttysal.so
+-rw-r--r-- 1 root root 14432 Mar  3  2020 libbrlttysbl.so
+-rw-r--r-- 1 root root 18504 Mar  3  2020 libbrlttyscb.so
+-rw-r--r-- 1 root root 14408 Mar  3  2020 libbrlttysfv.so
+-rw-r--r-- 1 root root 14408 Mar  3  2020 libbrlttysgs.so
+-rw-r--r-- 1 root root 14416 Mar  3  2020 libbrlttysxs.so
+-rw-r--r-- 1 root root 39112 Mar  3  2020 libbrlttyxlx.so
+-rw-r--r-- 1 root root 14408 Mar  3  2020 libbrlttyxsc.so
+
+/usr/lib/code-server:
+total 48044
+drwxr-xr-x  2 root root     4096 Oct 24 15:51 [01;34mbin[0m
+-rwxr-xr-x  1 root root      993 Oct 23 22:48 [01;32mcode-server[0m
+drwxr-xr-x  3 root root     4096 Oct 24 15:51 [01;34mdist[0m
+drwxr-xr-x  3 root root     4096 Oct 24 15:51 [01;34mlib[0m
+-rw-r--r--  1 root root     1084 Oct 23 22:48 LICENSE.txt
+-rwxr-xr-x  1 root root 48646616 Oct 23 22:48 [01;32mnode[0m
+drwxr-xr-x 60 root root     4096 Oct 24 15:51 [01;34mnode_modules[0m
+drwxr-xr-x  5 root root     4096 Oct 24 15:51 [01;34mout[0m
+-rw-r--r--  1 root root     3097 Oct 23 22:48 package.json
+-rwxr-xr-x  1 root root     1708 Oct 23 22:48 [01;32mpostinstall.sh[0m
+-rw-r--r--  1 root root     2867 Oct 23 22:48 README.md
+drwxr-xr-x  3 root root     4096 Oct 24 15:51 [01;34msrc[0m
+-rw-r--r--  1 root root   151735 Oct 23 22:48 ThirdPartyNotices.txt
+-rw-r--r--  1 root root   347608 Oct 23 22:48 yarn.lock
+
+/usr/lib/code-server/bin:
+total 4
+-rwxr-xr-x 1 root root 993 Oct 23 22:48 [01;32mcode-server[0m
+
+/usr/lib/code-server/dist:
+total 64
+drwxr-xr-x 2 root root  4096 Oct 24 15:51 [01;34mpages[0m
+-rw-r--r-- 1 root root  1892 Oct 23 22:48 register.css
+-rw-r--r-- 1 root root  3728 Oct 23 22:48 register.css.map
+-rw-r--r-- 1 root root  9995 Oct 23 22:48 register.js
+-rw-r--r-- 1 root root 30573 Oct 23 22:48 register.js.map
+-rw-r--r-- 1 root root  1358 Oct 23 22:48 serviceWorker.js
+-rw-r--r-- 1 root root   644 Oct 23 22:48 serviceWorker.js.map
+
+/usr/lib/code-server/dist/pages:
+total 92
+-rw-r--r-- 1 root root  9595 Oct 23 22:48 login.js
+-rw-r--r-- 1 root root 30114 Oct 23 22:48 login.js.map
+-rw-r--r-- 1 root root 10955 Oct 23 22:48 vscode.js
+-rw-r--r-- 1 root root 32805 Oct 23 22:48 vscode.js.map
+
+/usr/lib/code-server/lib:
+total 54376
+-rwxr-xr-x 1 root root  7028736 Oct 23 22:48 [01;32mcoder-cloud-agent[0m
+-rwxr-xr-x 1 root root 48646616 Oct 23 22:48 [01;32mnode[0m
+drwxr-xr-x 7 root root     4096 Oct 24 15:51 [01;34mvscode[0m
+
+/usr/lib/code-server/lib/vscode:
+total 436
+drwxr-xr-x  84 root root   4096 Oct 24 15:51 [01;34mextensions[0m
+drwxr-xr-x 122 root root   4096 Oct 24 15:51 [01;34mnode_modules[0m
+drwxr-xr-x   3 root root   4096 Oct 24 15:51 [01;34mout[0m
+-rw-r--r--   1 root root   4887 Oct 23 22:48 package.json
+-rw-r--r--   1 root root   4807 Oct 23 22:48 product.json
+drwxr-xr-x   3 root root   4096 Oct 24 15:51 [01;34mresources[0m
+drwxr-xr-x   3 root root   4096 Oct 24 15:51 [01;34msrc[0m
+-rw-r--r--   1 root root 408102 Oct 23 22:48 yarn.lock`.replaceAll(
+          '\n',
+          '\r\n',
+        ),
+      )
+    </script>
+  </body>
+</html>

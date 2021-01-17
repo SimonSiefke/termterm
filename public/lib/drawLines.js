@@ -95,7 +95,6 @@ export const createDrawLines = (
   const drawLine = (bufferY, positionY) => {
     let x = -1
     const chars = getChars(bufferY)
-    //console.log(chars)
     // const chars = lines[y]
     const attributesOnLine = attributes[bufferY] || {}
     let currentAttributes = {
