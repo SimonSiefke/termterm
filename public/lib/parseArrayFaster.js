@@ -11,6 +11,8 @@ const State = {
   Dcs: 9,
   AfterQuestionMark: 10,
   AfterQuestionMark2: 11,
+  AfterExclamationMark: 12,
+  AfterExclamationMark2: 13,
 }
 
 export const createParse = ({
@@ -323,6 +325,9 @@ export const createParse = ({
           break
         case State.Csi:
           switch (array[i]) {
+            case /* ! */ 33:
+              state = State.AfterExclamationMark
+              break
             case /* 0 */ 48:
             case /* 1 */ 49:
             case /* 2 */ 50:
@@ -720,6 +725,15 @@ export const createParse = ({
           }
           i++
           break
+        case State.AfterExclamationMark:
+          switch (array[i]) {
+            case /* p */ 112:
+              softTerminalReset()
+              state = State.TopLevelContent
+              break
+          }
+          i++
+          break
       }
     }
   }
@@ -727,7 +741,7 @@ export const createParse = ({
 }
 
 // const demo = () => {
-//   const input = `\x1B[?1h`
+//   const input = `\x1B[!p`
 //   createParse({
 //     cursorDown: () => console.log('cursor down'),
 //     cursorNextLine: () => console.log('cursor next line'),
@@ -735,6 +749,7 @@ export const createParse = ({
 //     setCharAttributes: (params) => console.log('set char attributes', params),
 //     privateModeSet: (params) => console.log('private mode set', params),
 //     setMode: (params) => console.log('setMode', params),
+//     softTerminalReset: () => console.log('soft terminal reset'),
 //   })(new Uint8Array(Buffer.from(input, 'utf-8')))
 // }
 

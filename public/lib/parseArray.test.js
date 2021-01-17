@@ -201,6 +201,9 @@ const operations = (input) => {
     privateModeReset(params) {
       calls.push(['privateModeReset', params])
     },
+    softTerminalReset() {
+      calls.push(['softTerminalReset'])
+    },
   }
   const parse = createParse(terminal)
   const array = encodeText(input)
@@ -984,7 +987,7 @@ test.skip('function setCharacterAttributes', () => {
  * CSI ! p
  * Soft terminal reset (DECSTR), VT220 and up.
  */
-test.skip('function softTerminalReset', () => {
+test('function softTerminalReset', () => {
   expect(operations(`\x1B[!p`)).toEqual([['softTerminalReset']])
 })
 
