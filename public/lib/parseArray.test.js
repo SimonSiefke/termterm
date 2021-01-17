@@ -204,6 +204,9 @@ const operations = (input) => {
     softTerminalReset() {
       calls.push(['softTerminalReset'])
     },
+    setCursorStyle(params) {
+      calls.push(['setCursorStyle', params])
+    },
   }
   const parse = createParse(terminal)
   const array = encodeText(input)
@@ -1003,8 +1006,15 @@ test('function softTerminalReset', () => {
  * Ps = 5  ⇒  blinking bar, xterm.
  * Ps = 6  ⇒  steady bar, xterm.
  */
-test.skip('function setCursorStyle', () => {
-  expect(operations(``)).toEqual([[]])
+test('function setCursorStyle', () => {
+  expect(operations(`\x1B[ q`)).toEqual([['setCursorStyle', []]])
+  expect(operations(`\x1B[0 q`)).toEqual([['setCursorStyle', [0]]])
+  expect(operations(`\x1B[1 q`)).toEqual([['setCursorStyle', [1]]])
+  expect(operations(`\x1B[2 q`)).toEqual([['setCursorStyle', [2]]])
+  expect(operations(`\x1B[3 q`)).toEqual([['setCursorStyle', [3]]])
+  expect(operations(`\x1B[4 q`)).toEqual([['setCursorStyle', [4]]])
+  expect(operations(`\x1B[5 q`)).toEqual([['setCursorStyle', [5]]])
+  expect(operations(`\x1B[6 q`)).toEqual([['setCursorStyle', [6]]])
 })
 
 /**

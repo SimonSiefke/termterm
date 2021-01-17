@@ -13,6 +13,8 @@ const State = {
   AfterQuestionMark2: 11,
   AfterExclamationMark: 12,
   AfterExclamationMark2: 13,
+  AfterSpace: 14,
+  AfterSpace2: 15,
 }
 
 export const createParse = ({
@@ -67,6 +69,7 @@ export const createParse = ({
   lineFeed,
   privateModeSet,
   privateModeReset,
+  setCursorStyle,
 }) => {
   // let state = State.TopLevelContent
   // let i = 0
@@ -325,6 +328,9 @@ export const createParse = ({
           break
         case State.Csi:
           switch (array[i]) {
+            case /*   */ 32:
+              state = State.AfterSpace
+              break
             case /* ! */ 33:
               state = State.AfterExclamationMark
               break
@@ -465,6 +471,10 @@ export const createParse = ({
           break
         case State.AfterEscape3:
           switch (array[i]) {
+            case /*   */ 32:
+              params.push(currentParam)
+              state = State.AfterSpace
+              break
             case /* ; */ 59:
               params.push(currentParam)
               state = State.AfterEscape3AfterSemicolon
@@ -734,6 +744,15 @@ export const createParse = ({
           }
           i++
           break
+        case State.AfterSpace:
+          switch (array[i]) {
+            case /* q */ 113:
+              setCursorStyle(params)
+              state = State.TopLevelContent
+              break
+          }
+          i++
+          break
       }
     }
   }
@@ -741,7 +760,7 @@ export const createParse = ({
 }
 
 // const demo = () => {
-//   const input = `\x1B[!p`
+//   const input = `\x1B[0 q`
 //   createParse({
 //     cursorDown: () => console.log('cursor down'),
 //     cursorNextLine: () => console.log('cursor next line'),
@@ -750,6 +769,7 @@ export const createParse = ({
 //     privateModeSet: (params) => console.log('private mode set', params),
 //     setMode: (params) => console.log('setMode', params),
 //     softTerminalReset: () => console.log('soft terminal reset'),
+//     setCursorStyle: (params) => console.log('set cursor style', params),
 //   })(new Uint8Array(Buffer.from(input, 'utf-8')))
 // }
 
