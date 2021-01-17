@@ -9,6 +9,8 @@ const State = {
   // CsiAfterQuestionMark2: 10,
   Osc: 8,
   Dcs: 9,
+  AfterQuestionMark: 10,
+  AfterQuestionMark2: 11,
 }
 
 export const createParse = ({
@@ -63,80 +65,11 @@ export const createParse = ({
   lineFeed,
   privateModeSet,
 }) => {
-  let state = State.TopLevelContent
-  let i = 0
-  let currentParam
-  let params = []
-  let printStartIndex = -1
-
-  const parseAfterQuestionMark = () => {
-    const State = {
-      Default: 1,
-      AfterSemicolon: 2,
-      AfterNumber: 3,
-    }
-    let state = State.Default
-    i++
-    params = []
-    while (i < array.length) {
-      state //?
-      currentParam
-      switch (state) {
-        case State.Default:
-          switch (array[i]) {
-            case /* 0 */ 48:
-            case /* 1 */ 49:
-            case /* 2 */ 50:
-            case /* 3 */ 51:
-            case /* 4 */ 52:
-            case /* 5 */ 53:
-            case /* 6 */ 54:
-            case /* 7 */ 55:
-            case /* 8 */ 56:
-            case /* 9 */ 57:
-              currentParam = array[i] - 48
-              state = State.AfterNumber
-              break
-            case /* h */ 104:
-              console.log(privateModeSet)
-              params
-              privateModeSet(params)
-              break
-            case /* l */ 108:
-              privateModeReset()
-              break
-          }
-          break
-        case State.AfterNumber:
-          switch (array[i]) {
-            case /* 0 */ 48:
-            case /* 1 */ 49:
-            case /* 2 */ 50:
-            case /* 3 */ 51:
-            case /* 4 */ 52:
-            case /* 5 */ 53:
-            case /* 6 */ 54:
-            case /* 7 */ 55:
-            case /* 8 */ 56:
-            case /* 9 */ 57:
-              currentParam = currentParam * 10 + array[i] - 48
-              break
-            case /* h */ 104:
-              params.push(currentParam)
-              privateModeSet(params)
-              break
-            case /* l */ 108:
-              params.push(currentParam)
-              privateModeReset()
-              break
-            default:
-              break
-          }
-      }
-      i++
-    }
-    i++
-  }
+  // let state = State.TopLevelContent
+  // let i = 0
+  // let currentParam
+  // let params = []
+  // let printStartIndex = -1
 
   const parse = (array) => {
     let state = State.TopLevelContent
@@ -403,7 +336,7 @@ export const createParse = ({
               state = State.AfterEscape3
               break
             case /* ? */ 63:
-              console.log(parseAfterQuestionMark)
+              state = State.AfterQuestionMark
               break
             case /* A */ 65:
               cursorUp(params)
@@ -702,6 +635,59 @@ export const createParse = ({
           }
           i++
           break
+        case State.AfterQuestionMark:
+          switch (array[i]) {
+            case /* 0 */ 48:
+            case /* 1 */ 49:
+            case /* 2 */ 50:
+            case /* 3 */ 51:
+            case /* 4 */ 52:
+            case /* 5 */ 53:
+            case /* 6 */ 54:
+            case /* 7 */ 55:
+            case /* 8 */ 56:
+            case /* 9 */ 57:
+              currentParam = array[i] - 48
+              state = State.AfterQuestionMark2
+              break
+            case /* h */ 104:
+              privateModeSet(params)
+              break
+            case /* l */ 108:
+              privateModeReset(params)
+              break
+          }
+          i++
+          break
+        case State.AfterQuestionMark2:
+          switch (array[i]) {
+            case /* 0 */ 48:
+            case /* 1 */ 49:
+            case /* 2 */ 50:
+            case /* 3 */ 51:
+            case /* 4 */ 52:
+            case /* 5 */ 53:
+            case /* 6 */ 54:
+            case /* 7 */ 55:
+            case /* 8 */ 56:
+            case /* 9 */ 57:
+              currentParam = currentParam * 10 + array[i] - 48
+              break
+            case /* ; */ 59:
+              params.push(currentParam)
+              state = State.AfterQuestionMark
+              break
+            case /* h */ 104:
+              params.push(currentParam)
+              privateModeSet(params)
+              break
+            case /* l */ 108:
+              params.push(currentParam)
+              privateModeReset(params)
+              break
+          }
+          i++
+          break
       }
     }
   }
@@ -709,13 +695,14 @@ export const createParse = ({
 }
 
 // const demo = () => {
-//   const input = `\x1B[?25h`
+//   const input = `\x1B[?1h`
 //   createParse({
 //     cursorDown: () => console.log('cursor down'),
 //     cursorNextLine: () => console.log('cursor next line'),
 //     cursorCharacterAbsolute: () => console.log('cursor character absolute'),
 //     setCharAttributes: (params) => console.log('set char attributes', params),
 //     privateModeSet: (params) => console.log('private mode set', params),
+//     setMode: (params) => console.log('setMode', params),
 //   })(new Uint8Array(Buffer.from(input, 'utf-8')))
 // }
 

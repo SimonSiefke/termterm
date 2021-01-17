@@ -1,3 +1,8 @@
+/**
+ * Terminal Emulation References:
+ * http://invisible-island.net/xterm/ctlseqs/ctlseqs.html
+ */
+
 import { jest } from '@jest/globals'
 import { StringDecoder } from 'string_decoder'
 import { createParse } from './parseArrayFaster.js'
@@ -115,12 +120,6 @@ const operations = (input) => {
     cursorPosition(params) {
       calls.push(['cursorPosition', params])
     },
-    cursorHide() {
-      calls.push(['cursorHide'])
-    },
-    cursorShow() {
-      calls.push(['cursorShow'])
-    },
     deleteCharacters(params) {
       calls.push(['deleteCharacters', params])
     },
@@ -199,8 +198,10 @@ const operations = (input) => {
     privateModeSet(params) {
       calls.push(['privateModeSet', params])
     },
+    privateModeReset(params) {
+      calls.push(['privateModeReset', params])
+    },
   }
-  console.log(terminal.privateModeSet)
   const parse = createParse(terminal)
   const array = encodeText(input)
   parse(array)
@@ -755,7 +756,7 @@ test('function setMode', () => {
  * Ps = 1 0 6 1  ⇒  Set VT220 keyboard emulation, xterm.
  * Ps = 2 0 0 4  ⇒  Set bracketed paste mode, xterm.
  */
-test.only('function privateModeSet', () => {
+test('function privateModeSet', () => {
   expect(operations(`\x1B[?1h`)).toEqual([['privateModeSet', [1]]])
   expect(operations(`\x1B[?2h`)).toEqual([['privateModeSet', [2]]])
   expect(operations(`\x1B[?3h`)).toEqual([['privateModeSet', [3]]])
@@ -779,6 +780,79 @@ test.only('function privateModeSet', () => {
   expect(operations(`\x1B[?41h`)).toEqual([['privateModeSet', [41]]])
   expect(operations(`\x1B[?42h`)).toEqual([['privateModeSet', [42]]])
 })
+
+/**
+ * CSI ? Pm l
+ * DEC Private Mode Reset (DECRST).
+ *
+ * Ps = 1  ⇒  Normal Cursor Keys (DECCKM), VT100.
+ * Ps = 2  ⇒  Designate VT52 mode (DECANM), VT100.
+ * Ps = 3  ⇒  80 Column Mode (DECCOLM), VT100.
+ * Ps = 4  ⇒  Jump (Fast) Scroll (DECSCLM), VT100.
+ * Ps = 5  ⇒  Normal Video (DECSCNM), VT100.
+ * Ps = 6  ⇒  Normal Cursor Mode (DECOM), VT100.
+ * Ps = 7  ⇒  No Auto-Wrap Mode (DECAWM), VT100.
+ * Ps = 8  ⇒  No Auto-Repeat Keys (DECARM), VT100.
+ * Ps = 9  ⇒  Don't send Mouse X & Y on button press, xterm.
+ * Ps = 1 0  ⇒  Hide toolbar (rxvt).
+ * Ps = 1 2  ⇒  Stop blinking cursor (AT&T 610).
+ * Ps = 1 3  ⇒  Disable blinking cursor (reset only via resource or menu).
+ * Ps = 1 4  ⇒  Disable XOR of blinking cursor control sequence and menu.
+ * Ps = 1 8  ⇒  Don't Print Form Feed (DECPFF), VT220.
+ * Ps = 1 9  ⇒  Limit print to scrolling region (DECPEX), VT220.
+ * Ps = 2 5  ⇒  Hide cursor (DECTCEM), VT220.
+ * Ps = 3 0  ⇒  Don't show scrollbar (rxvt).
+ * Ps = 3 5  ⇒  Disable font-shifting functions (rxvt).
+ * Ps = 4 0  ⇒  Disallow 80 ⇒  132 mode, xterm.
+ * Ps = 4 1  ⇒  No more(1) fix (see curses resource).
+ * Ps = 4 2  ⇒  Disable National Replacement Character sets (DECNRCM), VT220.
+ * Ps = 4 3  ⇒  Disable Graphics Expanded Print Mode (DECGEPM).
+ * Ps = 4 4  ⇒  Turn off margin bell, xterm.
+ * Ps = 4 4  ⇒  Disable Graphics Print Color Mode (DECGPCM).
+ * Ps = 4 5  ⇒  No Reverse-wraparound mode, xterm.
+ * Ps = 4 5  ⇒  Disable Graphics Print ColorSpace (DECGPCS).
+ * Ps = 4 6  ⇒  Stop logging, xterm.  This is normally disabled by a compile-time option.
+ * Ps = 4 7  ⇒  Use Normal Screen Buffer, xterm.
+ * Ps = 4 7  ⇒  Disable Graphics Rotated Print Mode (DECGRPM).
+ * Ps = 6 6  ⇒  Numeric keypad mode (DECNKM), VT320.
+ * Ps = 6 7  ⇒  Backarrow key sends delete (DECBKM), VT340, VT420.  This sets the backarrowKey resource to "false".
+ * Ps = 6 9  ⇒  Disable left and right margin mode (DECLRMM), VT420 and up.
+ * Ps = 8 0  ⇒  Disable Sixel Scrolling (DECSDM).
+ * Ps = 9 5  ⇒  Clear screen when DECCOLM is set/reset (DECNCSM), VT510 and up.
+ * Ps = 1 0 0 0  ⇒  Don't send Mouse X & Y on button press and release.  See the section Mouse Tracking.
+ * Ps = 1 0 0 1  ⇒  Don't use Hilite Mouse Tracking, xterm.
+ * Ps = 1 0 0 2  ⇒  Don't use Cell Motion Mouse Tracking, xterm.  See the section Button-event tracking.
+ * Ps = 1 0 0 3  ⇒  Don't use All Motion Mouse Tracking, xterm. See the section Any-event tracking.
+ * Ps = 1 0 0 4  ⇒  Don't send FocusIn/FocusOut events, xterm.
+ * Ps = 1 0 0 5  ⇒  Disable UTF-8 Mouse Mode, xterm.
+ * Ps = 1 0 0 6  ⇒  Disable SGR Mouse Mode, xterm.
+ * Ps = 1 0 0 7  ⇒  Disable Alternate Scroll Mode, xterm.  This corresponds to the alternateScroll resource.
+ * Ps = 1 0 1 0  ⇒  Don't scroll to bottom on tty output (rxvt).  This sets the scrollTtyOutput resource to "false".
+ * Ps = 1 0 1 1  ⇒  Don't scroll to bottom on key press (rxvt). This sets the scrollKey resource to "false".
+ * Ps = 1 0 1 5  ⇒  Disable urxvt Mouse Mode.
+ * Ps = 1 0 1 6  ⇒  Disable SGR Mouse Pixel-Mode, xterm.
+ * Ps = 1 0 3 4  ⇒  Don't interpret "meta" key, xterm.  This disables the eightBitInput resource.
+ * Ps = 1 0 3 5  ⇒  Disable special modifiers for Alt and NumLock keys, xterm.  This disables the numLock resource.
+ * Ps = 1 0 3 6  ⇒  Don't send ESC  when Meta modifies a key, xterm.  This disables the metaSendsEscape resource.
+ * Ps = 1 0 3 7  ⇒  Send VT220 Remove from the editing-keypad Delete key, xterm.
+ * Ps = 1 0 3 9  ⇒  Don't send ESC when Alt modifies a key, xterm.  This disables the altSendsEscape resource.
+ * Ps = 1 0 4 0  ⇒  Do not keep selection when not highlighted, xterm.  This disables the keepSelection resource.
+ * Ps = 1 0 4 1  ⇒  Use the PRIMARY selection, xterm.  This disables the selectToClipboard resource.
+ * Ps = 1 0 4 2  ⇒  Disable Urgency window manager hint when Control-G is received, xterm.  This disables the bellIsUrgent resource.
+ * Ps = 1 0 4 3  ⇒  Disable raising of the window when Control-G is received, xterm.  This disables the popOnBell resource.
+ * Ps = 1 0 4 6  ⇒  Disable switching to/from Alternate Screen Buffer, xterm.  This works for terminfo-based systems, updating the titeInhibit resource.  If currently using the Alternate Screen Buffer, xterm switches to the Normal Screen Buffer.
+ * Ps = 1 0 4 7  ⇒  Use Normal Screen Buffer, xterm.  Clear the screen first if in the Alternate Screen Buffer.  This may be disabled by the titeInhibit resource.
+ * Ps = 1 0 4 8  ⇒  Restore cursor as in DECRC, xterm.  This may be disabled by the titeInhibit resource.
+ * Ps = 1 0 4 9  ⇒  Use Normal Screen Buffer and restore cursor as in DECRC, xterm.  This may be disabled by the titeInhibit resource.  This combines the effects of the 1 0 4 7  and 1 0 4 8  modes.  Use this with terminfo-based applications rather than the 4 7  mode.
+ * Ps = 1 0 5 0  ⇒  Reset terminfo/termcap function-key mode, xterm.
+ * Ps = 1 0 5 1  ⇒  Reset Sun function-key mode, xterm.
+ * Ps = 1 0 5 2  ⇒  Reset HP function-key mode, xterm.
+ * Ps = 1 0 5 3  ⇒  Reset SCO function-key mode, xterm.
+ * Ps = 1 0 6 0  ⇒  Reset legacy keyboard emulation, i.e, X11R6, xterm.
+ * Ps = 1 0 6 1  ⇒  Reset keyboard emulation to Sun/PC style, xterm.
+ * Ps = 2 0 0 4  ⇒  Reset bracketed paste mode, xterm.
+ */
+test('function privateModeReset', () => {})
 
 /**
  * CSI Pm l
@@ -1334,13 +1408,13 @@ test('reset char attributes', () => {
   expect(operations(`\x1B[m`)).toEqual([['setCharAttributes', []]])
 })
 
-test('function cursorHide', () => {
-  expect(operations(`\x1B[?25l`)).toEqual([['cursorHide']])
-})
+// test('function cursorHide', () => {
+//   expect(operations(`\x1B[?25l`)).toEqual([['cursorHide']])
+// })
 
-test('function cursorShow', () => {
-  expect(operations(`\x1B[?25h`)).toEqual([['cursorShow']])
-})
+// test('function cursorShow', () => {
+//   expect(operations(`\x1B[?25h`)).toEqual([['cursorShow']])
+// })
 
 test.skip('special ', () => {
   expect(operations(`\x1B[?1049l`)).toEqual([[]])
