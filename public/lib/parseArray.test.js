@@ -1152,22 +1152,6 @@ test('function eraseInLine', () => {
   expect(operations(`\u001b[K`)).toEqual([['eraseInLine', []]])
 })
 
-test('function - setCharAttributes with white background', () => {
-  expect(operations(`\x1B[0;7m^C`)).toEqual([['setCharAttributes'], ['print']])
-})
-
-test('function - eraseInLine', () => {
-  const eraseInLine = jest.fn()
-  runTest('\u001b[K', { eraseInLine })
-  expect(eraseInLine).toHaveBeenCalledTimes(1)
-})
-
-test('function - backspace', () => {
-  const backspace = jest.fn()
-  runTest('\u0008', { backspace })
-  expect(backspace).toHaveBeenCalledTimes(1)
-})
-
 test('function - setGLevel 1', () => {
   expect(operations(`\u001b~`)).toEqual([])
 })
@@ -1203,12 +1187,6 @@ test('function - tabSet', () => {
 })
 
 test.skip('function - setWindowTitle', () => {
-  expect(operations('\u001b]0;This is the window title\x07')).toEqual([
-    ['setWindowTitle', 'This is the window title'],
-  ])
-})
-
-test('function - setWindowTitle', () => {
   expect(operations('\u001b]0;This is the window title\x07')).toEqual([
     ['setWindowTitle', 'This is the window title'],
   ])
