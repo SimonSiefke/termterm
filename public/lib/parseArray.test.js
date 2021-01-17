@@ -148,11 +148,7 @@ const operations = (input) => {
  */
 test('function bell', () => {
   expect(operations(`\u0007`)).toEqual([['bell']])
-  expect(operations(`sample \u0007 text`)).toEqual([
-    ['print'],
-    ['bell'],
-    ['print'],
-  ])
+  expect(operations(`\u0007 text`)).toEqual([['bell'], ['print']])
 })
 
 /**
@@ -161,6 +157,7 @@ test('function bell', () => {
  */
 test('function backspace', () => {
   expect(operations(`\u0008`)).toEqual([['backspace']])
+  expect(operations(`\u0008 text`)).toEqual([['backspace'], ['print']])
 })
 
 /**
@@ -169,6 +166,7 @@ test('function backspace', () => {
  */
 test('function carriageReturn', () => {
   expect(operations(`\r`)).toEqual([['carriageReturn']])
+  expect(operations(`\r text`)).toEqual([['carriageReturn'], ['print']])
 })
 /**
  * LF
@@ -176,6 +174,7 @@ test('function carriageReturn', () => {
  */
 test('function lineFeed', () => {
   expect(operations(`\n`)).toEqual([['lineFeed']])
+  expect(operations(`\n text`)).toEqual([['lineFeed'], ['print']])
 })
 
 /**
@@ -184,6 +183,7 @@ test('function lineFeed', () => {
  */
 test('function tab', () => {
   expect(operations(`\t`)).toEqual([])
+  expect(operations(`\t text`)).toEqual([['print']])
 })
 
 /**
@@ -195,6 +195,10 @@ test('function insertBlankCharacters', () => {
   expect(operations(`\x1B[0@`)).toEqual([['insertBlankCharacters', [0]]])
   expect(operations(`\x1B[1@`)).toEqual([['insertBlankCharacters', [1]]])
   expect(operations(`\x1B[2@`)).toEqual([['insertBlankCharacters', [2]]])
+  expect(operations(`\x1B[@ text`)).toEqual([
+    ['insertBlankCharacters', []],
+    ['print'],
+  ])
 })
 
 /**
@@ -206,6 +210,10 @@ test('function shiftLeftColumns', () => {
   expect(operations(`\x1B[0 @`)).toEqual([['shiftLeftColumns', [0]]])
   expect(operations(`\x1B[1 @`)).toEqual([['shiftLeftColumns', [1]]])
   expect(operations(`\x1B[2 @`)).toEqual([['shiftLeftColumns', [2]]])
+  expect(operations(`\x1B[ @ text`)).toEqual([
+    ['shiftLeftColumns', []],
+    ['print'],
+  ])
 })
 
 /**
@@ -217,16 +225,7 @@ test('function - cursorUp', () => {
   expect(operations('\u001b[0A')).toEqual([['cursorUp', [0]]])
   expect(operations('\u001b[1A')).toEqual([['cursorUp', [1]]])
   expect(operations('\u001b[2A')).toEqual([['cursorUp', [2]]])
-  expect(operations(`sample \u001b[A text`)).toEqual([
-    ['print'],
-    ['cursorUp', []],
-    ['print'],
-  ])
-  expect(operations(`sample \u001b[2A text`)).toEqual([
-    ['print'],
-    ['cursorUp', [2]],
-    ['print'],
-  ])
+  expect(operations(`\u001b[A text`)).toEqual([['cursorUp', []], ['print']])
 })
 
 /**
@@ -238,16 +237,7 @@ test('function - cursorDown', () => {
   expect(operations(`\u001b[0B`)).toEqual([['cursorDown', [0]]])
   expect(operations(`\u001b[1B`)).toEqual([['cursorDown', [1]]])
   expect(operations(`\u001b[2B`)).toEqual([['cursorDown', [2]]])
-  expect(operations(`sample \u001b[B text`)).toEqual([
-    ['print'],
-    ['cursorDown', []],
-    ['print'],
-  ])
-  expect(operations(`sample \u001b[2B text`)).toEqual([
-    ['print'],
-    ['cursorDown', [2]],
-    ['print'],
-  ])
+  expect(operations(`\u001b[B text`)).toEqual([['cursorDown', []], ['print']])
 })
 
 /**
@@ -259,16 +249,7 @@ test('function - cursorRight', () => {
   expect(operations(`\u001b[0C`)).toEqual([['cursorRight', [0]]])
   expect(operations(`\u001b[1C`)).toEqual([['cursorRight', [1]]])
   expect(operations(`\u001b[2C`)).toEqual([['cursorRight', [2]]])
-  expect(operations(`sample \u001b[C text`)).toEqual([
-    ['print'],
-    ['cursorRight', []],
-    ['print'],
-  ])
-  expect(operations(`sample \u001b[2C text`)).toEqual([
-    ['print'],
-    ['cursorRight', [2]],
-    ['print'],
-  ])
+  expect(operations(`\u001b[C text`)).toEqual([['cursorRight', []], ['print']])
 })
 
 /**
@@ -280,16 +261,7 @@ test('function - cursorLeft', () => {
   expect(operations(`\u001b[0D`)).toEqual([['cursorLeft', [0]]])
   expect(operations(`\u001b[1D`)).toEqual([['cursorLeft', [1]]])
   expect(operations(`\u001b[2D`)).toEqual([['cursorLeft', [2]]])
-  expect(operations(`sample \u001b[D text`)).toEqual([
-    ['print'],
-    ['cursorLeft', []],
-    ['print'],
-  ])
-  expect(operations(`sample \u001b[2D text`)).toEqual([
-    ['print'],
-    ['cursorLeft', [2]],
-    ['print'],
-  ])
+  expect(operations(`\u001b[D text`)).toEqual([['cursorLeft', []], ['print']])
 })
 
 /**
@@ -301,6 +273,7 @@ test('function cursorNextLine', () => {
   expect(operations(`\x1B[0E`)).toEqual([['cursorNextLine', [0]]])
   expect(operations(`\x1B[1E`)).toEqual([['cursorNextLine', [1]]])
   expect(operations(`\x1B[2E`)).toEqual([['cursorNextLine', [2]]])
+  expect(operations(`\x1B[E text`)).toEqual([['cursorNextLine', []], ['print']])
 })
 
 /**
@@ -312,6 +285,10 @@ test('function cursorPrecedingLine', () => {
   expect(operations(`\x1B[0F`)).toEqual([['cursorPrecedingLine', [0]]])
   expect(operations(`\x1B[1F`)).toEqual([['cursorPrecedingLine', [1]]])
   expect(operations(`\x1B[2F`)).toEqual([['cursorPrecedingLine', [2]]])
+  expect(operations(`\x1B[F text`)).toEqual([
+    ['cursorPrecedingLine', []],
+    ['print'],
+  ])
 })
 
 /**
@@ -323,6 +300,10 @@ test('function cursorCharacterAbsolute', () => {
   expect(operations(`\x1B[0G`)).toEqual([['cursorCharacterAbsolute', [0]]])
   expect(operations(`\x1B[1G`)).toEqual([['cursorCharacterAbsolute', [1]]])
   expect(operations(`\x1B[2G`)).toEqual([['cursorCharacterAbsolute', [2]]])
+  expect(operations(`\x1B[G text`)).toEqual([
+    ['cursorCharacterAbsolute', []],
+    ['print'],
+  ])
 })
 
 /**
@@ -334,6 +315,10 @@ test('function cursorForwardTabulation', () => {
   expect(operations(`\x1B[0I`)).toEqual([['cursorForwardTabulation', [0]]])
   expect(operations(`\x1B[1I`)).toEqual([['cursorForwardTabulation', [1]]])
   expect(operations(`\x1B[2I`)).toEqual([['cursorForwardTabulation', [2]]])
+  expect(operations(`\x1B[I text`)).toEqual([
+    ['cursorForwardTabulation', []],
+    ['print'],
+  ])
 })
 
 /**
@@ -344,6 +329,7 @@ test('function cursorPosition', () => {
   expect(operations(`\x1B[H`)).toEqual([['cursorPosition', []]])
   expect(operations(`\x1B[1;1H`)).toEqual([['cursorPosition', [1, 1]]])
   expect(operations(`\x1B[22;16H`)).toEqual([['cursorPosition', [22, 16]]])
+  expect(operations(`\x1B[H text`)).toEqual([['cursorPosition', []], ['print']])
 })
 
 /**
@@ -361,6 +347,7 @@ test('function eraseInDisplay', () => {
   expect(operations(`\x1B[1J`)).toEqual([['eraseInDisplay', [1]]])
   expect(operations(`\x1B[2J`)).toEqual([['eraseInDisplay', [2]]])
   expect(operations(`\x1B[3J`)).toEqual([['eraseInDisplay', [3]]])
+  expect(operations(`\x1B[J text`)).toEqual([['eraseInDisplay', []], ['print']])
 })
 
 /**
@@ -378,6 +365,10 @@ test('function eraseInDisplay (alternative)', () => {
   expect(operations(`\x1B[?1J`)).toEqual([['eraseInDisplay', [1]]])
   expect(operations(`\x1B[?2J`)).toEqual([['eraseInDisplay', [2]]])
   expect(operations(`\x1B[?3J`)).toEqual([['eraseInDisplay', [3]]])
+  expect(operations(`\x1B[?J text`)).toEqual([
+    ['eraseInDisplay', []],
+    ['print'],
+  ])
 })
 
 /**
@@ -393,6 +384,7 @@ test('function eraseInLine', () => {
   expect(operations(`\x1B[0K`)).toEqual([['eraseInLine', [0]]])
   expect(operations(`\x1B[1K`)).toEqual([['eraseInLine', [1]]])
   expect(operations(`\x1B[2K`)).toEqual([['eraseInLine', [2]]])
+  expect(operations(`\x1B[K text`)).toEqual([['eraseInLine', []], ['print']])
 })
 
 /**
@@ -408,6 +400,7 @@ test('function eraseInLine (alternative)', () => {
   expect(operations(`\x1B[?0K`)).toEqual([['eraseInLine', [0]]])
   expect(operations(`\x1B[?1K`)).toEqual([['eraseInLine', [1]]])
   expect(operations(`\x1B[?2K`)).toEqual([['eraseInLine', [2]]])
+  expect(operations(`\x1B[?K text`)).toEqual([['eraseInLine', []], ['print']])
 })
 
 /**
@@ -419,6 +412,7 @@ test('function insertLines', () => {
   expect(operations(`\x1B[0L`)).toEqual([['insertLines', [0]]])
   expect(operations(`\x1B[1L`)).toEqual([['insertLines', [1]]])
   expect(operations(`\x1B[2L`)).toEqual([['insertLines', [2]]])
+  expect(operations(`\x1B[L text`)).toEqual([['insertLines', []], ['print']])
 })
 
 /**
@@ -430,6 +424,7 @@ test('function deleteLines', () => {
   expect(operations(`\x1B[0M`)).toEqual([['deleteLines', [0]]])
   expect(operations(`\x1B[1M`)).toEqual([['deleteLines', [1]]])
   expect(operations(`\x1B[2M`)).toEqual([['deleteLines', [2]]])
+  expect(operations(`\x1B[M text`)).toEqual([['deleteLines', []], ['print']])
 })
 
 /**
@@ -441,6 +436,10 @@ test('function deleteCharacters', () => {
   expect(operations(`\x1B[0P`)).toEqual([['deleteCharacters', [0]]])
   expect(operations(`\x1B[1P`)).toEqual([['deleteCharacters', [1]]])
   expect(operations(`\x1B[2P`)).toEqual([['deleteCharacters', [2]]])
+  expect(operations(`\x1B[P text`)).toEqual([
+    ['deleteCharacters', []],
+    ['print'],
+  ])
 })
 
 /**
@@ -452,6 +451,7 @@ test('function scrollUp', () => {
   expect(operations(`\x1B[0S`)).toEqual([['scrollUp', [0]]])
   expect(operations(`\x1B[1S`)).toEqual([['scrollUp', [1]]])
   expect(operations(`\x1B[2S`)).toEqual([['scrollUp', [2]]])
+  expect(operations(`\x1B[S text`)).toEqual([['scrollUp', []], ['print']])
 })
 
 /**
@@ -463,6 +463,7 @@ test('function scrollDown', () => {
   expect(operations(`\x1B[0T`)).toEqual([['scrollDown', [0]]])
   expect(operations(`\x1B[1T`)).toEqual([['scrollDown', [1]]])
   expect(operations(`\x1B[2T`)).toEqual([['scrollDown', [2]]])
+  expect(operations(`\x1B[T print`)).toEqual([['scrollDown', []], ['print']])
 })
 
 /**
@@ -474,6 +475,10 @@ test('function eraseCharacters', () => {
   expect(operations(`\x1B[0X`)).toEqual([['eraseCharacters', [0]]])
   expect(operations(`\x1B[1X`)).toEqual([['eraseCharacters', [1]]])
   expect(operations(`\x1B[2X`)).toEqual([['eraseCharacters', [2]]])
+  expect(operations(`\x1B[X text`)).toEqual([
+    ['eraseCharacters', []],
+    ['print'],
+  ])
 })
 
 /**
@@ -485,6 +490,10 @@ test('function cursorBackwardTabulation', () => {
   expect(operations(`\x1B[0Z`)).toEqual([['cursorBackwardTabulation', [0]]])
   expect(operations(`\x1B[1Z`)).toEqual([['cursorBackwardTabulation', [1]]])
   expect(operations(`\x1B[2Z`)).toEqual([['cursorBackwardTabulation', [2]]])
+  expect(operations(`\x1B[Z text`)).toEqual([
+    ['cursorBackwardTabulation', []],
+    ['print'],
+  ])
 })
 
 /**
@@ -497,6 +506,7 @@ test('function scrollDown (alternative)', () => {
   expect(operations(`\x1B[0^`)).toEqual([['scrollDown', [0]]])
   expect(operations(`\x1B[1^`)).toEqual([['scrollDown', [1]]])
   expect(operations(`\x1B[2^`)).toEqual([['scrollDown', [2]]])
+  expect(operations(`\x1B[^ text`)).toEqual([['scrollDown', []], ['print']])
 })
 
 /**
@@ -509,6 +519,10 @@ test('function characterPositionAbsolute', () => {
   expect(operations('\x1B[0`')).toEqual([['characterPositionAbsolute', [0]]])
   expect(operations('\x1B[1`')).toEqual([['characterPositionAbsolute', [1]]])
   expect(operations('\x1B[2`')).toEqual([['characterPositionAbsolute', [2]]])
+  expect(operations('\x1B[` text')).toEqual([
+    ['characterPositionAbsolute', []],
+    ['print'],
+  ])
 })
 
 /**
@@ -521,6 +535,10 @@ test('function characterPositionRelative', () => {
   expect(operations('\x1B[0a')).toEqual([['characterPositionRelative', [0]]])
   expect(operations('\x1B[1a')).toEqual([['characterPositionRelative', [1]]])
   expect(operations('\x1B[2a')).toEqual([['characterPositionRelative', [2]]])
+  expect(operations('\x1B[a text')).toEqual([
+    ['characterPositionRelative', []],
+    ['print'],
+  ])
 })
 
 /**
@@ -539,6 +557,10 @@ test('function repeatPrecedingGraphicCharacter', () => {
   ])
   expect(operations(`\x1B[2b`)).toEqual([
     ['repeatPrecedingGraphicCharacter', [2]],
+  ])
+  expect(operations(`\x1B[b text`)).toEqual([
+    ['repeatPrecedingGraphicCharacter', []],
+    ['print'],
   ])
 })
 
@@ -589,6 +611,7 @@ test('function repeatPrecedingGraphicCharacter', () => {
 test('function sendDeviceAttributesPrimary', () => {
   expect(operations(`\x1B[c`)).toEqual([])
   expect(operations(`\x1B[0c`)).toEqual([])
+  expect(operations(`\x1B[0c text`)).toEqual([['print']])
 })
 
 /**
@@ -600,6 +623,10 @@ test('function sendDeviceAttributesPrimary', () => {
  */
 test.skip('function sendDeviceAttributesTertiary', () => {
   expect(operations(`\x1B[=0c`)).toEqual([['sendDeviceAttributesTertiary', []]])
+  expect(operations(`\x1B[=0c text`)).toEqual([
+    ['sendDeviceAttributesTertiary', []],
+    ['print'],
+  ])
 })
 
 /**
@@ -635,6 +662,10 @@ test('function linePositionAbsolute', () => {
   expect(operations(`\x1B[0d`)).toEqual([['linePositionAbsolute', [0]]])
   expect(operations(`\x1B[1d`)).toEqual([['linePositionAbsolute', [1]]])
   expect(operations(`\x1B[2d`)).toEqual([['linePositionAbsolute', [2]]])
+  expect(operations(`\x1B[d text`)).toEqual([
+    ['linePositionAbsolute', []],
+    ['print'],
+  ])
 })
 
 /**
@@ -646,6 +677,10 @@ test('function linePositionRelative', () => {
   expect(operations(`\x1B[0e`)).toEqual([['linePositionRelative', [0]]])
   expect(operations(`\x1B[1e`)).toEqual([['linePositionRelative', [1]]])
   expect(operations(`\x1B[2e`)).toEqual([['linePositionRelative', [2]]])
+  expect(operations(`\x1B[e text`)).toEqual([
+    ['linePositionRelative', []],
+    ['print'],
+  ])
 })
 
 /**
@@ -656,6 +691,10 @@ test('function horizontalAndVerticalPosition', () => {
   expect(operations(`\x1B[f`)).toEqual([['horizontalAndVerticalPosition', []]])
   expect(operations(`\x1B[1;1f`)).toEqual([
     ['horizontalAndVerticalPosition', [1, 1]],
+  ])
+  expect(operations(`\x1B[f text`)).toEqual([
+    ['horizontalAndVerticalPosition', []],
+    ['print'],
   ])
 })
 
@@ -670,6 +709,7 @@ test('function tabClear', () => {
   expect(operations(`\x1B[g`)).toEqual([['tabClear', []]])
   expect(operations(`\x1B[0g`)).toEqual([['tabClear', [0]]])
   expect(operations(`\x1B[3g`)).toEqual([['tabClear', [3]]])
+  expect(operations(`\x1B[g text`)).toEqual([['tabClear', []], ['print']])
 })
 
 /**
@@ -684,6 +724,7 @@ test('function tabClear', () => {
 test('function setMode', () => {
   expect(operations(`\x1B[2h`)).toEqual([['setMode', [2]]])
   expect(operations(`\x1B[4h`)).toEqual([['setMode', [4]]])
+  expect(operations(`\x1B[2h text`)).toEqual([['setMode', [2]], ['print']])
 })
 
 /**
@@ -782,6 +823,10 @@ test('function privateModeSet', () => {
   expect(operations(`\x1B[?40h`)).toEqual([['privateModeSet', [40]]])
   expect(operations(`\x1B[?41h`)).toEqual([['privateModeSet', [41]]])
   expect(operations(`\x1B[?42h`)).toEqual([['privateModeSet', [42]]])
+  expect(operations(`\x1B[?1h text`)).toEqual([
+    ['privateModeSet', [1]],
+    ['print'],
+  ])
 })
 
 /**
@@ -918,6 +963,10 @@ test('function privateModeReset', () => {
   expect(operations(`\x1B[?1060l`)).toEqual([['privateModeReset', [1060]]])
   expect(operations(`\x1B[?1061l`)).toEqual([['privateModeReset', [1061]]])
   expect(operations(`\x1B[?2004l`)).toEqual([['privateModeReset', [2004]]])
+  expect(operations(`\x1B[?1l text`)).toEqual([
+    ['privateModeReset', [1]],
+    ['print'],
+  ])
 })
 
 /**
@@ -934,6 +983,7 @@ test('function resetMode', () => {
   expect(operations(`\x1B[4l`)).toEqual([['resetMode', [4]]])
   expect(operations(`\x1B[12l`)).toEqual([['resetMode', [12]]])
   expect(operations(`\x1B[20l`)).toEqual([['resetMode', [20]]])
+  expect(operations(`\x1B[2l text`)).toEqual([['resetMode', [2]], ['print']])
 })
 
 /**
@@ -978,6 +1028,10 @@ test.skip('function setCharacterAttributes', () => {
   expect(operations(`\x1B[46m`)).toEqual([['setCharacterAttributes']])
   expect(operations(`\x1B[47m`)).toEqual([['setCharacterAttributes']])
   expect(operations(`\x1B[49m`)).toEqual([['setCharacterAttributes']])
+  expect(operations(`\x1B[m text`)).toEqual([
+    ['setCharacterAttributes'],
+    ['print'],
+  ])
 })
 
 /**
@@ -986,6 +1040,7 @@ test.skip('function setCharacterAttributes', () => {
  */
 test('function softTerminalReset', () => {
   expect(operations(`\x1B[!p`)).toEqual([['softTerminalReset']])
+  expect(operations(`\x1B[!p text`)).toEqual([['softTerminalReset'], ['print']])
 })
 
 /**
@@ -1009,6 +1064,10 @@ test('function setCursorStyle', () => {
   expect(operations(`\x1B[4 q`)).toEqual([['setCursorStyle', [4]]])
   expect(operations(`\x1B[5 q`)).toEqual([['setCursorStyle', [5]]])
   expect(operations(`\x1B[6 q`)).toEqual([['setCursorStyle', [6]]])
+  expect(operations(`\x1B[ q text`)).toEqual([
+    ['setCursorStyle', []],
+    ['print'],
+  ])
 })
 
 /**
@@ -1030,6 +1089,7 @@ test('function setWarningBellVolume', () => {
   expect(operations(`\x1B[6 t`)).toEqual([])
   expect(operations(`\x1B[7 t`)).toEqual([])
   expect(operations(`\x1B[8 t`)).toEqual([])
+  expect(operations(`\x1B[ t text`)).toEqual([['print']])
 })
 
 /**
@@ -1038,6 +1098,7 @@ test('function setWarningBellVolume', () => {
  */
 test('function restoreCursor (alternative)', () => {
   expect(operations(`\x1B[u`)).toEqual([['restoreCursor']])
+  expect(operations(`\x1B[u print`)).toEqual([['restoreCursor'], ['print']])
 })
 
 /**
@@ -1059,6 +1120,7 @@ test('function setMarginBellVolume', () => {
   expect(operations(`\x1B[ 6u`)).toEqual([])
   expect(operations(`\x1B[ 7u`)).toEqual([])
   expect(operations(`\x1B[ 8u`)).toEqual([])
+  expect(operations(`\x1B[ u text`)).toEqual([['print']])
 })
 
 test('function - setCharAttributes', () => {
