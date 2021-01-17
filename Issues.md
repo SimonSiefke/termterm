@@ -47,10 +47,12 @@ showkey -a to get ascii output of keyboard shortcuts
 
 <!-- TODO chunking ws https://stackoverflow.com/questions/13010354/chunking-websocket-transmission -->
 
-<!-- intersting terminal simular with react and typescript https://www.reddit.com/r/typescript/comments/g7hfvy/a_terminal_emulator_built_with_ts_react/ -->
+<!-- interesting terminal simulator with react and typescript https://www.reddit.com/r/typescript/comments/g7hfvy/a_terminal_emulator_built_with_ts_react/ -->
 
 <!-- TODO more tests
 https://github.com/thestinger/vte-ng
 https://gitlab.gnome.org/GNOME/gnome-terminal
 https://gitlab.gnome.org/GNOME/vte
  -->
+
+<!-- interesting video about modern terminal emulators https://www.youtube.com/watch?v=9DgQqDnYNyQ -->
