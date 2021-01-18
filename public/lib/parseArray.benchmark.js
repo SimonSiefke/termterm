@@ -3,7 +3,8 @@ import { dirname } from 'path'
 import { performance } from 'perf_hooks'
 import { StringDecoder } from 'string_decoder'
 import { fileURLToPath } from 'url'
-import { createParse } from './parseArray.js'
+// import { createParse } from './parseArrayFaster.js'
+import { createParse } from '../../dist/termterm.modern.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
@@ -48,7 +49,8 @@ const test_terminal = {
 const noop_terminal = {
   bell: noop,
   eraseInDisplay: noop,
-  eraseInLine: noop,
+  eraseToEndOfLine: noop,
+  goToHome: noop,
   setCharAttributes: noop,
   cursorUp: noop,
   cursorDown: noop,
@@ -57,12 +59,8 @@ const noop_terminal = {
   backspace: noop,
   print: noop,
   lineFeed: noop,
-  carriageReturn: noop,
-  setWindowTitle: noop,
-  setCursor: noop,
-  cursorShow: noop,
-  cursorHide: noop,
   cursorPosition: noop,
+  eraseInLine: noop,
 }
 
 const fixtureLs = fs
@@ -72,6 +70,11 @@ const array = new Uint8Array(fixtureLs.split('').map((x) => x.charCodeAt()))
 
 const parse = createParse(noop_terminal)
 let total = 0
+for (let i = 0; i < 5; i++) {
+  calls.length = 0
+  parse(array)
+}
+
 for (let i = 0; i < 1000; i++) {
   calls.length = 0
   console.log(bytesToSize(fixtureLs.length))

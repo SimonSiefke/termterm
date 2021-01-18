@@ -9,7 +9,8 @@
     "dev": "nodemon server.js",
     "benchmark:parseArray": "node public/lib/parseArray.benchmark.js",
     "benchmark:handleKeyDown": "node public/lib/handleKeyDown.benchmark.js",
-    "bundle": "microbundle public/legacy/index.js -f modern -o dist"
+    "bundle": "microbundle public/lib/parseArray.js -f modern -o dist",
+    "bundle-and-benchmark": "npm run bundle && npm run benchmark:parseArray"
   },
   "keywords": [],
   "author": "",

@@ -209,7 +209,15 @@ export const createTerminal = (
     }
   }
 
+  const pasteText = (text) => {
+    // TODO bug first line not written
+    const fixedText = '\n' + text.replaceAll('\n', '\r\n')
+    const array = new TextEncoder().encode(fixedText)
+    write(array)
+  }
+
   return {
     write,
+    pasteText,
   }
 }

@@ -1,8 +1,11 @@
+/**
+ * Terminal Emulation References:
+ * http://invisible-island.net/xterm/ctlseqs/ctlseqs.html
+ */
+
 import { jest } from '@jest/globals'
 import { StringDecoder } from 'string_decoder'
 import { createParse } from './parseArray.js'
-
-const noop = () => {}
 
 const encodeText = (input) => {
   return new Uint8Array(Buffer.from(input, 'utf-8'))
@@ -13,93 +16,15 @@ const decodeText = (text) => {
   return decode.write(text)
 }
 
-const runTest = (
-  input,
-  {
-    bell = noop,
-    eraseInDisplay = noop,
-    eraseInLine = noop,
-    setCharAttributes = noop,
-    cursorUp = noop,
-    cursorDown = noop,
-    cursorRight = noop,
-    cursorLeft = noop,
-    backspace = noop,
-    print = noop,
-    newline = noop,
-    setGLevel = noop,
-    saveCursor = noop,
-    restoreCursor = noop,
-    nextLine = noop,
-    index = noop,
-    tabSet = noop,
-    deleteCharacters = noop,
-    setWindowTitle = noop,
-    lineFeed = noop,
-    carriageReturn = noop,
-  } = {},
-) => {
-  const parse = createParse({
-    eraseInDisplay,
-    eraseInLine,
-    setCharAttributes,
-    cursorUp,
-    cursorDown,
-    cursorRight,
-    cursorLeft,
-    bell,
-    backspace,
-    print,
-    newline,
-    setGLevel,
-    saveCursor,
-    restoreCursor,
-    nextLine,
-    index,
-    tabSet,
-    deleteCharacters,
-    setWindowTitle,
-    carriageReturn,
-    lineFeed,
-  })
-  const array = new Uint8Array(input.split('').map((x) => x.charCodeAt()))
-  return parse(array)
-}
-
-const getOutputLines = (input) => {
-  const chunks = []
-  const array = encodeText(input)
-  const parse = createParse({
-    bell: noop,
-    eraseInDisplay: noop,
-    eraseInLine: noop,
-    setCharAttributes: noop,
-    cursorUp: noop,
-    cursorDown: noop,
-    cursorRight: noop,
-    cursorLeft: noop,
-    backspace: noop,
-    print: (array, startIndex, endIndex) => {
-      chunks.push(decodeText(array.slice(startIndex, endIndex)))
-    },
-    newline: () => {
-      chunks.push('\n')
-    },
-    lineFeed: () => {
-      chunks.push('\n')
-    },
-    carriageReturn: noop,
-  })
-  parse(array)
-  return chunks.join('').split('\n')
-}
-
 const operations = (input) => {
   const calls = []
   const terminal = {
+    index: () => calls.push(['index']),
     bell: () => calls.push(['bell']),
+    tabSet: () => calls.push(['tabSet']),
+    nextLine: () => calls.push(['nextLine']),
     eraseInLine: (params) => calls.push(['eraseInLine', params]),
-    setCharAttributes: () => calls.push(['setCharAttributes']),
+    setCharAttributes: (params) => calls.push(['setCharAttributes', params]),
     cursorUp: (params) => calls.push(['cursorUp', params]),
     cursorDown: (params) => calls.push(['cursorDown', params]),
     cursorRight: (params) => calls.push(['cursorRight', params]),
@@ -115,12 +40,6 @@ const operations = (input) => {
       ]),
     cursorPosition(params) {
       calls.push(['cursorPosition', params])
-    },
-    cursorHide() {
-      calls.push(['cursorHide'])
-    },
-    cursorShow() {
-      calls.push(['cursorShow'])
     },
     deleteCharacters(params) {
       calls.push(['deleteCharacters', params])
@@ -159,10 +78,10 @@ const operations = (input) => {
       calls.push(['scrollUp', params])
     },
     scrollDown(params) {
-      calls.push('scrollDown', params)
+      calls.push(['scrollDown', params])
     },
     eraseCharacters(params) {
-      calls.push('eraseCharacters', params)
+      calls.push(['eraseCharacters', params])
     },
     characterPositionAbsolute(params) {
       calls.push(['characterPositionAbsolute', params])
@@ -182,12 +101,120 @@ const operations = (input) => {
     linePositionAbsolute(params) {
       calls.push(['linePositionAbsolute', params])
     },
+    linePositionRelative(params) {
+      calls.push(['linePositionRelative', params])
+    },
+    horizontalAndVerticalPosition(params) {
+      calls.push(['horizontalAndVerticalPosition', params])
+    },
+    tabClear(params) {
+      calls.push(['tabClear', params])
+    },
+    setMode(params) {
+      calls.push(['setMode', params])
+    },
+    resetMode(params) {
+      calls.push(['resetMode', params])
+    },
+    privateModeSet(params) {
+      calls.push(['privateModeSet', params])
+    },
+    privateModeReset(params) {
+      calls.push(['privateModeReset', params])
+    },
+    softTerminalReset() {
+      calls.push(['softTerminalReset'])
+    },
+    setCursorStyle(params) {
+      calls.push(['setCursorStyle', params])
+    },
+    shiftLeftColumns(params) {
+      calls.push(['shiftLeftColumns', params])
+    },
+    insertBlankCharacters(params) {
+      calls.push(['insertBlankCharacters', params])
+    },
+    saveCursor: () => calls.push(['saveCursor']),
   }
   const parse = createParse(terminal)
   const array = encodeText(input)
   parse(array)
   return calls
 }
+
+/**
+ * BEL
+ * Bell (BEL  is Ctrl-G).
+ */
+test('function bell', () => {
+  expect(operations(`\u0007`)).toEqual([['bell']])
+  expect(operations(`\u0007 text`)).toEqual([['bell'], ['print']])
+})
+
+/**
+ * BS
+ * Backspace (BS  is Ctrl-H).
+ */
+test('function backspace', () => {
+  expect(operations(`\u0008`)).toEqual([['backspace']])
+  expect(operations(`\u0008 text`)).toEqual([['backspace'], ['print']])
+})
+
+/**
+ * CR
+ * Carriage Return (CR  is Ctrl-M).
+ */
+test('function carriageReturn', () => {
+  expect(operations(`\r`)).toEqual([['carriageReturn']])
+  expect(operations(`\r text`)).toEqual([['carriageReturn'], ['print']])
+})
+/**
+ * LF
+ * Line Feed or New Line (NL).  (LF  is Ctrl-J).
+ */
+test('function lineFeed', () => {
+  expect(operations(`\n`)).toEqual([['lineFeed']])
+  expect(operations(`\n text`)).toEqual([['lineFeed'], ['print']])
+})
+
+/**
+ * TAB
+ * Horizontal Tab (HTS  is Ctrl-I).
+ */
+test('function tab', () => {
+  expect(operations(`\t`)).toEqual([])
+  expect(operations(`\t text`)).toEqual([['print']])
+})
+
+/**
+ * CSI Ps @
+ * Insert Ps (Blank) Character(s) (default = 1) (ICH).
+ */
+test('function insertBlankCharacters', () => {
+  expect(operations(`\x1B[@`)).toEqual([['insertBlankCharacters', []]])
+  expect(operations(`\x1B[0@`)).toEqual([['insertBlankCharacters', [0]]])
+  expect(operations(`\x1B[1@`)).toEqual([['insertBlankCharacters', [1]]])
+  expect(operations(`\x1B[2@`)).toEqual([['insertBlankCharacters', [2]]])
+  expect(operations(`\x1B[@ text`)).toEqual([
+    ['insertBlankCharacters', []],
+    ['print'],
+  ])
+})
+
+/**
+ * CSI Ps SP @
+ * Shift left Ps columns(s) (default = 1) (SL), ECMA-48.
+ */
+test('function shiftLeftColumns', () => {
+  expect(operations(`\x1B[ @`)).toEqual([['shiftLeftColumns', []]])
+  expect(operations(`\x1B[0 @`)).toEqual([['shiftLeftColumns', [0]]])
+  expect(operations(`\x1B[1 @`)).toEqual([['shiftLeftColumns', [1]]])
+  expect(operations(`\x1B[2 @`)).toEqual([['shiftLeftColumns', [2]]])
+  expect(operations(`\x1B[ @ text`)).toEqual([
+    ['shiftLeftColumns', []],
+    ['print'],
+  ])
+})
 
 /**
  * CSI Ps A
@@ -198,16 +225,7 @@ test('function - cursorUp', () => {
   expect(operations('\u001b[0A')).toEqual([['cursorUp', [0]]])
   expect(operations('\u001b[1A')).toEqual([['cursorUp', [1]]])
   expect(operations('\u001b[2A')).toEqual([['cursorUp', [2]]])
-  expect(operations(`sample \u001b[A text`)).toEqual([
-    ['print'],
-    ['cursorUp', []],
-    ['print'],
-  ])
-  expect(operations(`sample \u001b[2A text`)).toEqual([
-    ['print'],
-    ['cursorUp', [2]],
-    ['print'],
-  ])
+  expect(operations(`\u001b[A text`)).toEqual([['cursorUp', []], ['print']])
 })
 
 /**
@@ -219,16 +237,7 @@ test('function - cursorDown', () => {
   expect(operations(`\u001b[0B`)).toEqual([['cursorDown', [0]]])
   expect(operations(`\u001b[1B`)).toEqual([['cursorDown', [1]]])
   expect(operations(`\u001b[2B`)).toEqual([['cursorDown', [2]]])
-  expect(operations(`sample \u001b[B text`)).toEqual([
-    ['print'],
-    ['cursorDown', []],
-    ['print'],
-  ])
-  expect(operations(`sample \u001b[2B text`)).toEqual([
-    ['print'],
-    ['cursorDown', [2]],
-    ['print'],
-  ])
+  expect(operations(`\u001b[B text`)).toEqual([['cursorDown', []], ['print']])
 })
 
 /**
@@ -240,16 +249,7 @@ test('function - cursorRight', () => {
   expect(operations(`\u001b[0C`)).toEqual([['cursorRight', [0]]])
   expect(operations(`\u001b[1C`)).toEqual([['cursorRight', [1]]])
   expect(operations(`\u001b[2C`)).toEqual([['cursorRight', [2]]])
-  expect(operations(`sample \u001b[C text`)).toEqual([
-    ['print'],
-    ['cursorRight', []],
-    ['print'],
-  ])
-  expect(operations(`sample \u001b[2C text`)).toEqual([
-    ['print'],
-    ['cursorRight', [2]],
-    ['print'],
-  ])
+  expect(operations(`\u001b[C text`)).toEqual([['cursorRight', []], ['print']])
 })
 
 /**
@@ -261,16 +261,7 @@ test('function - cursorLeft', () => {
   expect(operations(`\u001b[0D`)).toEqual([['cursorLeft', [0]]])
   expect(operations(`\u001b[1D`)).toEqual([['cursorLeft', [1]]])
   expect(operations(`\u001b[2D`)).toEqual([['cursorLeft', [2]]])
-  expect(operations(`sample \u001b[D text`)).toEqual([
-    ['print'],
-    ['cursorLeft', []],
-    ['print'],
-  ])
-  expect(operations(`sample \u001b[2D text`)).toEqual([
-    ['print'],
-    ['cursorLeft', [2]],
-    ['print'],
-  ])
+  expect(operations(`\u001b[D text`)).toEqual([['cursorLeft', []], ['print']])
 })
 
 /**
@@ -282,6 +273,7 @@ test('function cursorNextLine', () => {
   expect(operations(`\x1B[0E`)).toEqual([['cursorNextLine', [0]]])
   expect(operations(`\x1B[1E`)).toEqual([['cursorNextLine', [1]]])
   expect(operations(`\x1B[2E`)).toEqual([['cursorNextLine', [2]]])
+  expect(operations(`\x1B[E text`)).toEqual([['cursorNextLine', []], ['print']])
 })
 
 /**
@@ -293,6 +285,10 @@ test('function cursorPrecedingLine', () => {
   expect(operations(`\x1B[0F`)).toEqual([['cursorPrecedingLine', [0]]])
   expect(operations(`\x1B[1F`)).toEqual([['cursorPrecedingLine', [1]]])
   expect(operations(`\x1B[2F`)).toEqual([['cursorPrecedingLine', [2]]])
+  expect(operations(`\x1B[F text`)).toEqual([
+    ['cursorPrecedingLine', []],
+    ['print'],
+  ])
 })
 
 /**
@@ -304,6 +300,10 @@ test('function cursorCharacterAbsolute', () => {
   expect(operations(`\x1B[0G`)).toEqual([['cursorCharacterAbsolute', [0]]])
   expect(operations(`\x1B[1G`)).toEqual([['cursorCharacterAbsolute', [1]]])
   expect(operations(`\x1B[2G`)).toEqual([['cursorCharacterAbsolute', [2]]])
+  expect(operations(`\x1B[G text`)).toEqual([
+    ['cursorCharacterAbsolute', []],
+    ['print'],
+  ])
 })
 
 /**
@@ -315,6 +315,10 @@ test('function cursorForwardTabulation', () => {
   expect(operations(`\x1B[0I`)).toEqual([['cursorForwardTabulation', [0]]])
   expect(operations(`\x1B[1I`)).toEqual([['cursorForwardTabulation', [1]]])
   expect(operations(`\x1B[2I`)).toEqual([['cursorForwardTabulation', [2]]])
+  expect(operations(`\x1B[I text`)).toEqual([
+    ['cursorForwardTabulation', []],
+    ['print'],
+  ])
 })
 
 /**
@@ -325,6 +329,7 @@ test('function cursorPosition', () => {
   expect(operations(`\x1B[H`)).toEqual([['cursorPosition', []]])
   expect(operations(`\x1B[1;1H`)).toEqual([['cursorPosition', [1, 1]]])
   expect(operations(`\x1B[22;16H`)).toEqual([['cursorPosition', [22, 16]]])
+  expect(operations(`\x1B[H text`)).toEqual([['cursorPosition', []], ['print']])
 })
 
 /**
@@ -342,6 +347,7 @@ test('function eraseInDisplay', () => {
   expect(operations(`\x1B[1J`)).toEqual([['eraseInDisplay', [1]]])
   expect(operations(`\x1B[2J`)).toEqual([['eraseInDisplay', [2]]])
   expect(operations(`\x1B[3J`)).toEqual([['eraseInDisplay', [3]]])
+  expect(operations(`\x1B[J text`)).toEqual([['eraseInDisplay', []], ['print']])
 })
 
 /**
@@ -353,12 +359,16 @@ test('function eraseInDisplay', () => {
  * Ps = 2  ⇒  Selective Erase All.
  * Ps = 3  ⇒  Selective Erase Saved Lines, xterm.
  */
-test.skip('function eraseInDisplay (alternative)', () => {
+test('function eraseInDisplay (alternative)', () => {
   expect(operations(`\x1B[?J`)).toEqual([['eraseInDisplay', []]])
   expect(operations(`\x1B[?0J`)).toEqual([['eraseInDisplay', [0]]])
   expect(operations(`\x1B[?1J`)).toEqual([['eraseInDisplay', [1]]])
   expect(operations(`\x1B[?2J`)).toEqual([['eraseInDisplay', [2]]])
   expect(operations(`\x1B[?3J`)).toEqual([['eraseInDisplay', [3]]])
+  expect(operations(`\x1B[?J text`)).toEqual([
+    ['eraseInDisplay', []],
+    ['print'],
+  ])
 })
 
 /**
@@ -374,6 +384,7 @@ test('function eraseInLine', () => {
   expect(operations(`\x1B[0K`)).toEqual([['eraseInLine', [0]]])
   expect(operations(`\x1B[1K`)).toEqual([['eraseInLine', [1]]])
   expect(operations(`\x1B[2K`)).toEqual([['eraseInLine', [2]]])
+  expect(operations(`\x1B[K text`)).toEqual([['eraseInLine', []], ['print']])
 })
 
 /**
@@ -384,11 +395,12 @@ test('function eraseInLine', () => {
  * Ps = 1  ⇒  Selective Erase to Left.
  * Ps = 2  ⇒  Selective Erase All.
  */
-test.skip('function eraseInLine (alternative)', () => {
+test('function eraseInLine (alternative)', () => {
   expect(operations(`\x1B[?K`)).toEqual([['eraseInLine', []]])
   expect(operations(`\x1B[?0K`)).toEqual([['eraseInLine', [0]]])
   expect(operations(`\x1B[?1K`)).toEqual([['eraseInLine', [1]]])
   expect(operations(`\x1B[?2K`)).toEqual([['eraseInLine', [2]]])
+  expect(operations(`\x1B[?K text`)).toEqual([['eraseInLine', []], ['print']])
 })
 
 /**
@@ -400,6 +412,7 @@ test('function insertLines', () => {
   expect(operations(`\x1B[0L`)).toEqual([['insertLines', [0]]])
   expect(operations(`\x1B[1L`)).toEqual([['insertLines', [1]]])
   expect(operations(`\x1B[2L`)).toEqual([['insertLines', [2]]])
+  expect(operations(`\x1B[L text`)).toEqual([['insertLines', []], ['print']])
 })
 
 /**
@@ -411,6 +424,7 @@ test('function deleteLines', () => {
   expect(operations(`\x1B[0M`)).toEqual([['deleteLines', [0]]])
   expect(operations(`\x1B[1M`)).toEqual([['deleteLines', [1]]])
   expect(operations(`\x1B[2M`)).toEqual([['deleteLines', [2]]])
+  expect(operations(`\x1B[M text`)).toEqual([['deleteLines', []], ['print']])
 })
 
 /**
@@ -422,6 +436,10 @@ test('function deleteCharacters', () => {
   expect(operations(`\x1B[0P`)).toEqual([['deleteCharacters', [0]]])
   expect(operations(`\x1B[1P`)).toEqual([['deleteCharacters', [1]]])
   expect(operations(`\x1B[2P`)).toEqual([['deleteCharacters', [2]]])
+  expect(operations(`\x1B[P text`)).toEqual([
+    ['deleteCharacters', []],
+    ['print'],
+  ])
 })
 
 /**
@@ -433,6 +451,7 @@ test('function scrollUp', () => {
   expect(operations(`\x1B[0S`)).toEqual([['scrollUp', [0]]])
   expect(operations(`\x1B[1S`)).toEqual([['scrollUp', [1]]])
   expect(operations(`\x1B[2S`)).toEqual([['scrollUp', [2]]])
+  expect(operations(`\x1B[S text`)).toEqual([['scrollUp', []], ['print']])
 })
 
 /**
@@ -440,10 +459,11 @@ test('function scrollUp', () => {
  * Scroll down Ps lines (default = 1) (SD), VT420.
  */
 test('function scrollDown', () => {
-  expect(operations(`\x1B[T`)).toEqual(['scrollDown', []])
-  expect(operations(`\x1B[0T`)).toEqual(['scrollDown', [0]])
-  expect(operations(`\x1B[1T`)).toEqual(['scrollDown', [1]])
-  expect(operations(`\x1B[2T`)).toEqual(['scrollDown', [2]])
+  expect(operations(`\x1B[T`)).toEqual([['scrollDown', []]])
+  expect(operations(`\x1B[0T`)).toEqual([['scrollDown', [0]]])
+  expect(operations(`\x1B[1T`)).toEqual([['scrollDown', [1]]])
+  expect(operations(`\x1B[2T`)).toEqual([['scrollDown', [2]]])
+  expect(operations(`\x1B[T print`)).toEqual([['scrollDown', []], ['print']])
 })
 
 /**
@@ -451,21 +471,29 @@ test('function scrollDown', () => {
  * Erase Ps Character(s) (default = 1) (ECH).
  */
 test('function eraseCharacters', () => {
-  expect(operations(`\x1B[X`)).toEqual(['eraseCharacters', []])
-  expect(operations(`\x1B[0X`)).toEqual(['eraseCharacters', [0]])
-  expect(operations(`\x1B[1X`)).toEqual(['eraseCharacters', [1]])
-  expect(operations(`\x1B[2X`)).toEqual(['eraseCharacters', [2]])
+  expect(operations(`\x1B[X`)).toEqual([['eraseCharacters', []]])
+  expect(operations(`\x1B[0X`)).toEqual([['eraseCharacters', [0]]])
+  expect(operations(`\x1B[1X`)).toEqual([['eraseCharacters', [1]]])
+  expect(operations(`\x1B[2X`)).toEqual([['eraseCharacters', [2]]])
+  expect(operations(`\x1B[X text`)).toEqual([
+    ['eraseCharacters', []],
+    ['print'],
+  ])
 })
 
 /**
  * CSI Ps Z
  * Cursor Backward Tabulation Ps tab stops (default = 1) (CBT).
  */
-test.skip('function cursorBackwardTabulation', () => {
-  expect(operations(`\x1B[Z`)).toEqual(['cursorBackwardTabulation', []])
-  expect(operations(`\x1B[0Z`)).toEqual(['cursorBackwardTabulation', [0]])
-  expect(operations(`\x1B[1Z`)).toEqual(['cursorBackwardTabulation', [1]])
-  expect(operations(`\x1B[2Z`)).toEqual(['cursorBackwardTabulation', [2]])
+test('function cursorBackwardTabulation', () => {
+  expect(operations(`\x1B[Z`)).toEqual([['cursorBackwardTabulation', []]])
+  expect(operations(`\x1B[0Z`)).toEqual([['cursorBackwardTabulation', [0]]])
+  expect(operations(`\x1B[1Z`)).toEqual([['cursorBackwardTabulation', [1]]])
+  expect(operations(`\x1B[2Z`)).toEqual([['cursorBackwardTabulation', [2]]])
+  expect(operations(`\x1B[Z text`)).toEqual([
+    ['cursorBackwardTabulation', []],
+    ['print'],
+  ])
 })
 
 /**
@@ -474,10 +502,11 @@ test.skip('function cursorBackwardTabulation', () => {
  * This was a publication error in the original ECMA-48 5th edition (1991) corrected in 2003.
  */
 test('function scrollDown (alternative)', () => {
-  expect(operations(`\x1B[^`)).toEqual(['scrollDown', []])
-  expect(operations(`\x1B[0^`)).toEqual(['scrollDown', [0]])
-  expect(operations(`\x1B[1^`)).toEqual(['scrollDown', [1]])
-  expect(operations(`\x1B[2^`)).toEqual(['scrollDown', [2]])
+  expect(operations(`\x1B[^`)).toEqual([['scrollDown', []]])
+  expect(operations(`\x1B[0^`)).toEqual([['scrollDown', [0]]])
+  expect(operations(`\x1B[1^`)).toEqual([['scrollDown', [1]]])
+  expect(operations(`\x1B[2^`)).toEqual([['scrollDown', [2]]])
+  expect(operations(`\x1B[^ text`)).toEqual([['scrollDown', []], ['print']])
 })
 
 /**
@@ -490,6 +519,10 @@ test('function characterPositionAbsolute', () => {
   expect(operations('\x1B[0`')).toEqual([['characterPositionAbsolute', [0]]])
   expect(operations('\x1B[1`')).toEqual([['characterPositionAbsolute', [1]]])
   expect(operations('\x1B[2`')).toEqual([['characterPositionAbsolute', [2]]])
+  expect(operations('\x1B[` text')).toEqual([
+    ['characterPositionAbsolute', []],
+    ['print'],
+  ])
 })
 
 /**
@@ -502,6 +535,10 @@ test('function characterPositionRelative', () => {
   expect(operations('\x1B[0a')).toEqual([['characterPositionRelative', [0]]])
   expect(operations('\x1B[1a')).toEqual([['characterPositionRelative', [1]]])
   expect(operations('\x1B[2a')).toEqual([['characterPositionRelative', [2]]])
+  expect(operations('\x1B[a text')).toEqual([
+    ['characterPositionRelative', []],
+    ['print'],
+  ])
 })
 
 /**
@@ -520,6 +557,10 @@ test('function repeatPrecedingGraphicCharacter', () => {
   ])
   expect(operations(`\x1B[2b`)).toEqual([
     ['repeatPrecedingGraphicCharacter', [2]],
+  ])
+  expect(operations(`\x1B[b text`)).toEqual([
+    ['repeatPrecedingGraphicCharacter', []],
+    ['print'],
   ])
 })
 
@@ -568,8 +609,9 @@ test('function repeatPrecedingGraphicCharacter', () => {
  * DECPCCM, DECVCCM) are ignored.
  */
 test('function sendDeviceAttributesPrimary', () => {
-  expect(operations(`\x1B[c`)).toEqual([['sendDeviceAttributesPrimary', []]])
-  expect(operations(`\x1B[0c`)).toEqual([['sendDeviceAttributesPrimary', [0]]])
+  expect(operations(`\x1B[c`)).toEqual([])
+  expect(operations(`\x1B[0c`)).toEqual([])
+  expect(operations(`\x1B[0c text`)).toEqual([['print']])
 })
 
 /**
@@ -581,29 +623,28 @@ test('function sendDeviceAttributesPrimary', () => {
  */
 test.skip('function sendDeviceAttributesTertiary', () => {
   expect(operations(`\x1B[=0c`)).toEqual([['sendDeviceAttributesTertiary', []]])
+  expect(operations(`\x1B[=0c text`)).toEqual([
+    ['sendDeviceAttributesTertiary', []],
+    ['print'],
+  ])
 })
 
 /**
  * CSI > Ps c
- *
  * Send Device Attributes (Secondary DA).
- *   Ps = 0  or omitted ⇒  request the terminal's identification
- * code.  The response depends on the decTerminalID resource
- * setting.  It should apply only to VT220 and up, but xterm
- * extends this to VT100.
- *   ⇒  CSI  > Pp ; Pv ; Pc c
- * where Pp denotes the terminal type
- *   Pp = 0  ⇒  "VT100".
- *   Pp = 1  ⇒  "VT220".
- *   Pp = 2  ⇒  "VT240" or "VT241".
- *   Pp = 1 8  ⇒  "VT330".
- *   Pp = 1 9  ⇒  "VT340".
- *   Pp = 2 4  ⇒  "VT320".
- *   Pp = 3 2  ⇒  "VT382".
- *   Pp = 4 1  ⇒  "VT420".
- *   Pp = 6 1  ⇒  "VT510".
- *   Pp = 6 4  ⇒  "VT520".
- *   Pp = 6 5  ⇒  "VT525".
+ *
+ * Ps = 0  or omitted ⇒  request the terminal's identification code.  The response depends on the decTerminalID resource setting.  It should apply only to VT220 and up, but xterm extends this to VT100.   ⇒  CSI  > Pp ; Pv ; Pc c where Pp denotes the terminal type
+ * Pp = 0  ⇒  "VT100".
+ * Pp = 1  ⇒  "VT220".
+ * Pp = 2  ⇒  "VT240" or "VT241".
+ * Pp = 1 8  ⇒  "VT330".
+ * Pp = 1 9  ⇒  "VT340".
+ * Pp = 2 4  ⇒  "VT320".
+ * Pp = 3 2  ⇒  "VT382".
+ * Pp = 4 1  ⇒  "VT420".
+ * Pp = 6 1  ⇒  "VT510".
+ * Pp = 6 4  ⇒  "VT520".
+ * Pp = 6 5  ⇒  "VT525".
  *
  * and Pv is the firmware version (for xterm, this was originally
  * the XFree86 patch number, starting with 95).  In a DEC
@@ -621,24 +662,40 @@ test('function linePositionAbsolute', () => {
   expect(operations(`\x1B[0d`)).toEqual([['linePositionAbsolute', [0]]])
   expect(operations(`\x1B[1d`)).toEqual([['linePositionAbsolute', [1]]])
   expect(operations(`\x1B[2d`)).toEqual([['linePositionAbsolute', [2]]])
+  expect(operations(`\x1B[d text`)).toEqual([
+    ['linePositionAbsolute', []],
+    ['print'],
+  ])
 })
 
 /**
  * CSI Ps e
  * Line Position Relative  [rows] (default = [row+1,column]) (VPR).
  */
-test.skip('function linePositionRelative', () => {
-  expect(operations(`\x1B[e`)).toEqual([['linePositionRelative']])
-  expect(operations(`\x1B[1e`)).toEqual([['linePositionRelative']])
-  expect(operations(`\x1B[2e`)).toEqual([['linePositionRelative']])
+test('function linePositionRelative', () => {
+  expect(operations(`\x1B[e`)).toEqual([['linePositionRelative', []]])
+  expect(operations(`\x1B[0e`)).toEqual([['linePositionRelative', [0]]])
+  expect(operations(`\x1B[1e`)).toEqual([['linePositionRelative', [1]]])
+  expect(operations(`\x1B[2e`)).toEqual([['linePositionRelative', [2]]])
+  expect(operations(`\x1B[e text`)).toEqual([
+    ['linePositionRelative', []],
+    ['print'],
+  ])
 })
 
 /**
  * CSI Ps ; Ps f
  * Horizontal and Vertical Position [row;column] (default = [1,1]) (HVP).
  */
-test.skip('function horizontalAndVerticalPosition', () => {
-  expect(operations(`\x1B[1;1f`)).toEqual([['horizontalAndVerticalPosition']])
+test('function horizontalAndVerticalPosition', () => {
+  expect(operations(`\x1B[f`)).toEqual([['horizontalAndVerticalPosition', []]])
+  expect(operations(`\x1B[1;1f`)).toEqual([
+    ['horizontalAndVerticalPosition', [1, 1]],
+  ])
+  expect(operations(`\x1B[f text`)).toEqual([
+    ['horizontalAndVerticalPosition', []],
+    ['print'],
+  ])
 })
 
 /**
@@ -648,23 +705,268 @@ test.skip('function horizontalAndVerticalPosition', () => {
  * Ps = 0  ⇒  Clear Current Column (default).
  * Ps = 3  ⇒  Clear All.
  */
-test.skip('function tabClear', () => {
-  expect(operations(`\x1B[g`)).toEqual([['tabClear']])
-  expect(operations(`\x1B[0g`)).toEqual([['tabClear']])
-  expect(operations(`\x1B[3g`)).toEqual([['tabClear']])
+test('function tabClear', () => {
+  expect(operations(`\x1B[g`)).toEqual([['tabClear', []]])
+  expect(operations(`\x1B[0g`)).toEqual([['tabClear', [0]]])
+  expect(operations(`\x1B[3g`)).toEqual([['tabClear', [3]]])
+  expect(operations(`\x1B[g text`)).toEqual([['tabClear', []], ['print']])
 })
 
 /**
  * CSI Pm h
  * Set Mode (SM).
  *
- *  Ps = 2  ⇒  Keyboard Action Mode (KAM).
+ * Ps = 2  ⇒  Keyboard Action Mode (KAM).
  * Ps = 4  ⇒  Insert Mode (IRM).
  * Ps = 1 2  ⇒  Send/receive (SRM).
  * Ps = 2 0  ⇒  Automatic Newline (LNM).
  */
-test.skip('function setMode', () => {
-  expect(operations(`\x1B[2h`)).toEqual(['setMode'])
+test('function setMode', () => {
+  expect(operations(`\x1B[2h`)).toEqual([['setMode', [2]]])
+  expect(operations(`\x1B[4h`)).toEqual([['setMode', [4]]])
+  expect(operations(`\x1B[2h text`)).toEqual([['setMode', [2]], ['print']])
+})
+
+/**
+ * CSI ? Pm h
+ * DEC Private Mode Set (DECSET).
+ *
+ * Ps = 1  ⇒  Application Cursor Keys (DECCKM), VT100.
+ * Ps = 2  ⇒  Designate USASCII for character sets G0-G3 (DECANM), VT100, and set VT100 mode.
+ * Ps = 3  ⇒  132 Column Mode (DECCOLM), VT100.
+ * Ps = 4  ⇒  Smooth (Slow) Scroll (DECSCLM), VT100.
+ * Ps = 5  ⇒  Reverse Video (DECSCNM), VT100.
+ * Ps = 6  ⇒  Origin Mode (DECOM), VT100.
+ * Ps = 7  ⇒  Auto-Wrap Mode (DECAWM), VT100.
+ * Ps = 8  ⇒  Auto-Repeat Keys (DECARM), VT100.
+ * Ps = 9  ⇒  Send Mouse X & Y on button press.  See the section Mouse Tracking.  This is the X10 xterm mouse protocol.
+ * Ps = 1 0  ⇒  Show toolbar (rxvt).
+ * Ps = 1 2  ⇒  Start blinking cursor (AT&T 610).
+ * Ps = 1 3  ⇒  Start blinking cursor (set only via resource or menu).
+ * Ps = 1 4  ⇒  Enable XOR of blinking cursor control sequence and menu.
+ * Ps = 1 8  ⇒  Print Form Feed (DECPFF), VT220.
+ * Ps = 1 9  ⇒  Set print extent to full screen (DECPEX), VT220.
+ * Ps = 2 5  ⇒  Show cursor (DECTCEM), VT220.
+ * Ps = 3 0  ⇒  Show scrollbar (rxvt).
+ * Ps = 3 5  ⇒  Enable font-shifting functions (rxvt).
+ * Ps = 3 8  ⇒  Enter Tektronix mode (DECTEK), VT240, xterm.
+ * Ps = 4 0  ⇒  Allow 80 ⇒  132 mode, xterm.
+ * Ps = 4 1  ⇒  more(1) fix (see curses resource).
+ * Ps = 4 2  ⇒  Enable National Replacement Character sets (DECNRCM), VT220.
+ * Ps = 4 3  ⇒  Enable Graphics Expanded Print Mode (DECGEPM).
+ * Ps = 4 4  ⇒  Turn on margin bell, xterm.
+ * Ps = 4 4  ⇒  Enable Graphics Print Color Mode (DECGPCM).
+ * Ps = 4 5  ⇒  Reverse-wraparound mode, xterm.
+ * Ps = 4 5  ⇒  Enable Graphics Print ColorSpace (DECGPCS).
+ * Ps = 4 6  ⇒  Start logging, xterm.  This is normally disabled by a compile-time option.
+ * Ps = 4 7  ⇒  Use Alternate Screen Buffer, xterm.  This may be disabled by the titeInhibit resource.
+ * Ps = 4 7  ⇒  Enable Graphics Rotated Print Mode (DECGRPM).
+ * Ps = 6 6  ⇒  Application keypad mode (DECNKM), VT320.
+ * Ps = 6 7  ⇒  Backarrow key sends backspace (DECBKM), VT340, VT420.  This sets the backarrowKey resource to "true".
+ * Ps = 6 9  ⇒  Enable left and right margin mode (DECLRMM), VT420 and up.
+ * Ps = 8 0  ⇒  Enable Sixel Scrolling (DECSDM).
+ * Ps = 9 5  ⇒  Do not clear screen when DECCOLM is set/reset (DECNCSM), VT510 and up.
+ * Ps = 1 0 0 0  ⇒  Send Mouse X & Y on button press and release.  See the section Mouse Tracking.  This is the X11 xterm mouse protocol.
+ * Ps = 1 0 0 1  ⇒  Use Hilite Mouse Tracking, xterm.
+ * Ps = 1 0 0 2  ⇒  Use Cell Motion Mouse Tracking, xterm.  See the section Button-event tracking.
+ * Ps = 1 0 0 3  ⇒  Use All Motion Mouse Tracking, xterm.  See the section Any-event tracking.
+ * Ps = 1 0 0 4  ⇒  Send FocusIn/FocusOut events, xterm.
+ * Ps = 1 0 0 5  ⇒  Enable UTF-8 Mouse Mode, xterm.
+ * Ps = 1 0 0 6  ⇒  Enable SGR Mouse Mode, xterm.
+ * Ps = 1 0 0 7  ⇒  Enable Alternate Scroll Mode, xterm.  This corresponds to the alternateScroll resource.
+ * Ps = 1 0 1 0  ⇒  Scroll to bottom on tty output (rxvt). This sets the scrollTtyOutput resource to "true".
+ * Ps = 1 0 1 1  ⇒  Scroll to bottom on key press (rxvt).  This sets the scrollKey resource to "true".
+ * Ps = 1 0 1 5  ⇒  Enable urxvt Mouse Mode.
+ * Ps = 1 0 1 6  ⇒  Enable SGR Mouse PixelMode, xterm.
+ * Ps = 1 0 3 4  ⇒  Interpret "meta" key, xterm.  This sets the eighth bit of keyboard input (and enables the eightBitInput resource).
+ * Ps = 1 0 3 5  ⇒  Enable special modifiers for Alt and NumLock keys, xterm.  This enables the numLock resource.
+ * Ps = 1 0 3 6  ⇒  Send ESC   when Meta modifies a key, xterm. This enables the metaSendsEscape resource.
+ * Ps = 1 0 3 7  ⇒  Send DEL from the editing-keypad Delete key, xterm.
+ * Ps = 1 0 3 9  ⇒  Send ESC  when Alt modifies a key, xterm. This enables the altSendsEscape resource, xterm.
+ * Ps = 1 0 4 0  ⇒  Keep selection even if not highlighted, xterm.  This enables the keepSelection resource.
+ * Ps = 1 0 4 1  ⇒  Use the CLIPBOARD selection, xterm.  This enables the selectToClipboard resource.
+ * Ps = 1 0 4 2  ⇒  Enable Urgency window manager hint when Control-G is received, xterm.  This enables the bellIsUrgent resource.
+ * Ps = 1 0 4 3  ⇒  Enable raising of the window when Control-G is received, xterm.  This enables the popOnBell resource.
+ * Ps = 1 0 4 4  ⇒  Reuse the most recent data copied to CLIPBOARD, xterm.  This enables the keepClipboard resource.
+ * Ps = 1 0 4 6  ⇒  Enable switching to/from Alternate Screen Buffer, xterm.  This works for terminfo-based systems, updating the titeInhibit resource.
+ * Ps = 1 0 4 7  ⇒  Use Alternate Screen Buffer, xterm.  This may be disabled by the titeInhibit resource.
+ * Ps = 1 0 4 8  ⇒  Save cursor as in DECSC, xterm.  This may be disabled by the titeInhibit resource.
+ * Ps = 1 0 4 9  ⇒  Save cursor as in DECSC, xterm.  After saving the cursor, switch to the Alternate Screen Buffer, clearing it first.  This may be disabled by the titeInhibit resource.  This control combines the effects of the 1 0 4 7 and 1 0 4 8  modes.  Use this with terminfo-based applications rather than the 4 7  mode.
+ * Ps = 1 0 5 0  ⇒  Set terminfo/termcap function-key mode, xterm.
+ * Ps = 1 0 5 1  ⇒  Set Sun function-key mode, xterm.
+ * Ps = 1 0 5 2  ⇒  Set HP function-key mode, xterm.
+ * Ps = 1 0 5 3  ⇒  Set SCO function-key mode, xterm.
+ * Ps = 1 0 6 0  ⇒  Set legacy keyboard emulation, i.e, X11R6, xterm.
+ * Ps = 1 0 6 1  ⇒  Set VT220 keyboard emulation, xterm.
+ * Ps = 2 0 0 4  ⇒  Set bracketed paste mode, xterm.
+ */
+test('function privateModeSet', () => {
+  expect(operations(`\x1B[?1h`)).toEqual([['privateModeSet', [1]]])
+  expect(operations(`\x1B[?2h`)).toEqual([['privateModeSet', [2]]])
+  expect(operations(`\x1B[?3h`)).toEqual([['privateModeSet', [3]]])
+  expect(operations(`\x1B[?4h`)).toEqual([['privateModeSet', [4]]])
+  expect(operations(`\x1B[?5h`)).toEqual([['privateModeSet', [5]]])
+  expect(operations(`\x1B[?6h`)).toEqual([['privateModeSet', [6]]])
+  expect(operations(`\x1B[?7h`)).toEqual([['privateModeSet', [7]]])
+  expect(operations(`\x1B[?8h`)).toEqual([['privateModeSet', [8]]])
+  expect(operations(`\x1B[?9h`)).toEqual([['privateModeSet', [9]]])
+  expect(operations(`\x1B[?10h`)).toEqual([['privateModeSet', [10]]])
+  expect(operations(`\x1B[?12h`)).toEqual([['privateModeSet', [12]]])
+  expect(operations(`\x1B[?13h`)).toEqual([['privateModeSet', [13]]])
+  expect(operations(`\x1B[?14h`)).toEqual([['privateModeSet', [14]]])
+  expect(operations(`\x1B[?18h`)).toEqual([['privateModeSet', [18]]])
+  expect(operations(`\x1B[?19h`)).toEqual([['privateModeSet', [19]]])
+  expect(operations(`\x1B[?25h`)).toEqual([['privateModeSet', [25]]])
+  expect(operations(`\x1B[?30h`)).toEqual([['privateModeSet', [30]]])
+  expect(operations(`\x1B[?35h`)).toEqual([['privateModeSet', [35]]])
+  expect(operations(`\x1B[?38h`)).toEqual([['privateModeSet', [38]]])
+  expect(operations(`\x1B[?40h`)).toEqual([['privateModeSet', [40]]])
+  expect(operations(`\x1B[?41h`)).toEqual([['privateModeSet', [41]]])
+  expect(operations(`\x1B[?42h`)).toEqual([['privateModeSet', [42]]])
+  expect(operations(`\x1B[?1h text`)).toEqual([
+    ['privateModeSet', [1]],
+    ['print'],
+  ])
+})
+
+/**
+ * CSI ? Pm l
+ * DEC Private Mode Reset (DECRST).
+ *
+ * Ps = 1  ⇒  Normal Cursor Keys (DECCKM), VT100.
+ * Ps = 2  ⇒  Designate VT52 mode (DECANM), VT100.
+ * Ps = 3  ⇒  80 Column Mode (DECCOLM), VT100.
+ * Ps = 4  ⇒  Jump (Fast) Scroll (DECSCLM), VT100.
+ * Ps = 5  ⇒  Normal Video (DECSCNM), VT100.
+ * Ps = 6  ⇒  Normal Cursor Mode (DECOM), VT100.
+ * Ps = 7  ⇒  No Auto-Wrap Mode (DECAWM), VT100.
+ * Ps = 8  ⇒  No Auto-Repeat Keys (DECARM), VT100.
+ * Ps = 9  ⇒  Don't send Mouse X & Y on button press, xterm.
+ * Ps = 1 0  ⇒  Hide toolbar (rxvt).
+ * Ps = 1 2  ⇒  Stop blinking cursor (AT&T 610).
+ * Ps = 1 3  ⇒  Disable blinking cursor (reset only via resource or menu).
+ * Ps = 1 4  ⇒  Disable XOR of blinking cursor control sequence and menu.
+ * Ps = 1 8  ⇒  Don't Print Form Feed (DECPFF), VT220.
+ * Ps = 1 9  ⇒  Limit print to scrolling region (DECPEX), VT220.
+ * Ps = 2 5  ⇒  Hide cursor (DECTCEM), VT220.
+ * Ps = 3 0  ⇒  Don't show scrollbar (rxvt).
+ * Ps = 3 5  ⇒  Disable font-shifting functions (rxvt).
+ * Ps = 4 0  ⇒  Disallow 80 ⇒  132 mode, xterm.
+ * Ps = 4 1  ⇒  No more(1) fix (see curses resource).
+ * Ps = 4 2  ⇒  Disable National Replacement Character sets (DECNRCM), VT220.
+ * Ps = 4 3  ⇒  Disable Graphics Expanded Print Mode (DECGEPM).
+ * Ps = 4 4  ⇒  Turn off margin bell, xterm.
+ * Ps = 4 4  ⇒  Disable Graphics Print Color Mode (DECGPCM).
+ * Ps = 4 5  ⇒  No Reverse-wraparound mode, xterm.
+ * Ps = 4 5  ⇒  Disable Graphics Print ColorSpace (DECGPCS).
+ * Ps = 4 6  ⇒  Stop logging, xterm.  This is normally disabled by a compile-time option.
+ * Ps = 4 7  ⇒  Use Normal Screen Buffer, xterm.
+ * Ps = 4 7  ⇒  Disable Graphics Rotated Print Mode (DECGRPM).
+ * Ps = 6 6  ⇒  Numeric keypad mode (DECNKM), VT320.
+ * Ps = 6 7  ⇒  Backarrow key sends delete (DECBKM), VT340, VT420.  This sets the backarrowKey resource to "false".
+ * Ps = 6 9  ⇒  Disable left and right margin mode (DECLRMM), VT420 and up.
+ * Ps = 8 0  ⇒  Disable Sixel Scrolling (DECSDM).
+ * Ps = 9 5  ⇒  Clear screen when DECCOLM is set/reset (DECNCSM), VT510 and up.
+ * Ps = 1 0 0 0  ⇒  Don't send Mouse X & Y on button press and release.  See the section Mouse Tracking.
+ * Ps = 1 0 0 1  ⇒  Don't use Hilite Mouse Tracking, xterm.
+ * Ps = 1 0 0 2  ⇒  Don't use Cell Motion Mouse Tracking, xterm.  See the section Button-event tracking.
+ * Ps = 1 0 0 3  ⇒  Don't use All Motion Mouse Tracking, xterm. See the section Any-event tracking.
+ * Ps = 1 0 0 4  ⇒  Don't send FocusIn/FocusOut events, xterm.
+ * Ps = 1 0 0 5  ⇒  Disable UTF-8 Mouse Mode, xterm.
+ * Ps = 1 0 0 6  ⇒  Disable SGR Mouse Mode, xterm.
+ * Ps = 1 0 0 7  ⇒  Disable Alternate Scroll Mode, xterm.  This corresponds to the alternateScroll resource.
+ * Ps = 1 0 1 0  ⇒  Don't scroll to bottom on tty output (rxvt).  This sets the scrollTtyOutput resource to "false".
+ * Ps = 1 0 1 1  ⇒  Don't scroll to bottom on key press (rxvt). This sets the scrollKey resource to "false".
+ * Ps = 1 0 1 5  ⇒  Disable urxvt Mouse Mode.
+ * Ps = 1 0 1 6  ⇒  Disable SGR Mouse Pixel-Mode, xterm.
+ * Ps = 1 0 3 4  ⇒  Don't interpret "meta" key, xterm.  This disables the eightBitInput resource.
+ * Ps = 1 0 3 5  ⇒  Disable special modifiers for Alt and NumLock keys, xterm.  This disables the numLock resource.
+ * Ps = 1 0 3 6  ⇒  Don't send ESC  when Meta modifies a key, xterm.  This disables the metaSendsEscape resource.
+ * Ps = 1 0 3 7  ⇒  Send VT220 Remove from the editing-keypad Delete key, xterm.
+ * Ps = 1 0 3 9  ⇒  Don't send ESC when Alt modifies a key, xterm.  This disables the altSendsEscape resource.
+ * Ps = 1 0 4 0  ⇒  Do not keep selection when not highlighted, xterm.  This disables the keepSelection resource.
+ * Ps = 1 0 4 1  ⇒  Use the PRIMARY selection, xterm.  This disables the selectToClipboard resource.
+ * Ps = 1 0 4 2  ⇒  Disable Urgency window manager hint when Control-G is received, xterm.  This disables the bellIsUrgent resource.
+ * Ps = 1 0 4 3  ⇒  Disable raising of the window when Control-G is received, xterm.  This disables the popOnBell resource.
+ * Ps = 1 0 4 6  ⇒  Disable switching to/from Alternate Screen Buffer, xterm.  This works for terminfo-based systems, updating the titeInhibit resource.  If currently using the Alternate Screen Buffer, xterm switches to the Normal Screen Buffer.
+ * Ps = 1 0 4 7  ⇒  Use Normal Screen Buffer, xterm.  Clear the screen first if in the Alternate Screen Buffer.  This may be disabled by the titeInhibit resource.
+ * Ps = 1 0 4 8  ⇒  Restore cursor as in DECRC, xterm.  This may be disabled by the titeInhibit resource.
+ * Ps = 1 0 4 9  ⇒  Use Normal Screen Buffer and restore cursor as in DECRC, xterm.  This may be disabled by the titeInhibit resource.  This combines the effects of the 1 0 4 7  and 1 0 4 8  modes.  Use this with terminfo-based applications rather than the 4 7  mode.
+ * Ps = 1 0 5 0  ⇒  Reset terminfo/termcap function-key mode, xterm.
+ * Ps = 1 0 5 1  ⇒  Reset Sun function-key mode, xterm.
+ * Ps = 1 0 5 2  ⇒  Reset HP function-key mode, xterm.
+ * Ps = 1 0 5 3  ⇒  Reset SCO function-key mode, xterm.
+ * Ps = 1 0 6 0  ⇒  Reset legacy keyboard emulation, i.e, X11R6, xterm.
+ * Ps = 1 0 6 1  ⇒  Reset keyboard emulation to Sun/PC style, xterm.
+ * Ps = 2 0 0 4  ⇒  Reset bracketed paste mode, xterm.
+ */
+test('function privateModeReset', () => {
+  expect(operations(`\x1B[?1l`)).toEqual([['privateModeReset', [1]]])
+  expect(operations(`\x1B[?2l`)).toEqual([['privateModeReset', [2]]])
+  expect(operations(`\x1B[?3l`)).toEqual([['privateModeReset', [3]]])
+  expect(operations(`\x1B[?4l`)).toEqual([['privateModeReset', [4]]])
+  expect(operations(`\x1B[?5l`)).toEqual([['privateModeReset', [5]]])
+  expect(operations(`\x1B[?6l`)).toEqual([['privateModeReset', [6]]])
+  expect(operations(`\x1B[?7l`)).toEqual([['privateModeReset', [7]]])
+  expect(operations(`\x1B[?8l`)).toEqual([['privateModeReset', [8]]])
+  expect(operations(`\x1B[?9l`)).toEqual([['privateModeReset', [9]]])
+  expect(operations(`\x1B[?10l`)).toEqual([['privateModeReset', [10]]])
+  expect(operations(`\x1B[?12l`)).toEqual([['privateModeReset', [12]]])
+  expect(operations(`\x1B[?13l`)).toEqual([['privateModeReset', [13]]])
+  expect(operations(`\x1B[?14l`)).toEqual([['privateModeReset', [14]]])
+  expect(operations(`\x1B[?18l`)).toEqual([['privateModeReset', [18]]])
+  expect(operations(`\x1B[?19l`)).toEqual([['privateModeReset', [19]]])
+  expect(operations(`\x1B[?25l`)).toEqual([['privateModeReset', [25]]])
+  expect(operations(`\x1B[?30l`)).toEqual([['privateModeReset', [30]]])
+  expect(operations(`\x1B[?35l`)).toEqual([['privateModeReset', [35]]])
+  expect(operations(`\x1B[?40l`)).toEqual([['privateModeReset', [40]]])
+  expect(operations(`\x1B[?41l`)).toEqual([['privateModeReset', [41]]])
+  expect(operations(`\x1B[?42l`)).toEqual([['privateModeReset', [42]]])
+  expect(operations(`\x1B[?43l`)).toEqual([['privateModeReset', [43]]])
+  expect(operations(`\x1B[?44l`)).toEqual([['privateModeReset', [44]]])
+  expect(operations(`\x1B[?45l`)).toEqual([['privateModeReset', [45]]])
+  expect(operations(`\x1B[?46l`)).toEqual([['privateModeReset', [46]]])
+  expect(operations(`\x1B[?47l`)).toEqual([['privateModeReset', [47]]])
+  expect(operations(`\x1B[?66l`)).toEqual([['privateModeReset', [66]]])
+  expect(operations(`\x1B[?67l`)).toEqual([['privateModeReset', [67]]])
+  expect(operations(`\x1B[?69l`)).toEqual([['privateModeReset', [69]]])
+  expect(operations(`\x1B[?80l`)).toEqual([['privateModeReset', [80]]])
+  expect(operations(`\x1B[?95l`)).toEqual([['privateModeReset', [95]]])
+  expect(operations(`\x1B[?1000l`)).toEqual([['privateModeReset', [1000]]])
+  expect(operations(`\x1B[?1001l`)).toEqual([['privateModeReset', [1001]]])
+  expect(operations(`\x1B[?1002l`)).toEqual([['privateModeReset', [1002]]])
+  expect(operations(`\x1B[?1003l`)).toEqual([['privateModeReset', [1003]]])
+  expect(operations(`\x1B[?1004l`)).toEqual([['privateModeReset', [1004]]])
+  expect(operations(`\x1B[?1005l`)).toEqual([['privateModeReset', [1005]]])
+  expect(operations(`\x1B[?1006l`)).toEqual([['privateModeReset', [1006]]])
+  expect(operations(`\x1B[?1007l`)).toEqual([['privateModeReset', [1007]]])
+  expect(operations(`\x1B[?1010l`)).toEqual([['privateModeReset', [1010]]])
+  expect(operations(`\x1B[?1011l`)).toEqual([['privateModeReset', [1011]]])
+  expect(operations(`\x1B[?1015l`)).toEqual([['privateModeReset', [1015]]])
+  expect(operations(`\x1B[?1016l`)).toEqual([['privateModeReset', [1016]]])
+  expect(operations(`\x1B[?1035l`)).toEqual([['privateModeReset', [1035]]])
+  expect(operations(`\x1B[?1036l`)).toEqual([['privateModeReset', [1036]]])
+  expect(operations(`\x1B[?1037l`)).toEqual([['privateModeReset', [1037]]])
+  expect(operations(`\x1B[?1039l`)).toEqual([['privateModeReset', [1039]]])
+  expect(operations(`\x1B[?1040l`)).toEqual([['privateModeReset', [1040]]])
+  expect(operations(`\x1B[?1041l`)).toEqual([['privateModeReset', [1041]]])
+  expect(operations(`\x1B[?1042l`)).toEqual([['privateModeReset', [1042]]])
+  expect(operations(`\x1B[?1043l`)).toEqual([['privateModeReset', [1043]]])
+  expect(operations(`\x1B[?1046l`)).toEqual([['privateModeReset', [1046]]])
+  expect(operations(`\x1B[?1047l`)).toEqual([['privateModeReset', [1047]]])
+  expect(operations(`\x1B[?1048l`)).toEqual([['privateModeReset', [1048]]])
+  expect(operations(`\x1B[?1049l`)).toEqual([['privateModeReset', [1049]]])
+  expect(operations(`\x1B[?1050l`)).toEqual([['privateModeReset', [1050]]])
+  expect(operations(`\x1B[?1051l`)).toEqual([['privateModeReset', [1051]]])
+  expect(operations(`\x1B[?1052l`)).toEqual([['privateModeReset', [1052]]])
+  expect(operations(`\x1B[?1053l`)).toEqual([['privateModeReset', [1053]]])
+  expect(operations(`\x1B[?1060l`)).toEqual([['privateModeReset', [1060]]])
+  expect(operations(`\x1B[?1061l`)).toEqual([['privateModeReset', [1061]]])
+  expect(operations(`\x1B[?2004l`)).toEqual([['privateModeReset', [2004]]])
+  expect(operations(`\x1B[?1l text`)).toEqual([
+    ['privateModeReset', [1]],
+    ['print'],
+  ])
 })
 
 /**
@@ -676,11 +978,12 @@ test.skip('function setMode', () => {
  * Ps = 1 2  ⇒  Send/receive (SRM).
  * Ps = 2 0  ⇒  Normal Linefeed (LNM).
  */
-test.skip('function resetMode', () => {
-  expect(operations(`\x1B[2l`)).toEqual([['resetMode']])
-  expect(operations(`\x1B[4l`)).toEqual([['resetMode']])
-  expect(operations(`\x1B[12l`)).toEqual([['resetMode']])
-  expect(operations(`\x1B[20l`)).toEqual([['resetMode']])
+test('function resetMode', () => {
+  expect(operations(`\x1B[2l`)).toEqual([['resetMode', [2]]])
+  expect(operations(`\x1B[4l`)).toEqual([['resetMode', [4]]])
+  expect(operations(`\x1B[12l`)).toEqual([['resetMode', [12]]])
+  expect(operations(`\x1B[20l`)).toEqual([['resetMode', [20]]])
+  expect(operations(`\x1B[2l text`)).toEqual([['resetMode', [2]], ['print']])
 })
 
 /**
@@ -725,6 +1028,10 @@ test.skip('function setCharacterAttributes', () => {
   expect(operations(`\x1B[46m`)).toEqual([['setCharacterAttributes']])
   expect(operations(`\x1B[47m`)).toEqual([['setCharacterAttributes']])
   expect(operations(`\x1B[49m`)).toEqual([['setCharacterAttributes']])
+  expect(operations(`\x1B[m text`)).toEqual([
+    ['setCharacterAttributes'],
+    ['print'],
+  ])
 })
 
 /**
@@ -733,6 +1040,7 @@ test.skip('function setCharacterAttributes', () => {
  */
 test('function softTerminalReset', () => {
   expect(operations(`\x1B[!p`)).toEqual([['softTerminalReset']])
+  expect(operations(`\x1B[!p text`)).toEqual([['softTerminalReset'], ['print']])
 })
 
 /**
@@ -747,8 +1055,19 @@ test('function softTerminalReset', () => {
  * Ps = 5  ⇒  blinking bar, xterm.
  * Ps = 6  ⇒  steady bar, xterm.
  */
-test.skip('function setCursorStyle', () => {
-  expect(operations(``)).toEqual([[]])
+test('function setCursorStyle', () => {
+  expect(operations(`\x1B[ q`)).toEqual([['setCursorStyle', []]])
+  expect(operations(`\x1B[0 q`)).toEqual([['setCursorStyle', [0]]])
+  expect(operations(`\x1B[1 q`)).toEqual([['setCursorStyle', [1]]])
+  expect(operations(`\x1B[2 q`)).toEqual([['setCursorStyle', [2]]])
+  expect(operations(`\x1B[3 q`)).toEqual([['setCursorStyle', [3]]])
+  expect(operations(`\x1B[4 q`)).toEqual([['setCursorStyle', [4]]])
+  expect(operations(`\x1B[5 q`)).toEqual([['setCursorStyle', [5]]])
+  expect(operations(`\x1B[6 q`)).toEqual([['setCursorStyle', [6]]])
+  expect(operations(`\x1B[ q text`)).toEqual([
+    ['setCursorStyle', []],
+    ['print'],
+  ])
 })
 
 /**
@@ -759,101 +1078,115 @@ test.skip('function setCursorStyle', () => {
  * Ps = 2 , 3  or 4  ⇒  low.
  * Ps = 5 , 6 , 7 , or 8  ⇒  high.
  */
-test.skip('function setWarningBellVolume', () => {
-  expect(operations(``)).toEqual([[]])
+test('function setWarningBellVolume', () => {
+  expect(operations(`\x1B[ t`)).toEqual([])
+  expect(operations(`\x1B[0 t`)).toEqual([])
+  expect(operations(`\x1B[1 t`)).toEqual([])
+  expect(operations(`\x1B[2 t`)).toEqual([])
+  expect(operations(`\x1B[3 t`)).toEqual([])
+  expect(operations(`\x1B[4 t`)).toEqual([])
+  expect(operations(`\x1B[5 t`)).toEqual([])
+  expect(operations(`\x1B[6 t`)).toEqual([])
+  expect(operations(`\x1B[7 t`)).toEqual([])
+  expect(operations(`\x1B[8 t`)).toEqual([])
+  expect(operations(`\x1B[ t text`)).toEqual([['print']])
 })
 
 /**
  * CSI u
  * Restore cursor (SCORC, also ANSI.SYS).
  */
-test('function restoreCursor', () => {
+test('function restoreCursor (alternative)', () => {
   expect(operations(`\x1B[u`)).toEqual([['restoreCursor']])
+  expect(operations(`\x1B[u print`)).toEqual([['restoreCursor'], ['print']])
+})
+
+/**
+ * CSI Ps SP u
+ * Set margin-bell volume (DECSMBV), VT520.
+ *
+ * Ps = 0 , 5 , 6 , 7 , or 8  ⇒  high.
+ * Ps = 1  ⇒  off.
+ * Ps = 2 , 3  or 4  ⇒  low.
+ */
+test('function setMarginBellVolume', () => {
+  expect(operations(`\x1B[ u`)).toEqual([])
+  expect(operations(`\x1B[ 0u`)).toEqual([])
+  expect(operations(`\x1B[ 1u`)).toEqual([])
+  expect(operations(`\x1B[ 2u`)).toEqual([])
+  expect(operations(`\x1B[ 3u`)).toEqual([])
+  expect(operations(`\x1B[ 4u`)).toEqual([])
+  expect(operations(`\x1B[ 5u`)).toEqual([])
+  expect(operations(`\x1B[ 6u`)).toEqual([])
+  expect(operations(`\x1B[ 7u`)).toEqual([])
+  expect(operations(`\x1B[ 8u`)).toEqual([])
+  expect(operations(`\x1B[ u text`)).toEqual([['print']])
 })
 
 test('function - setCharAttributes', () => {
-  const setCharAttributes = jest.fn()
-  runTest('\u001b[0;7m', { setCharAttributes })
-  expect(setCharAttributes).toHaveBeenCalledTimes(1)
+  expect(operations(`\u001b[0;7m`)).toEqual([['setCharAttributes', [0, 7]]])
 })
 
 test('function - setCharAttributes with single param', () => {
-  const setCharAttributes = jest.fn()
-  runTest(`\u001b[31m Hello World`, { setCharAttributes })
-  expect(setCharAttributes).toHaveBeenCalledWith([31])
+  expect(operations(`\u001b[31m Hello World`)).toEqual([
+    ['setCharAttributes', [31]],
+    ['print'],
+  ])
 })
 
 test('function - setCharAttributes with multiple params', () => {
-  const setCharAttributes = jest.fn()
-  runTest(`\u001b[0;35m Hello World`, { setCharAttributes })
-  expect(setCharAttributes).toHaveBeenCalledWith([0, 35])
+  expect(operations(`\u001b[0;35m Hello World`)).toEqual([
+    ['setCharAttributes', [0, 35]],
+    ['print'],
+  ])
 })
 
 test('function - setCharAttributes with white background', () => {
-  expect(operations(`\x1B[0;7m^C`)).toEqual([['setCharAttributes'], ['print']])
+  expect(operations(`\x1B[0;7m^C`)).toEqual([
+    ['setCharAttributes', [0, 7]],
+    ['print'],
+  ])
 })
 
-test('function - eraseInLine', () => {
-  const eraseInLine = jest.fn()
-  runTest('\u001b[K', { eraseInLine })
-  expect(eraseInLine).toHaveBeenCalledTimes(1)
-})
-
-test('function - backspace', () => {
-  const backspace = jest.fn()
-  runTest('\u0008', { backspace })
-  expect(backspace).toHaveBeenCalledTimes(1)
+test('function eraseInLine', () => {
+  expect(operations(`\u001b[K`)).toEqual([['eraseInLine', []]])
 })
 
 test('function - setGLevel 1', () => {
-  const setGLevel = jest.fn()
-  runTest(`\u001b~`, { setGLevel })
-  expect(setGLevel).toHaveBeenCalledWith(1)
+  expect(operations(`\u001b~`)).toEqual([])
 })
 
 test('function - setGLevel 2', () => {
-  const setGLevel = jest.fn()
-  runTest(`\u001b}`, { setGLevel })
-  expect(setGLevel).toHaveBeenCalledWith(2)
+  expect(operations(`\u001b}`)).toEqual([])
 })
 
 test('function - setGLevel 3', () => {
-  const setGLevel = jest.fn()
-  runTest(`\u001b|`, { setGLevel })
-  expect(setGLevel).toHaveBeenCalledWith(3)
+  expect(operations(`\u001b|`)).toEqual([])
 })
 
 test('function - saveCursor', () => {
-  const saveCursor = jest.fn()
-  runTest(`\u001b7`, { saveCursor })
-  expect(saveCursor).toHaveBeenCalledTimes(1)
+  expect(operations(`\u001b7`)).toEqual([['saveCursor']])
 })
 
-test('function - restoreCursor', () => {
-  const restoreCursor = jest.fn()
-  runTest(`\u001b8`, { restoreCursor })
-  expect(restoreCursor).toHaveBeenCalledTimes(1)
-})
+// test('function - restoreCursor', () => {
+//   const restoreCursor = jest.fn()
+//   runTest(`\u001b8`, { restoreCursor })
+//   expect(restoreCursor).toHaveBeenCalledTimes(1)
+// })
 
 test('function - index', () => {
-  const index = jest.fn()
-  runTest(`\u001bD`, { index })
-  expect(index).toHaveBeenCalledTimes(1)
+  expect(operations(`\u001bD`)).toEqual([['index']])
 })
 
-test('function - nextLine', () => {
-  const nextLine = jest.fn()
-  runTest(`\u001bE`, { nextLine })
-  expect(nextLine).toHaveBeenCalledTimes(1)
+test.skip('function nextLine', () => {
+  expect(operations(`\u001bE`)).toEqual([['nextLine']])
 })
 
 test('function - tabSet', () => {
-  const tabSet = jest.fn()
-  runTest(`\u001bH`, { tabSet })
-  expect(tabSet).toHaveBeenCalledTimes(1)
+  expect(operations(`\u001bH`)).toEqual([['tabSet']])
 })
 
-test('function - setWindowTitle', () => {
+test.skip('function - setWindowTitle', () => {
   expect(operations('\u001b]0;This is the window title\x07')).toEqual([
     ['setWindowTitle', 'This is the window title'],
   ])
@@ -877,12 +1210,6 @@ test.skip('function - auxPortOff', () => {
   expect(auxPortOff).toHaveBeenCalledTimes(1)
 })
 
-test('function - carriage return', () => {
-  const carriageReturn = jest.fn()
-  runTest('\r', { carriageReturn })
-  expect(carriageReturn).toHaveBeenCalledTimes(1)
-})
-
 // test.only('function - newline 2', () => {
 //   const newline = jest.fn()
 //   runTest('\n', { newline })
@@ -890,20 +1217,30 @@ test('function - carriage return', () => {
 // })
 
 test('text - hello world!', () => {
-  const lines = getOutputLines('hello world!')
-  expect(lines).toEqual([`hello world!`])
+  expect(operations(`hello world!`)).toEqual([['print']])
 })
 
 test('text - prompt', () => {
-  const lines = getOutputLines(
-    `\u001b[0;35msimon\u001b[0;32m (master *)\u001b[0;34m termterm $ \u001b[0m`,
-  )
-  expect(lines).toEqual([`simon (master *) termterm $ `])
+  expect(
+    operations(
+      `\u001b[0;35msimon\u001b[0;32m (master *)\u001b[0;34m termterm $ \u001b[0m`,
+    ),
+  ).toEqual([
+    ['setCharAttributes', [0, 35]],
+    ['print'],
+    ['setCharAttributes', [0, 32]],
+    ['print'],
+    ['setCharAttributes', [0, 34]],
+    ['print'],
+    ['setCharAttributes', [0]],
+  ])
 })
 
-test('special - csi with print and execute', () => {
-  const lines = getOutputLines('\u001b[<31;5mHello World! öäü€\nabc')
-  expect(lines).toEqual([`Hello World! öäü€`, `abc`])
+test.skip('special - csi with print and execute', () => {
+  expect(operations('\u001b[<31;5mHello World! öäü€\nabc')).toEqual([
+    ['setCharAttributes', [31, 5]],
+    ['print'],
+  ])
 })
 
 test.skip('special - single DCS', () => {
@@ -941,7 +1278,7 @@ test.skip('special - 7bit ST should be swallowed', () => {
   expect(lines).toEqual(['abcdefg'])
 })
 
-test('special - colon notation in CSI params', () => {
+test.skip('special - colon notation in CSI params', () => {
   const lines = getOutputLines(`\x1b[<31;5::123:;8mHello World! öäü€\nabc`)
   expect(lines).toEqual(['Hello World! öäü€', 'abc'])
 })
@@ -971,14 +1308,17 @@ test.skip('special - SUB should abort OSC', () => {
   expect(lines).toEqual([])
 })
 
-test('styled text - [01;32mfastboot[0m', () => {
-  const lines = getOutputLines(`[01;32mfastboot[0m`)
-  expect(lines).toEqual(['fastboot'])
+test('styled text - \x1B[01;32mfastboot\x1B[0m', () => {
+  expect(operations(`\x1B[01;32mfastboot\x1B[0m`)).toEqual([
+    ['setCharAttributes', [1, 32]],
+    ['print'],
+    ['setCharAttributes', [0]],
+  ])
 })
 
 test('tab', () => {
-  const lines = getOutputLines(`\t\t\t`)
-  expect(lines).toEqual(['\t\t\t'])
+  expect(operations(`\t`)).toEqual([])
+  expect(operations(`\t\t\t`)).toEqual([])
 })
 
 // test('program nano', () => {
@@ -999,24 +1339,44 @@ test('tab', () => {
 // })
 
 test('program ls', () => {
-  const lines = getOutputLines(
-    `\u001b[0m\u001b[01;34mnode_modules\u001b[0m  package.json  package-lock.json  \u001b[01;34mpublic\u001b[0m  server.js\r\n`,
-  )
-  expect(lines).toEqual([
-    'node_modules  package.json  package-lock.json  public  server.js',
-    '',
+  expect(
+    operations(
+      `\u001b[0m\u001b[01;34mnode_modules\u001b[0m  package.json  package-lock.json  \u001b[01;34mpublic\u001b[0m  server.js\r\n`,
+    ),
+  ).toEqual([
+    ['setCharAttributes', [0]],
+    ['setCharAttributes', [1, 34]],
+    ['print'],
+    ['setCharAttributes', [0]],
+    ['print'],
+    ['setCharAttributes', [1, 34]],
+    ['print'],
+    ['setCharAttributes', [0]],
+    ['print'],
+    ['carriageReturn'],
+    ['lineFeed'],
   ])
 })
 
 test('cursor left and delete', () => {
-  const eraseInLine = jest.fn()
-  const backspace = jest.fn()
-  runTest(
-    `\u0008\u0008\u0008\u0008\u0008\u0008\u0008\u0008\u0008\u0008d\u001b[K`,
-    { backspace, eraseInLine },
-  )
-  expect(backspace).toHaveBeenCalledTimes(10)
-  expect(eraseInLine).toHaveBeenCalledTimes(1)
+  expect(
+    operations(
+      `\u0008\u0008\u0008\u0008\u0008\u0008\u0008\u0008\u0008\u0008d\u001b[K`,
+    ),
+  ).toEqual([
+    ['backspace'],
+    ['backspace'],
+    ['backspace'],
+    ['backspace'],
+    ['backspace'],
+    ['backspace'],
+    ['backspace'],
+    ['backspace'],
+    ['backspace'],
+    ['backspace'],
+    ['print'],
+    ['eraseInLine', []],
+  ])
 })
 
 test.skip('delete 2', () => {
@@ -1029,9 +1389,11 @@ test.skip('delete 2', () => {
 })
 
 test('multiple carriage return', () => {
-  const carriageReturn = jest.fn()
-  runTest(`Run \`unset PREFIX\` to unset it.\r\n`, { carriageReturn })
-  expect(carriageReturn).toHaveBeenCalledTimes(1)
+  expect(operations(`Run \`unset PREFIX\` to unset it.\r\n`)).toEqual([
+    ['print'],
+    ['carriageReturn'],
+    ['lineFeed'],
+  ])
 })
 
 test('bug with carriage return', () => {
@@ -1199,20 +1561,16 @@ test('set charset iso latin', () => {
 })
 
 test('reset char attributes', () => {
-  expect(operations(`\x1B[m;`)).toEqual([
-    ['setCharAttributes'],
-    // TODO should be no print
-    ['print'],
-  ])
+  expect(operations(`\x1B[m`)).toEqual([['setCharAttributes', []]])
 })
 
-test('function cursorHide', () => {
-  expect(operations(`\x1B[?25l`)).toEqual([['cursorHide']])
-})
+// test('function cursorHide', () => {
+//   expect(operations(`\x1B[?25l`)).toEqual([['cursorHide']])
+// })
 
-test('function cursorShow', () => {
-  expect(operations(`\x1B[?25h`)).toEqual([['cursorShow']])
-})
+// test('function cursorShow', () => {
+//   expect(operations(`\x1B[?25h`)).toEqual([['cursorShow']])
+// })
 
 test.skip('special ', () => {
   expect(operations(`\x1B[?1049l`)).toEqual([[]])
@@ -1226,11 +1584,14 @@ test.skip('special', () => {
   expect(operations(`\x1B[?1l`)).toEqual([[]])
 })
 
-test('function - bell', () => {
-  expect(operations(`\u0007`)).toEqual([['bell']])
-  expect(operations(`sample \u0007 text`)).toEqual([
-    ['print'],
-    ['bell'],
-    ['print'],
-  ])
+test.skip('special ', () => {
+  expect(operations(`中文\x1b[4C12`)).toEqual([[]])
+})
+
+test.skip('special long numbers', () => {
+  expect(operations(`１０`)).toEqual([['print']])
+})
+
+test('special ', () => {
+  expect(operations(`\x1B]0;`)).toEqual([])
 })
