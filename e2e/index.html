@@ -21,9 +21,14 @@
 
       window.terminal = terminal
 
-      terminal.pasteText(
-        `\r\n\x1B]0;gitpod /workspace/termterm\x07\x1B[01;32mgitpod\x1B[00m \x1B[01;34m/workspace/termterm\x1B[00m $`,
-      )
+      const __initialize__ = async () => {
+        const text = await fetch('/fixtures/ls.txt').then((response) =>
+          response.text(),
+        )
+        terminal.pasteText(text)
+      }
+
+      __initialize__()
     </script>
   </body>
 </html>
