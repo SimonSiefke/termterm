@@ -1,0 +1,1 @@
+\x1B]0;gitpod /workspace/termterm\x07\x1B[01;32mgitpod\x1B[00m \x1B[01;34m/workspace/termterm\x1B[00m $

@@ -135,6 +135,9 @@ const operations = (input) => {
       calls.push(['insertBlankCharacters', params])
     },
     saveCursor: () => calls.push(['saveCursor']),
+    setTextParameters(params) {
+      calls.push(['setTextParameters', params])
+    },
   }
   const parse = createParse(terminal)
   const array = encodeText(input)
@@ -1594,4 +1597,66 @@ test.skip('special long numbers', () => {
 
 test('special ', () => {
   expect(operations(`\x1B]0;`)).toEqual([])
+})
+
+test('osc 0', () => {
+  expect(operations(`\x1B]0;`)).toEqual([])
+  expect(operations(`\x1B]0; text\x07 text`)).toEqual([
+    [
+      'setTextParameters',
+      [0, /* space */ 32, /* t */ 116, /* e */ 101, /* x */ 120, /* t */ 116],
+    ],
+    ['print'],
+  ])
+})
+
+test('special 5', () => {
+  expect(
+    operations(
+      `\r\n\x1B]0;gitpod /workspace/termterm\x07\x1B[01;32mgitpod\x1B[00m \x1B[01;34m/workspace/termterm\x1B[00m $`,
+    ),
+  ).toEqual([
+    ['carriageReturn'],
+    ['lineFeed'],
+    [
+      'setTextParameters',
+      [
+        0,
+        103,
+        105,
+        116,
+        112,
+        111,
+        100,
+        32,
+        47,
+        119,
+        111,
+        114,
+        107,
+        115,
+        112,
+        97,
+        99,
+        101,
+        47,
+        116,
+        101,
+        114,
+        109,
+        116,
+        101,
+        114,
+        109,
+      ],
+    ],
+    ['setCharAttributes', [1, 32]],
+    ['print'],
+    ['setCharAttributes', [0]],
+    ['print'],
+    ['setCharAttributes', [1, 34]],
+    ['print'],
+    ['setCharAttributes', [0]],
+    ['print'],
+  ])
 })

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="../public/termterm.css" />
+  </head>
+  <body>
+    <div id="Terminal">
+      <canvas id="CanvasText"></canvas>
+      <canvas id="CanvasCursor"></canvas>
+    </div>
+
+    <script type="module">
+      import { createTerminal } from '../public/lib/createTerminal.js'
+
+      const canvasText = document.getElementById('CanvasText')
+      const canvasCursor = document.getElementById('CanvasCursor')
+      const terminal = createTerminal(canvasText, canvasCursor, {})
+
+      window.terminal = terminal
+
+      terminal.pasteText(
+        `\r\n\x1B]0;gitpod /workspace/termterm\x07\x1B[01;32mgitpod\x1B[00m \x1B[01;34m/workspace/termterm\x1B[00m $`,
+      )
+    </script>
+  </body>
+</html>

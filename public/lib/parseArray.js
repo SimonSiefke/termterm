@@ -16,6 +16,7 @@ const State = {
   AfterSpace: 14,
   AfterSpace2: 15,
   Osc2: 16,
+  Osc3: 17,
 }
 
 export const createParse = ({
@@ -73,6 +74,7 @@ export const createParse = ({
   setCursorStyle,
   shiftLeftColumns,
   insertBlankCharacters,
+  setTextParameters,
 }) => {
   // let state = State.TopLevelContent
   // let i = 0
@@ -791,6 +793,10 @@ export const createParse = ({
               currentParam = array[i] - 48
               state = State.Osc2
               break
+            case /* \u0007 */ 7:
+              setTextParameters(params)
+              state = State.TopLevelContent
+              break
           }
           i++
           break
@@ -810,11 +816,21 @@ export const createParse = ({
               break
             case /* ; */ 59:
               params.push(currentParam)
-              state = State.AfterQuestionMark
+              state = State.Osc3
               break
           }
           i++
           break
+        case State.Osc3:
+          switch (array[i]) {
+            case /* \u0007 */ 7:
+              setTextParameters(params)
+              state = State.TopLevelContent
+              break
+            default:
+              params.push(array[i])
+          }
+          i++
       }
     }
   }
@@ -822,7 +838,7 @@ export const createParse = ({
 }
 
 // const demo = () => {
-//   const input = `\x1B]0;`
+//   const input = `\x1B]0; text\x07`
 //   createParse({
 //     cursorDown: () => console.log('cursor down'),
 //     cursorNextLine: () => console.log('cursor next line'),
@@ -837,6 +853,7 @@ export const createParse = ({
 //     print: (params) => console.log('print', params),
 //     lineFeed: () => console.log('lineFeed'),
 //     bell: () => console.log('bell'),
+//     setTextParameters: (params) => console.log('set text parameters', params),
 //   })(new Uint8Array(Buffer.from(input, 'utf-8')))
 // }
 

@@ -12,4 +12,4 @@ const browser = await puppeteer.launch({
 })
 const page = await browser.newPage()
 await page.setViewport({ width: 1280, height: 1800 })
-await page.goto('http://localhost:3000/e2e/fixtures/counter.html')
+await page.goto('http://localhost:3000/e2e/index.html')

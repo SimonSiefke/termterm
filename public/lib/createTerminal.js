@@ -173,6 +173,7 @@ export const createTerminal = (
     },
     insertLines() {},
     deleteLines() {},
+    setTextParameters() {},
   }
 
   const parse = createParse(callbackFns)
