@@ -1,14 +1,8 @@
-import { forkPtyAndExecvp } from 'fork-pty'
-import { ReadStream } from 'tty'
-import WebSocket from 'ws'
 import express from 'express'
+import { forkPtyAndExecvp } from 'fork-pty'
 import http from 'http'
 import * as net from 'net'
-
-const nextId = (() => {
-  let id = 0
-  return () => id++
-})()
+import WebSocket from 'ws'
 
 class PipeSocket extends net.Socket {
   constructor(fd) {
@@ -19,12 +13,12 @@ class PipeSocket extends net.Socket {
   }
 }
 
-const createHandleData = (webSocket, delay) => {
+const buffer = (fn, delay) => {
   let pending = Buffer.from('')
   let state = 'default'
   const handlePendingData = () => {
     if (pending.length > 0) {
-      webSocket.send(pending)
+      fn(pending)
       pending = Buffer.from('')
       setTimeout(handlePendingData, delay)
       state = 'justSent'
@@ -32,11 +26,11 @@ const createHandleData = (webSocket, delay) => {
       state = 'default'
     }
   }
-  const sendBuffer = (data) => {
+  const bufferedFn = (data) => {
     // console.log({ data: data.toString() })
     switch (state) {
       case 'default':
-        webSocket.send(data)
+        fn(data)
         state = 'justSent'
         setTimeout(handlePendingData, delay)
         break
@@ -51,16 +45,12 @@ const createHandleData = (webSocket, delay) => {
         break
     }
   }
-  return sendBuffer
+  return bufferedFn
 }
 
-const createTerminal = () => {
+const createPtyStream = () => {
   const fd = forkPtyAndExecvp('bash', ['bash', '-i'])
   const socket = new PipeSocket(fd)
-
-  // setTimeout(() => {
-  //   readStream.write('echo "hello world"\n')
-  // }, 1250)
   return socket
 }
 
@@ -72,23 +62,21 @@ const server = http.createServer(app)
 
 const wss = new WebSocket.Server({ server })
 
-const terminals = Object.create(null)
-
 wss.on('connection', (socket) => {
-  const readStream = createTerminal()
-  const handleData = createHandleData(socket, 8)
-  readStream.on('data', handleData)
-  socket.on('message', (data) => {
-    // console.log({ data })
-    readStream.write(data)
-  })
-  socket.on('error', (error) => {
+  const ptyStream = createPtyStream()
+  const handleData = (data) => socket.send(data)
+  const handleMessage = (data) => ptyStream.write(data)
+  const handleError = (error) => {
     console.error(error)
     socket.close()
-  })
-  socket.on('close', () => {
-    readStream.destroy()
-  })
+  }
+  const handleClose = () => {
+    ptyStream.destroy()
+  }
+  ptyStream.on('data', buffer(handleData, 8))
+  socket.on('message', handleMessage)
+  socket.on('error', handleError)
+  socket.on('close', handleClose)
 })
 
 server.listen(5555, 'localhost')
