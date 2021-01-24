@@ -46,7 +46,7 @@ const tmpCanvas = supportsOffscreenCanvas
     })()
 
 const tmpCtx = tmpCanvas.getContext('2d', {
-  desynchronized: true, // perf
+  // desynchronized: true, // perf
   alpha: false, // perf
 })
 
@@ -62,9 +62,10 @@ export const createDrawLines = (
   cols,
 ) => {
   const ctx = canvas.getContext('2d', {
-    desynchronized: true, // perf
+    // desynchronized: true, // perf
     alpha: false, // perf
   })
+  ctx.fillStyle = BACKGROUND
 
   const drawChar = (char, x, y, background, foreground) => {
     if (char === ' ' && background === '#000000') {
@@ -111,27 +112,38 @@ export const createDrawLines = (
     }
   }
 
+  const rnd = () => Math.floor(Math.random() * 16777215).toString(16)
+
   const clearLines = (x, y, width, height) => {
-    ctx.fillStyle = BACKGROUND
-    ctx.fillRect(0, 0, 780, 625)
+    // ctx.fillStyle = `#${rnd()}`
+    // console.log(rnd())
+    // ctx.fillRect(0, 0, 780, 625)
+    // console.log({ x, y, width, height })
+    // console.log([
+    //   x * CHAR_WIDTH,
+    //   y * CHAR_HEIGHT,
+    //   width * CHAR_WIDTH,
+    //   height * CHAR_HEIGHT,
+    // ])
     // ctx.clearRect(
     //   x * CHAR_WIDTH,
     //   y * CHAR_HEIGHT,
     //   width * CHAR_WIDTH,
     //   height * CHAR_HEIGHT,
     // )
-    // ctx.fillRect(
-    //   x * CHAR_WIDTH,
-    //   y * CHAR_HEIGHT,
-    //   width * CHAR_WIDTH,
-    //   height * CHAR_HEIGHT,
-    // )
+    // ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
+    ctx.fillRect(
+      x * CHAR_WIDTH,
+      y * CHAR_HEIGHT,
+      width * CHAR_WIDTH,
+      height * CHAR_HEIGHT,
+    )
   }
 
   const drawLines = (start, end, bufferYEnd) => {
-    start = 0
-    end = lines.length
-    clearLines(0, start, cols, end - start + 1)
+    // console.log('draw all lines')
+    // console.log(start, end)
+    clearLines(0, start, cols, end - start)
     if (bufferYEnd < rows) {
       for (let i = 0; i < rows - bufferYEnd; i++) {
         drawLine(bufferLines - i - 1, rows - i)

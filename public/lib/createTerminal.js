@@ -60,6 +60,7 @@ export const createTerminal = (
     lines.map((line, y) => textDecoder.decode(line.subarray(0, offsets[y] + 1)))
 
   const dirtyMark = (y) => {
+    // console.log('dirty' + y)
     if (y < dirty.start) {
       dirty.start = y
     } else if (y > dirty.end) {
@@ -67,8 +68,8 @@ export const createTerminal = (
     }
   }
   const dirtyClear = () => {
-    dirty.start = bufferYEnd - 25
-    dirty.end = bufferYEnd
+    // console.log('dirty clear')
+    dirty.start = dirty.end = bufferYEnd + cursorYRelative
   }
 
   const callbackFns = {
@@ -137,6 +138,7 @@ export const createTerminal = (
       lines[y].set(subArray, x)
       cursorXRelative += end - start
       offsets[y] = COLS + cursorXRelative
+      dirtyMark(y)
       // offsets[y] += end - start
       // cursorXRelative = -COLS + offsets[y]
     },
@@ -191,21 +193,23 @@ export const createTerminal = (
 
   self.drawLines = () => drawLines(dirty.start, dirty.end + 1)
 
-  const write = (array) => {
+  const handleAnimationFrame = () => {
+    // console.log(dirty)
+    drawLines(dirty.start, dirty.end + 1, bufferYEnd)
+    const y = ROWS + cursorYRelative
+    const x = COLS + cursorXRelative
+    drawCursor(x, y, cursorVisible)
+    scheduled = false
     dirtyClear()
+  }
+  const write = (array) => {
     parse(array)
     // if (lines.length > 1_000) {
     //   lines.length = 1_000
     // }
     if (!scheduled) {
       scheduled = true
-      requestAnimationFrame(() => {
-        drawLines(dirty.start, dirty.end + 1, bufferYEnd)
-        const y = ROWS + cursorYRelative
-        const x = COLS + cursorXRelative
-        drawCursor(x, y, cursorVisible)
-        scheduled = false
-      })
+      requestAnimationFrame(handleAnimationFrame)
     }
   }
 

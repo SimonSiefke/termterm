@@ -15,10 +15,18 @@ const handlePaste = (event) => {
   send(text)
 }
 
+let scheduled = false
 const playBellAudio = () => {
-  const audio = document.createElement('audio')
-  audio.src = `https://raw.githubusercontent.com/ubuntu/yaru/master/sounds/src/stereo/bell.oga`
-  audio.play()
+  if (scheduled) {
+    return
+  }
+  scheduled = true
+  requestIdleCallback(() => {
+    const audio = document.createElement('audio')
+    audio.src = `https://raw.githubusercontent.com/ubuntu/yaru/master/sounds/src/stereo/bell.oga`
+    audio.play()
+    scheduled = false
+  })
 }
 
 const setWindowTitle = (title) => {
