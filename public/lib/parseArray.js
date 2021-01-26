@@ -242,6 +242,8 @@ export const createParse = ({
             case 123:
             case 124:
             case 125:
+            case 126:
+            case 127:
               printStartIndex = i++
               while (i < array.length) {
                 const element = array[i]
@@ -838,7 +840,7 @@ export const createParse = ({
 }
 
 // const demo = () => {
-//   const input = `\x1B]0; text\x07`
+//   const input = `~`
 //   createParse({
 //     cursorDown: () => console.log('cursor down'),
 //     cursorNextLine: () => console.log('cursor next line'),

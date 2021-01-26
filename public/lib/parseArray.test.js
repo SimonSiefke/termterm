@@ -1660,3 +1660,7 @@ test('special 5', () => {
     ['print'],
   ])
 })
+
+test(`~`, () => {
+  expect(operations(`~`)).toEqual([['print']])
+})
