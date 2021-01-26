@@ -250,3 +250,5 @@ a2c2ed791961
 <!-- TODO add letter-spacing and line-height -->
 
 <!-- TODO use browser tests like codemirror (faster than e2e with puppeteer or cypress) -->
+
+<!-- TODO cd ~ not showing -->
