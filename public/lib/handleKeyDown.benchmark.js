@@ -1,13 +1,12 @@
 import { performance } from 'perf_hooks'
-import { handleKeyDown } from './handleKeyDown.js'
+import { transformKey } from './handleKeyDown.js'
 
 const toEvent = ({
   key,
   shiftKey = false,
   altKey = false,
   ctrlKey = false,
-  preventDefault = () => {},
-}) => ({ key, preventDefault, shiftKey, altKey, ctrlKey })
+}) => ({ key, shiftKey, altKey, ctrlKey })
 
 const events = [
   {
@@ -57,17 +56,11 @@ const events = [
   },
 ].map(toEvent)
 
-const webSocket = {
-  send: () => {},
-}
-
-const fn = handleKeyDown(webSocket)
-
 let total = 0
 for (let i = 0; i < 10_000; i++) {
   const start = performance.now()
   for (const event of events) {
-    fn(event)
+    transformKey(event)
   }
   const end = performance.now()
   console.log(`took ${end - start}ms`)

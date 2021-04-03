@@ -1,6 +1,7 @@
 import { createDrawCursor } from './drawCursor.js'
 import { createDrawLines } from './drawLines.js'
 import { createParse } from './parseArray.js'
+import { transformKey } from './handleKeyDown.js'
 
 const CHAR_WIDTH = 13
 const CHAR_HEIGHT = 15
@@ -12,11 +13,33 @@ const COLS = 60
 const ROWS = 25
 const BUFFER_LINES = 200
 
-export const createTerminal = (
-  canvasText,
-  canvasCursor,
-  { bell, setWindowTitle, cacheCanvas },
-) => {
+export const createTerminal = (root, { bell, setWindowTitle, handleInput }) => {
+  let focused = true
+  const handleKeyDown = (event) => {
+    const transformedKey = transformKey(event)
+    if (transformedKey) {
+      handleInput(transformedKey)
+    }
+  }
+  const handleBlur = (event) => {
+    focused = false
+  }
+  const canvasText = document.createElement('canvas')
+  canvasText.id = 'CanvasText'
+  const canvasCursor = document.createElement('canvas')
+  canvasCursor.id = 'CanvasCursor'
+  const textarea = document.createElement('textarea')
+  textarea.id = 'TerminalTextArea'
+  root.append(textarea, canvasText, canvasCursor)
+  textarea.onkeydown = handleKeyDown
+  textarea.focus()
+  root.onmousedown = (event) => {
+    event.preventDefault()
+    if (!focused) {
+      textarea.focus()
+    }
+  }
+  textarea.onblur = handleBlur
   const WIDTH = COLS * CHAR_WIDTH
   const HEIGHT = ROWS * (CHAR_HEIGHT + 10)
   canvasText.width = canvasCursor.width = WIDTH

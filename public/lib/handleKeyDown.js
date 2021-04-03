@@ -1,6 +1,4 @@
-window.start = undefined
-
-export const createHandleKeyDown = (send) => (event) => {
+export const transformKey = (event) => {
   const modifiers =
     (event.shiftKey ? 1 : 0) |
     (event.altKey ? 2 : 0) |
@@ -36,14 +34,11 @@ export const createHandleKeyDown = (send) => (event) => {
       if (event.ctrlKey) {
         const char = String.fromCharCode(event.key.charCodeAt() - 64)
         if (event.altKey) {
-          send(`\u001b${char}`)
-          break
+          return `\u001b${char}`
         }
-        send(char)
-        break
+        return char
       }
-      send(event.key)
-      break
+      return event.key
     case 'a':
     case 'b':
     case 'c':
@@ -71,273 +66,195 @@ export const createHandleKeyDown = (send) => (event) => {
     case 'y':
     case 'z':
       if (event.ctrlKey) {
-        if (event.key === 'r' || event.key === 'l') {
-          event.preventDefault()
-        }
+        // if (event.key === 'r' || event.key === 'l') {
+        //   event.preventDefault()
+        // }
         const char = String.fromCharCode(event.key.charCodeAt() - 96)
         if (event.altKey) {
-          send(`\u001b${char}`)
-          break
+          return `\u001b${char}`
         }
-        send(char)
-        break
+        return char
       }
-      send(event.key)
-      break
+      return event.key
     case 'F1':
-      send('\u001bOP')
-      break
+      return '\u001bOP'
     case 'F2':
-      send('\u001bOQ')
-      break
+      return '\u001bOQ'
     case 'F3':
-      send('\u001bOR')
-      break
+      return '\u001bOR'
     case 'F4':
-      send('\u001bOS')
-      break
+      return '\u001bOS'
     case 'F5':
-      send('\u001b[15~')
-      break
+      return '\u001b[15~'
     case 'F6':
-      send('\u001b[17~')
-      break
+      return '\u001b[17~'
     case 'F7':
-      send('\u001b[18~')
-      break
+      return '\u001b[18~'
     case 'F8':
-      send('\u001b[19~')
-      break
+      return '\u001b[19~'
     case 'F9':
-      send('\u001b[20~')
-      break
+      return '\u001b[20~'
     case 'F10':
-      send('\u001b[21~')
-      break
+      return '\u001b[21~'
     case 'F11':
-      send('\u001b[23~')
-      break
+      return '\u001b[23~'
     case 'F12':
-      send('\u001b[24~')
-      break
+      return '\u001b[24~'
     case 'Home':
       if (modifiers) {
-        send(`\u001b[1;${modifiers + 1}H`)
-        break
+        return `\u001b[1;${modifiers + 1}H`
       }
-      send(`\u001b[H`)
-      break
+      return `\u001b[H`
     case 'End':
       if (modifiers) {
-        send(`\u001b[1;${modifiers + 1}F`)
-        break
+        return `\u001b[1;${modifiers + 1}F`
       }
-      send(`\u001b[F`)
-      break
+      return `\u001b[F`
     case 'Insert':
       if (event.shiftKey || event.ctrlKey) {
-        break
+        return ''
       }
-      send('\u001b[2~')
-      break
+      return '\u001b[2~'
     case 'Delete':
       if (modifiers) {
-        send(`\u001b[3;${modifiers + 1}~`)
+        return `\u001b[3;${modifiers + 1}~`
       }
-      send('\u001b[3~')
-      break
+      return '\u001b[3~'
     case 'ArrowUp':
-      event.preventDefault()
+      // event.preventDefault()
       if (modifiers) {
-        send(`\u001b[1;${modifiers + 1}A`)
-        break
+        return `\u001b[1;${modifiers + 1}A`
       }
-      send('\u001b[A')
-      break
+      return '\u001b[A'
     case 'ArrowDown':
-      event.preventDefault()
+      // event.preventDefault()
       if (modifiers) {
-        send(`\u001b[1;${modifiers + 1}B`)
-        break
+        return `\u001b[1;${modifiers + 1}B`
       }
-      send('\u001b[B')
-      break
+      return '\u001b[B'
     case 'ArrowRight':
-      event.preventDefault()
+      // event.preventDefault()
       if (modifiers) {
-        send(`\u001b[1;${modifiers + 1}C`)
-        break
+        return `\u001b[1;${modifiers + 1}C`
       }
-      send('\u001b[C')
-      break
+      return '\u001b[C'
     case 'ArrowLeft':
-      event.preventDefault()
+      // event.preventDefault()
       if (modifiers) {
-        send(`\u001b[1;${modifiers + 1}D`)
-        break
+        return `\u001b[1;${modifiers + 1}D`
       }
-      send('\u001b[D')
-      break
+      return '\u001b[D'
     case 'UIKeyInputUpArrow':
-      send('\u001b[A')
-      break
+      return '\u001b[A'
     case 'UIKeyInputDownArrow':
-      send('\u001b[B')
-      break
+      return '\u001b[B'
     case 'UIKeyInputRightArrow':
-      send('\u001b[C')
-      break
+      return '\u001b[C'
     case 'UIKeyInputLeftArrow':
-      send('\u001b[D')
-      break
+      return '\u001b[D'
     case 'Enter':
       if (event.altKey) {
-        send('\u001b\r')
-        break
+        return '\u001b\r'
       }
-      send('\n')
-      break
+      return '\n'
     case 'PageUp':
       if (event.ctrlKey) {
-        send(`\u001b[5;5~`)
-        break
+        return `\u001b[5;5~`
       }
-      send('\u001b[5~')
-      break
+      return '\u001b[5~'
     case 'PageDown':
       if (event.ctrlKey) {
-        send(`\u001b[6;5~`)
-        break
+        return `\u001b[6;5~`
       }
-      send(`\u001b[6~`)
-      break
+      return `\u001b[6~`
     case 'Backspace':
       if (event.altKey) {
-        send('\x17')
-        break
+        return '\x17'
       }
       if (event.shiftKey) {
-        send('\u0008')
-        break
+        return '\u0008'
       }
-      send('\x7f')
-      break
+      return '\x7f'
     case 'Tab':
-      event.preventDefault()
+      // event.preventDefault()
       if (event.shiftKey) {
-        send('\u001b[Z')
-        break
+        return '\u001b[Z'
       }
-      send('\t')
-      break
+      return '\t'
     case 'Escape':
       if (event.altKey) {
-        send('\u001b\u001b')
-        break
+        return '\u001b\u001b'
       }
-      send('\u001b')
-      break
+      return '\u001b'
     case '/':
-      event.preventDefault()
-      send('/')
-      break
+      // event.preventDefault()
+      return '/'
     case '?':
       if (event.ctrlKey) {
-        send('\u007f')
-        break
+        return '\u007f'
       }
       if (event.altKey) {
-        send(`\u001b?`)
-        break
+        return `\u001b?`
       }
-      send(event.key)
-      break
+      return event.key
     case '|':
       if (event.ctrlKey) {
-        send('\u001c')
-        break
+        return '\u001c'
       }
       if (event.altKey) {
-        send(`\u001b|`)
-        break
+        return `\u001b|`
       }
-      send(event.key)
-      break
+      return event.key
     case '{':
       if (event.ctrlKey) {
-        send('\u001b')
-        break
+        return '\u001b'
       }
       if (event.altKey) {
-        send(`\u001b{`)
-        break
+        return `\u001b{`
       }
-      send(event.key)
-      break
+      return event.key
     case '}':
       if (event.ctrlKey) {
-        send('\u001d')
-        break
+        return '\u001d'
       }
       if (event.altKey) {
-        send(`\u001b}`)
-        break
+        return `\u001b}`
       }
-      send(event.key)
-      break
+      return event.key
     case '_':
       if (event.ctrlKey) {
-        send('\u001f')
-        break
+        return '\u001f'
       }
       if (event.altKey) {
-        send(`\u001b_`)
-        break
+        return `\u001b_`
       }
-      send(event.key)
-      break
+      return event.key
     case '^':
       if (event.ctrlKey) {
-        send('\u001e')
-        break
+        return '\u001e'
       }
       if (event.altKey) {
-        send(`\u001b^`)
-        break
+        return `\u001b^`
       }
-      send(event.key)
-      break
+      return event.key
     case '@':
       if (event.ctrlKey) {
-        send('\u0000')
-        break
+        return '\u0000'
       }
       if (event.altKey) {
-        send(`\u001b@`)
-        break
+        return `\u001b@`
       }
-      send(event.key)
-      break
+      return event.key
     case ' ':
-      event.preventDefault()
-      send(` `)
-      break
+      // event.preventDefault()
+      return ` `
     default:
       if (event.key.length > 1) {
-        break
+        return ''
       }
       if (event.altKey) {
-        send(`\u001b${event.key}`)
-        break
+        return `\u001b${event.key}`
       }
-      send(event.key)
-      break
+      return event.key
   }
 }
-
-// export const handleBeforeInput = (webSocket) => (event) => {
-//   event.preventDefault()
-//   if (event.data) {
-//     send(event.data)
-//   }
-// }
