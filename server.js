@@ -79,6 +79,7 @@ wss.on('connection', (socket) => {
   socket.on('close', handleClose)
 })
 
+console.log(process.env.NODE_ENV)
 const PORT = parseInt(process.env.PORT) || 5555
 
 server.listen(PORT, 'localhost')
