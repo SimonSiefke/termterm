@@ -1,0 +1,9 @@
+# Ignore everything
+**
+
+# Allow files and directories
+!/public/**
+!/package.json
+!/package-lock.json
+!.env
+!server.js
