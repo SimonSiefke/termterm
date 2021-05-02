@@ -250,5 +250,8 @@ export const createTerminal = (root, { bell, setWindowTitle, handleInput }) => {
   return {
     write,
     pasteText,
+    writeText: pasteText,
+    // TODO should this be exposed (only used for testing)
+    lines,
   }
 }

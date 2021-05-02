@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="css/termterm.css" />
+    <style>
+      #CanvasCursor {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>hello world</h1>
+    <div id="Terminal"></div>
+    <script type="module">
+      import { createTerminal } from './src/createTerminal.js'
+      const handleInput = (transformedKey) => {
+        console.log(transformedKey)
+      }
+      const root = document.getElementById('Terminal')
+      const terminal = createTerminal(root, {
+        handleInput,
+      })
+      // @ts-ignore
+      self.terminal = terminal
+    </script>
+  </body>
+</html>

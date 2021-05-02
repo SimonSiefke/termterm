@@ -2,13 +2,19 @@ import express from 'express'
 import { forkPtyAndExecvp } from 'fork-pty'
 import http from 'http'
 import * as net from 'net'
+import { dirname } from 'path'
+import { fileURLToPath } from 'url'
 import WebSocket from 'ws'
+
+const __dirname = dirname(fileURLToPath(import.meta.url))
 
 class PipeSocket extends net.Socket {
   constructor(fd) {
+    // @ts-ignore
     const pipeWrap = process.binding('pipe_wrap')
     const handle = new pipeWrap.Pipe(pipeWrap.constants.SOCKET)
     handle.open(fd)
+    // @ts-ignore
     super({ handle })
   }
 }
@@ -56,7 +62,9 @@ const createPtyStream = () => {
 
 const app = express()
 
-app.use(express.static('public'))
+app.use('/src', express.static(`${__dirname}/../src`))
+app.use('/css', express.static(`${__dirname}/../css`))
+app.use(express.static(__dirname))
 
 const server = http.createServer(app)
 

@@ -142,7 +142,8 @@ export const createDrawLines = (
 
   const drawLines = (start, end, bufferYEnd) => {
     // console.log('draw all lines')
-    // console.log(start, end)
+    console.log({ start, end })
+    console.log({ bufferYEnd })
     clearLines(0, start, cols, end - start)
     if (bufferYEnd < rows) {
       for (let i = 0; i < rows - bufferYEnd; i++) {
