@@ -64,7 +64,10 @@ const wss = new WebSocket.Server({ server })
 
 wss.on('connection', (socket) => {
   const ptyStream = createPtyStream()
-  const handleData = (data) => socket.send(data)
+  const handleData = (data) => {
+    // console.log({ data: data.toString() })
+    socket.send(data)
+  }
   const handleMessage = (data) => ptyStream.write(data)
   const handleError = (error) => {
     console.error(error)

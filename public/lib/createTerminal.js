@@ -102,6 +102,7 @@ export const createTerminal = (root, { bell, setWindowTitle, handleInput }) => {
       offsets[y] = x
     },
     eraseInDisplay() {
+      // console.log('erase in display')
       offsets.fill(0)
       cursorYRelative = -ROWS + 1
       cursorXRelative = -COLS
@@ -109,6 +110,8 @@ export const createTerminal = (root, { bell, setWindowTitle, handleInput }) => {
       for (const key of Object.keys(attributes)) {
         delete attributes[key]
       }
+      dirtyMark(0)
+      dirtyMark(ROWS)
     },
     setCharAttributes(params) {
       if (params[1] === 7) {
