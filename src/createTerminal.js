@@ -14,15 +14,22 @@ const ROWS = 25
 const BUFFER_LINES = 200
 
 export const createTerminal = (root, { bell, setWindowTitle, handleInput }) => {
-  let focused = true
+  let focused = false
   const handleKeyDown = (event) => {
     const transformedKey = transformKey(event)
     if (transformedKey) {
       handleInput(transformedKey)
     }
   }
-  const handleBlur = (event) => {
+  const blur = () => {
     focused = false
+  }
+  const focus = () => {
+    if (focused) {
+      return
+    }
+    focused = true
+    textarea.focus()
   }
   const canvasText = document.createElement('canvas')
   canvasText.id = 'CanvasText'
@@ -32,14 +39,11 @@ export const createTerminal = (root, { bell, setWindowTitle, handleInput }) => {
   textarea.id = 'TerminalTextArea'
   root.append(textarea, canvasText, canvasCursor)
   textarea.onkeydown = handleKeyDown
-  textarea.focus()
   root.onmousedown = (event) => {
     event.preventDefault()
-    if (!focused) {
-      textarea.focus()
-    }
+    focus()
   }
-  textarea.onblur = handleBlur
+  textarea.onblur = blur
   const WIDTH = COLS * CHAR_WIDTH
   const HEIGHT = ROWS * (CHAR_HEIGHT + 10)
   canvasText.width = canvasCursor.width = WIDTH
@@ -249,6 +253,7 @@ export const createTerminal = (root, { bell, setWindowTitle, handleInput }) => {
 
   return {
     write,
+    focus,
     pasteText,
     writeText: pasteText,
     // TODO should this be exposed (only used for testing)
