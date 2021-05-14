@@ -2,7 +2,7 @@
   "name": "termterm",
   "version": "0.0.9",
   "description": "",
-  "main": "public/lib/createTerminal.js",
+  "main": "src/createTerminal.js",
   "files": [
     "src",
     "css"
@@ -21,9 +21,6 @@
   "type": "module",
   "devDependencies": {
     "@types/jest": "^26.0.23",
-    "express": "^4.17.1",
-    "fork-pty": "^0.0.12",
-    "jest": "^26.6.3",
-    "ws": "^7.4.5"
+    "jest": "^26.6.3"
   }
 }

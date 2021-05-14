@@ -6,7 +6,7 @@ COPY package.json package-lock.json ./
 
 RUN npm ci
 
-COPY public ./public
+COPY demo ./demo
 COPY server.js ./server.js
 
 USER node
