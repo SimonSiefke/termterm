@@ -1,6 +1,6 @@
 {
   "name": "termterm",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "",
   "main": "public/lib/createTerminal.js",
   "files": [
