@@ -1,5 +1,5 @@
 // based on https://github.com/xtermjs/xterm.js/blob/master/test/api/InputHandler.api.ts
-import playwright from 'playwright'
+// import playwright from 'playwright'
 import { spawn } from 'child_process'
 
 let browser
@@ -7,10 +7,9 @@ let page
 let server
 
 async function setupBrowser(options) {
-  browser = await playwright['chromium'].launch({ headless: false })
-  const context = await browser.newContext()
-  page = await context.newPage()
-
+  // browser = await playwright['chromium'].launch({ headless: false })
+  // const context = await browser.newContext()
+  // page = await context.newPage()
   // await browser.close()
 }
 
