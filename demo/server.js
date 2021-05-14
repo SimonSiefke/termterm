@@ -85,8 +85,4 @@ wss.on('connection', (socket) => {
   })
 })
 
-const PORT = parseInt(process.env.PORT) || 5555
-
-const HOST = PORT === 5555 ? 'localhost' : undefined
-
-server.listen(PORT, HOST)
+server.listen(3000, () => console.log(`listening on http://localhost:3000`))
