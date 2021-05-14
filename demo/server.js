@@ -67,8 +67,6 @@ const app = express()
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
-app.use('/src', express.static(`${__dirname}/../src`))
-app.use('/css', express.static(`${__dirname}/../css`))
 app.use(express.static(__dirname))
 
 const server = http.createServer(app)
