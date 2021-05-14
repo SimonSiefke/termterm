@@ -13,7 +13,12 @@ const COLS = 60
 const ROWS = 25
 const BUFFER_LINES = 200
 
-export const createTerminal = (root, { bell, setWindowTitle, handleInput }) => {
+const noop = () => {}
+
+export const createTerminal = (
+  root,
+  { handleInput, bell = noop, setWindowTitle = noop },
+) => {
   let focused = false
   const handleKeyDown = (event) => {
     const transformedKey = transformKey(event)
