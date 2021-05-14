@@ -1,27 +1,9 @@
 import express from 'express'
 import { forkPtyAndExecvp } from 'fork-pty'
 import http from 'http'
-import * as net from 'net'
 import { dirname } from 'path'
 import { fileURLToPath } from 'url'
 import WebSocket from 'ws'
-
-class PipeSocket extends net.Socket {
-  constructor(fd) {
-    // @ts-ignore
-    const pipeWrap = process.binding('pipe_wrap')
-    const handle = new pipeWrap.Pipe(pipeWrap.constants.SOCKET)
-    handle.open(fd)
-    // @ts-ignore
-    super({ handle })
-  }
-}
-
-const createPtyStream = () => {
-  const { fd } = forkPtyAndExecvp('bash', ['bash', '-i'])
-  const socket = new PipeSocket(fd)
-  return socket
-}
 
 // commands
 const commands = Object.create(null)
@@ -38,15 +20,14 @@ const executeCommand = (commandId, ...args) => {
 const terminals = Object.create(null)
 
 const terminalCreate = (socket, id) => {
-  const ptyStream = createPtyStream()
-  terminals[id] = ptyStream
+  const { socket: ptySocket } = forkPtyAndExecvp('bash', ['bash', '-i'])
+  terminals[id] = ptySocket
   const handleData = (data) => {
     socket.send(
       JSON.stringify([/* terminalWrite */ 2, /* id */ id, /* data */ data]),
     )
   }
-
-  ptyStream.on('data', handleData)
+  ptySocket.on('data', handleData)
 }
 
 const terminalWrite = (socket, id, data) => {
