@@ -32,7 +32,7 @@
       }
 
       // websocket
-      const webSocket = new WebSocket(`ws://localhost:5555`)
+      const webSocket = new WebSocket(`ws://${location.hostname}:3000`)
 
       webSocket.onmessage = ({ data }) => {
         const [commandId, ...args] = JSON.parse(data)
