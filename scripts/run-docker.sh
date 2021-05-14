@@ -1,7 +1,7 @@
 #!/bin/bash
 
 cd $(dirname "$0")
-cd ..
+cd ../demo
 
 docker build --tag termterm .
-docker run --init --publish 5555:5555 termterm
+docker run --init --publish 3000:3000 termterm

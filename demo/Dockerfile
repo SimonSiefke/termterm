@@ -6,9 +6,6 @@ COPY package.json package-lock.json ./
 
 RUN npm ci
 
-COPY demo ./demo
-COPY server.js ./server.js
-
-USER node
+COPY . .
 
 CMD [ "node", "server.js" ]

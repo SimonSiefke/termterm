@@ -2,8 +2,7 @@
 **
 
 # Allow files and directories
-!/public/**
+!/index.html
 !/package.json
 !/package-lock.json
-!.env
 !server.js
