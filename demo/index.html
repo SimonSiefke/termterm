@@ -4,7 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Terminal Demo</title>
-    <link rel="stylesheet" href="css/termterm.css" />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/termterm@0.0.10/css/termterm.css"
+    />
     <style>
       #CanvasCursor {
         display: none;
@@ -15,7 +18,7 @@
     <h1>Terminal Demo</h1>
     <div id="Terminal"></div>
     <script type="module">
-      import { createTerminal } from './src/createTerminal.js'
+      import { createTerminal } from 'https://unpkg.com/termterm@0.0.10/src/createTerminal.js'
 
       // commands
       const commands = Object.create(null)

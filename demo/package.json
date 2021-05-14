@@ -1,19 +1,16 @@
 {
   "name": "demo",
-  "version": "1.0.0",
+  "version": "0.0.0-dev",
   "description": "",
   "main": "server.js",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
   },
-  "keywords": [],
-  "author": "",
   "license": "MIT",
   "dependencies": {
     "express": "^4.17.1",
     "fork-pty": "^0.0.12",
-    "termterm": "^0.0.9",
     "ws": "^7.4.5"
   }
 }
