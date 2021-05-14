@@ -6,8 +6,6 @@ import { dirname } from 'path'
 import { fileURLToPath } from 'url'
 import WebSocket from 'ws'
 
-const __dirname = dirname(fileURLToPath(import.meta.url))
-
 class PipeSocket extends net.Socket {
   constructor(fd) {
     // @ts-ignore
@@ -19,48 +17,56 @@ class PipeSocket extends net.Socket {
   }
 }
 
-const buffer = (fn, delay) => {
-  let pending = Buffer.from('')
-  let state = 'default'
-  const handlePendingData = () => {
-    if (pending.length > 0) {
-      fn(pending)
-      pending = Buffer.from('')
-      setTimeout(handlePendingData, delay)
-      state = 'justSent'
-    } else {
-      state = 'default'
-    }
-  }
-  const bufferedFn = (data) => {
-    // console.log({ data: data.toString() })
-    switch (state) {
-      case 'default':
-        fn(data)
-        state = 'justSent'
-        setTimeout(handlePendingData, delay)
-        break
-      case 'justSent':
-        pending = Buffer.concat([pending, data])
-        state = 'waiting'
-        break
-      case 'waiting':
-        pending = Buffer.concat([pending, data])
-        break
-      default:
-        break
-    }
-  }
-  return bufferedFn
-}
-
 const createPtyStream = () => {
   const fd = forkPtyAndExecvp('bash', ['bash', '-i'])
   const socket = new PipeSocket(fd)
   return socket
 }
 
+// commands
+const commands = Object.create(null)
+
+const registerCommand = (commandId, listener) => {
+  commands[commandId] = listener
+}
+
+const executeCommand = (commandId, ...args) => {
+  commands[commandId](...args)
+}
+
+// terminal
+const terminals = Object.create(null)
+
+const terminalCreate = (socket, id) => {
+  const ptyStream = createPtyStream()
+  terminals[id] = ptyStream
+  const handleData = (data) => {
+    socket.send(
+      JSON.stringify([/* terminalWrite */ 2, /* id */ id, /* data */ data]),
+    )
+  }
+
+  ptyStream.on('data', handleData)
+}
+
+const terminalWrite = (socket, id, data) => {
+  terminals[id].write(data)
+}
+
+const terminalDispose = (socket, id) => {
+  terminals[id].dispose()
+  delete terminals[id]
+}
+
+registerCommand(101, terminalCreate)
+registerCommand(102, terminalWrite)
+registerCommand(103, terminalDispose)
+
+// server
 const app = express()
+
+// @ts-ignore
+const __dirname = dirname(fileURLToPath(import.meta.url))
 
 app.use('/src', express.static(`${__dirname}/../src`))
 app.use('/css', express.static(`${__dirname}/../css`))
@@ -71,23 +77,13 @@ const server = http.createServer(app)
 const wss = new WebSocket.Server({ server })
 
 wss.on('connection', (socket) => {
-  const ptyStream = createPtyStream()
-  const handleData = (data) => {
-    // console.log({ data: data.toString() })
-    socket.send(data)
-  }
-  const handleMessage = (data) => ptyStream.write(data)
-  const handleError = (error) => {
-    console.error(error)
-    socket.close()
-  }
-  const handleClose = () => {
-    ptyStream.destroy()
-  }
-  ptyStream.on('data', buffer(handleData, 8))
-  socket.on('message', handleMessage)
-  socket.on('error', handleError)
-  socket.on('close', handleClose)
+  socket.on('message', (message) => {
+    if (typeof message !== 'string') {
+      return
+    }
+    const [commandId, ...args] = JSON.parse(message)
+    executeCommand(commandId, socket, ...args)
+  })
 })
 
 const PORT = parseInt(process.env.PORT) || 5555
