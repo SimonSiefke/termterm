@@ -1,4 +1,4 @@
-## termterm demo
+## Demo
 
 ```sh
 git clone git@github.com:SimonSiefke/termterm.git &&
