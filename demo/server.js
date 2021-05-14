@@ -18,7 +18,7 @@ class PipeSocket extends net.Socket {
 }
 
 const createPtyStream = () => {
-  const fd = forkPtyAndExecvp('bash', ['bash', '-i'])
+  const { fd } = forkPtyAndExecvp('bash', ['bash', '-i'])
   const socket = new PipeSocket(fd)
   return socket
 }
@@ -65,7 +65,6 @@ registerCommand(103, terminalDispose)
 // server
 const app = express()
 
-// @ts-ignore
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
 app.use('/src', express.static(`${__dirname}/../src`))
