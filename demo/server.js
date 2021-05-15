@@ -5,43 +5,40 @@ import { dirname } from 'path'
 import { fileURLToPath } from 'url'
 import WebSocket from 'ws'
 
-// commands
-const commands = Object.create(null)
-
-const registerCommand = (commandId, listener) => {
-  commands[commandId] = listener
+const Command = {
+  commands: Object.create(null),
+  register(commandId, listener) {
+    this.commands[commandId] = listener
+  },
+  execute(commandId, ...args) {
+    this.commands[commandId](...args)
+  },
 }
 
-const executeCommand = (commandId, ...args) => {
-  commands[commandId](...args)
+const Terminal = {
+  terminals: Object.create(null),
+  create(socket, id) {
+    const { socket: ptySocket } = forkPtyAndExecvp('bash', ['bash', '-i'])
+    this.terminals[id] = ptySocket
+    const handleData = (data) => {
+      socket.send(
+        JSON.stringify([/* terminalWrite */ 2, /* id */ id, /* data */ data]),
+      )
+    }
+    ptySocket.on('data', handleData)
+  },
+  write(socket, id, data) {
+    this.terminals[id].write(data)
+  },
+  dispose(socket, id) {
+    this.terminals[id].dispose()
+    delete this.terminals[id]
+  },
 }
 
-// terminal
-const terminals = Object.create(null)
-
-const terminalCreate = (socket, id) => {
-  const { socket: ptySocket } = forkPtyAndExecvp('bash', ['bash', '-i'])
-  terminals[id] = ptySocket
-  const handleData = (data) => {
-    socket.send(
-      JSON.stringify([/* terminalWrite */ 2, /* id */ id, /* data */ data]),
-    )
-  }
-  ptySocket.on('data', handleData)
-}
-
-const terminalWrite = (socket, id, data) => {
-  terminals[id].write(data)
-}
-
-const terminalDispose = (socket, id) => {
-  terminals[id].dispose()
-  delete terminals[id]
-}
-
-registerCommand(101, terminalCreate)
-registerCommand(102, terminalWrite)
-registerCommand(103, terminalDispose)
+Command.register(101, Terminal.create)
+Command.register(102, Terminal.write)
+Command.register(103, Terminal.dispose)
 
 // server
 const app = express()
@@ -60,7 +57,7 @@ wss.on('connection', (socket) => {
       return
     }
     const [commandId, ...args] = JSON.parse(message)
-    executeCommand(commandId, socket, ...args)
+    Command.execute(commandId, socket, ...args)
   })
 })
 
