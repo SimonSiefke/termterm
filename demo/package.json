@@ -9,7 +9,6 @@
   },
   "license": "MIT",
   "dependencies": {
-    "express": "^4.17.1",
     "fork-pty": "^0.0.14",
     "ws": "^7.4.5"
   }
