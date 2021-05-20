@@ -26,6 +26,9 @@ export const createTerminal = (
       handleInput(transformedKey)
     }
   }
+  const handleBeforeInput = (event) => {
+    event.preventDefault()
+  }
   const blur = () => {
     focused = false
   }
@@ -44,6 +47,7 @@ export const createTerminal = (
   textarea.id = 'TerminalTextArea'
   root.append(textarea, canvasText, canvasCursor)
   textarea.onkeydown = handleKeyDown
+  textarea.addEventListener('beforeinput', handleBeforeInput)
   root.onmousedown = (event) => {
     event.preventDefault()
     focus()
