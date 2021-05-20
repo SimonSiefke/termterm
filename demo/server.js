@@ -10,7 +10,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 const Terminal = {
   terminals: Object.create(null),
   create(socket, id) {
-    const { socket: ptySocket } = forkPtyAndExecvp('bash', ['bash', '-i'])
+    const { ptySocket } = forkPtyAndExecvp('bash', ['bash', '-i'])
     this.terminals[id] = ptySocket
     const handleData = (data) => {
       socket.send(

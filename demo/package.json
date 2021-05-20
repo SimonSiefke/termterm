@@ -9,7 +9,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "fork-pty": "^0.0.14",
+    "fork-pty": "^0.0.15",
     "ws": "^7.4.5"
   }
 }
