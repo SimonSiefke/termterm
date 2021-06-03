@@ -17,7 +17,9 @@ const State = {
   AfterSpace2: 15,
   Osc2: 16,
   Osc3: 17,
-}
+};
+
+const noop = () => {};
 
 export const createParse = ({
   eraseInDisplay,
@@ -83,11 +85,11 @@ export const createParse = ({
   // let printStartIndex = -1
 
   const parse = (array) => {
-    let state = State.TopLevelContent
-    let i = 0
-    let currentParam
-    let params = []
-    let printStartIndex = -1
+    let state = State.TopLevelContent;
+    let i = 0;
+    let currentParam;
+    let params = [];
+    let printStartIndex = -1;
     while (i < array.length) {
       switch (state) {
         case State.TopLevelContent:
@@ -98,31 +100,31 @@ export const createParse = ({
             case 4:
             case 5:
             case 6:
-              i++
-              break
+              i++;
+              break;
             case /* \u0007 */ 7:
-              bell()
-              i++
-              break
+              bell();
+              i++;
+              break;
             case /* \u0008 */ 8:
-              backspace()
-              i++
-              break
+              backspace();
+              i++;
+              break;
             case /* \t */ 9:
-              i++
-              break
+              i++;
+              break;
             case /* \n */ 10:
-              lineFeed()
-              i++
-              break
+              lineFeed();
+              i++;
+              break;
             case 11:
             case 12:
-              i++
-              break
+              i++;
+              break;
             case /* \r */ 13:
-              carriageReturn()
-              i++
-              break
+              carriageReturn();
+              i++;
+              break;
             case 14:
             case 15:
             case 16:
@@ -136,18 +138,18 @@ export const createParse = ({
             case 24:
             case 25:
             case 26:
-              i++
-              break
+              i++;
+              break;
             case /* \u001b */ 27:
-              state = State.Escaped
-              i++
-              break
+              state = State.Escaped;
+              i++;
+              break;
             case 28:
             case 29:
             case 30:
             case 31:
-              i++
-              break
+              i++;
+              break;
             case 32:
             case 33:
             case 34:
@@ -244,103 +246,103 @@ export const createParse = ({
             case 125:
             case 126:
             case 127:
-              printStartIndex = i++
+              printStartIndex = i++;
               while (i < array.length) {
-                const element = array[i]
+                const element = array[i];
                 if (element >= 32 && element < 126) {
-                  i++
-                  continue
+                  i++;
+                  continue;
                 }
                 switch (element) {
                   case /* \u001b */ 27:
-                    print(array, printStartIndex, i)
-                    state = State.Escaped
-                    i++
-                    break middle
+                    print(array, printStartIndex, i);
+                    state = State.Escaped;
+                    i++;
+                    break middle;
                   case /* \u0007 */ 7:
-                    print(array, printStartIndex, i)
-                    bell()
-                    i++
-                    state = State.TopLevelContent
-                    break middle
+                    print(array, printStartIndex, i);
+                    bell();
+                    i++;
+                    state = State.TopLevelContent;
+                    break middle;
                   case /* \u0008 */ 8:
-                    print(array, printStartIndex, i)
-                    backspace()
-                    i++
-                    state = State.TopLevelContent
-                    break middle
+                    print(array, printStartIndex, i);
+                    backspace();
+                    i++;
+                    state = State.TopLevelContent;
+                    break middle;
                   case /* \r */ 13:
-                    print(array, printStartIndex, i)
-                    carriageReturn()
-                    i++
-                    state = State.TopLevelContent
-                    break middle
+                    print(array, printStartIndex, i);
+                    carriageReturn();
+                    i++;
+                    state = State.TopLevelContent;
+                    break middle;
                   default:
-                    i++
-                    break
+                    i++;
+                    break;
                 }
               }
-              print(array, printStartIndex, i)
-              break
+              print(array, printStartIndex, i);
+              break;
             default:
               // TODO this is slow
-              throw new Error('no')
+              throw new Error("no");
           }
-          break
+          break;
         case State.Escaped:
           switch (array[i]) {
             case /* ( */ 40:
-              state = State.Charset
-              break
+              state = State.Charset;
+              break;
             case /* [ */ 91:
-              params = []
-              state = State.Csi
-              break
+              params = [];
+              state = State.Csi;
+              break;
             case /* ] */ 93:
-              state = State.Osc
-              break
+              state = State.Osc;
+              break;
             case /* P */ 80:
-              state = State.Dcs
-              break
+              state = State.Dcs;
+              break;
             case /* _ */ 95:
-              break
+              break;
             case /* ^ */ 94:
-              break
+              break;
             case /* c */ 99:
-              break
+              break;
             case /* E */ 69:
-              nextLine()
+              nextLine();
             case /* D */ 68:
-              index()
-              break
+              index();
+              break;
             case /* 7 */ 55:
-              saveCursor()
-              state = State.TopLevelContent
-              break
+              saveCursor();
+              state = State.TopLevelContent;
+              break;
             case /* 8 */ 56:
-              backspace()
-              state = State.TopLevelContent
-              break
+              backspace();
+              state = State.TopLevelContent;
+              break;
             case /* H */ 72:
-              tabSet()
-              break
+              tabSet();
+              break;
             default:
-              state = State.TopLevelContent
-              break
+              state = State.TopLevelContent;
+              break;
           }
-          i++
-          break
+          i++;
+          break;
         case State.Charset:
-          i++
-          break
+          i++;
+          break;
         case State.Csi:
           switch (array[i]) {
             case /*   */ 32:
-              state = State.AfterSpace
-              break
+              state = State.AfterSpace;
+              break;
             case /* ! */ 33:
-              state = State.AfterExclamationMark
-              break
+              state = State.AfterExclamationMark;
+              break;
             case /* 0 */ 48:
             case /* 1 */ 49:
             case /* 2 */ 50:
@@ -351,149 +353,149 @@ export const createParse = ({
             case /* 7 */ 55:
             case /* 8 */ 56:
             case /* 9 */ 57:
-              currentParam = array[i] - 48
-              state = State.AfterEscape3
-              break
+              currentParam = array[i] - 48;
+              state = State.AfterEscape3;
+              break;
             case /* ? */ 63:
-              state = State.AfterQuestionMark
-              break
+              state = State.AfterQuestionMark;
+              break;
             case /* @ */ 64:
-              insertBlankCharacters(params)
-              state = State.TopLevelContent
-              break
+              insertBlankCharacters(params);
+              state = State.TopLevelContent;
+              break;
             case /* A */ 65:
-              cursorUp(params)
-              state = State.TopLevelContent
-              break
+              cursorUp(params);
+              state = State.TopLevelContent;
+              break;
             case /* B */ 66:
-              cursorDown(params)
-              state = State.TopLevelContent
-              break
+              cursorDown(params);
+              state = State.TopLevelContent;
+              break;
             case /* C */ 67:
-              cursorRight(params)
-              state = State.TopLevelContent
-              break
+              cursorRight(params);
+              state = State.TopLevelContent;
+              break;
             case /* D */ 68:
-              cursorLeft(params)
-              state = State.TopLevelContent
-              break
+              cursorLeft(params);
+              state = State.TopLevelContent;
+              break;
             case /* E */ 69:
-              cursorNextLine(params)
-              state = State.TopLevelContent
-              break
+              cursorNextLine(params);
+              state = State.TopLevelContent;
+              break;
             case /* F */ 70:
-              cursorPrecedingLine(params)
-              state = State.TopLevelContent
-              break
+              cursorPrecedingLine(params);
+              state = State.TopLevelContent;
+              break;
             case /* G */ 71:
-              cursorCharacterAbsolute(params)
-              state = State.TopLevelContent
-              break
+              cursorCharacterAbsolute(params);
+              state = State.TopLevelContent;
+              break;
             case /* H */ 72:
-              cursorPosition(params)
-              state = State.TopLevelContent
-              break
+              cursorPosition(params);
+              state = State.TopLevelContent;
+              break;
             case /* I */ 73:
-              cursorForwardTabulation(params)
-              state = State.TopLevelContent
-              break
+              cursorForwardTabulation(params);
+              state = State.TopLevelContent;
+              break;
             case /* J */ 74:
-              eraseInDisplay(params)
-              state = State.TopLevelContent
-              break
+              eraseInDisplay(params);
+              state = State.TopLevelContent;
+              break;
             case /* K */ 75:
-              eraseInLine(params)
-              state = State.TopLevelContent
-              break
+              eraseInLine(params);
+              state = State.TopLevelContent;
+              break;
             case /* L */ 76:
-              insertLines(params)
-              state = State.TopLevelContent
-              break
+              insertLines(params);
+              state = State.TopLevelContent;
+              break;
             case /* M */ 77:
-              deleteLines(params)
-              state = State.TopLevelContent
-              break
+              deleteLines(params);
+              state = State.TopLevelContent;
+              break;
             case /* P */ 80:
-              deleteCharacters(params)
-              state = State.TopLevelContent
-              break
+              deleteCharacters(params);
+              state = State.TopLevelContent;
+              break;
             case /* S */ 83:
-              scrollUp(params)
-              state = State.TopLevelContent
-              break
+              scrollUp(params);
+              state = State.TopLevelContent;
+              break;
             case /* T */ 84:
-              scrollDown(params)
-              state = State.TopLevelContent
-              break
+              scrollDown(params);
+              state = State.TopLevelContent;
+              break;
             case /* X */ 88:
-              eraseCharacters(params)
-              state = State.TopLevelContent
-              break
+              eraseCharacters(params);
+              state = State.TopLevelContent;
+              break;
             case /* Z */ 90:
-              cursorBackwardTabulation(params)
-              state = State.TopLevelContent
-              break
+              cursorBackwardTabulation(params);
+              state = State.TopLevelContent;
+              break;
             case /* ^ */ 94:
-              scrollDown(params)
-              state = State.TopLevelContent
-              break
+              scrollDown(params);
+              state = State.TopLevelContent;
+              break;
             case /* ` */ 96:
-              characterPositionAbsolute(params)
-              state = State.TopLevelContent
-              break
+              characterPositionAbsolute(params);
+              state = State.TopLevelContent;
+              break;
             case /* a */ 97:
-              characterPositionRelative(params)
-              state = State.TopLevelContent
-              break
+              characterPositionRelative(params);
+              state = State.TopLevelContent;
+              break;
             case /* b */ 98:
-              repeatPrecedingGraphicCharacter(params)
-              state = State.TopLevelContent
-              break
+              repeatPrecedingGraphicCharacter(params);
+              state = State.TopLevelContent;
+              break;
             case /* d */ 100:
-              linePositionAbsolute(params)
-              state = State.TopLevelContent
-              break
+              linePositionAbsolute(params);
+              state = State.TopLevelContent;
+              break;
             case /* e */ 101:
-              linePositionRelative(params)
-              state = State.TopLevelContent
-              break
+              linePositionRelative(params);
+              state = State.TopLevelContent;
+              break;
             case /* f */ 102:
-              horizontalAndVerticalPosition(params)
-              state = State.TopLevelContent
-              break
+              horizontalAndVerticalPosition(params);
+              state = State.TopLevelContent;
+              break;
             case /* g */ 103:
-              tabClear(params)
-              state = State.TopLevelContent
-              break
+              tabClear(params);
+              state = State.TopLevelContent;
+              break;
             case /* h */ 104:
-              setMode(params)
-              state = State.TopLevelContent
-              break
+              setMode(params);
+              state = State.TopLevelContent;
+              break;
             case /* l */ 108:
-              resetMode(params)
-              state = State.TopLevelContent
-              break
+              resetMode(params);
+              state = State.TopLevelContent;
+              break;
             case /* m */ 109:
-              setCharAttributes(params)
-              state = State.TopLevelContent
-              break
+              setCharAttributes(params);
+              state = State.TopLevelContent;
+              break;
             case /* u */ 117:
-              restoreCursor()
-              state = State.TopLevelContent
-              break
+              restoreCursor();
+              state = State.TopLevelContent;
+              break;
           }
-          i++
-          break
+          i++;
+          break;
         case State.AfterEscape3:
           switch (array[i]) {
             case /*   */ 32:
-              params.push(currentParam)
-              state = State.AfterSpace
-              break
+              params.push(currentParam);
+              state = State.AfterSpace;
+              break;
             case /* ; */ 59:
-              params.push(currentParam)
-              state = State.AfterEscape3AfterSemicolon
-              break
+              params.push(currentParam);
+              state = State.AfterEscape3AfterSemicolon;
+              break;
             case /* 0 */ 48:
             case /* 1 */ 49:
             case /* 2 */ 50:
@@ -504,164 +506,164 @@ export const createParse = ({
             case /* 7 */ 55:
             case /* 8 */ 56:
             case /* 9 */ 57:
-              currentParam = currentParam * 10 + array[i] - 48
-              break
+              currentParam = currentParam * 10 + array[i] - 48;
+              break;
             case /* @ */ 64:
-              params.push(currentParam)
-              insertBlankCharacters(params)
-              state = State.TopLevelContent
-              break
+              params.push(currentParam);
+              insertBlankCharacters(params);
+              state = State.TopLevelContent;
+              break;
             case /* A */ 65:
-              params.push(currentParam)
-              cursorUp(params)
-              state = State.TopLevelContent
-              break
+              params.push(currentParam);
+              cursorUp(params);
+              state = State.TopLevelContent;
+              break;
             case /* B */ 66:
-              params.push(currentParam)
-              cursorDown(params)
-              state = State.TopLevelContent
-              break
+              params.push(currentParam);
+              cursorDown(params);
+              state = State.TopLevelContent;
+              break;
             case /* C */ 67:
-              params.push(currentParam)
-              cursorRight(params)
-              state = State.TopLevelContent
-              break
+              params.push(currentParam);
+              cursorRight(params);
+              state = State.TopLevelContent;
+              break;
             case /* D */ 68:
-              params.push(currentParam)
-              cursorLeft(params)
-              state = State.TopLevelContent
-              break
+              params.push(currentParam);
+              cursorLeft(params);
+              state = State.TopLevelContent;
+              break;
             case /* E */ 69:
-              params.push(currentParam)
-              cursorNextLine(params)
-              state = State.TopLevelContent
-              break
+              params.push(currentParam);
+              cursorNextLine(params);
+              state = State.TopLevelContent;
+              break;
             case /* F */ 70:
-              params.push(currentParam)
-              cursorPrecedingLine(params)
-              state = State.TopLevelContent
-              break
+              params.push(currentParam);
+              cursorPrecedingLine(params);
+              state = State.TopLevelContent;
+              break;
             case /* G */ 71:
-              params.push(currentParam)
-              cursorCharacterAbsolute(params)
-              state = State.TopLevelContent
-              break
+              params.push(currentParam);
+              cursorCharacterAbsolute(params);
+              state = State.TopLevelContent;
+              break;
             case /* H */ 72:
-              params.push(currentParam)
-              cursorPosition(params)
-              state = State.TopLevelContent
-              break
+              params.push(currentParam);
+              cursorPosition(params);
+              state = State.TopLevelContent;
+              break;
             case /* I */ 73:
-              params.push(currentParam)
-              cursorForwardTabulation(params)
-              state = State.TopLevelContent
-              break
+              params.push(currentParam);
+              cursorForwardTabulation(params);
+              state = State.TopLevelContent;
+              break;
             case /* J */ 74:
-              params.push(currentParam)
-              eraseInDisplay(params)
-              state = State.TopLevelContent
-              break
+              params.push(currentParam);
+              eraseInDisplay(params);
+              state = State.TopLevelContent;
+              break;
             case /* K */ 75:
-              params.push(currentParam)
-              eraseInLine(params)
-              state = State.TopLevelContent
-              break
+              params.push(currentParam);
+              eraseInLine(params);
+              state = State.TopLevelContent;
+              break;
             case /* L */ 76:
-              params.push(currentParam)
-              insertLines(params)
-              state = State.TopLevelContent
-              break
+              params.push(currentParam);
+              insertLines(params);
+              state = State.TopLevelContent;
+              break;
             case /* M */ 77:
-              params.push(currentParam)
-              deleteLines(params)
-              state = State.TopLevelContent
-              break
+              params.push(currentParam);
+              deleteLines(params);
+              state = State.TopLevelContent;
+              break;
             case /* P */ 80:
-              params.push(currentParam)
-              deleteCharacters(params)
-              state = State.TopLevelContent
-              break
+              params.push(currentParam);
+              deleteCharacters(params);
+              state = State.TopLevelContent;
+              break;
             case /* S */ 83:
-              params.push(currentParam)
-              scrollUp(params)
-              state = State.TopLevelContent
-              break
+              params.push(currentParam);
+              scrollUp(params);
+              state = State.TopLevelContent;
+              break;
             case /* T */ 84:
-              params.push(currentParam)
-              scrollDown(params)
-              state = State.TopLevelContent
-              break
+              params.push(currentParam);
+              scrollDown(params);
+              state = State.TopLevelContent;
+              break;
             case /* X */ 88:
-              params.push(currentParam)
-              eraseCharacters(params)
-              state = State.TopLevelContent
-              break
+              params.push(currentParam);
+              eraseCharacters(params);
+              state = State.TopLevelContent;
+              break;
             case /* Z */ 90:
-              params.push(currentParam)
-              cursorBackwardTabulation(params)
-              state = State.TopLevelContent
-              break
+              params.push(currentParam);
+              cursorBackwardTabulation(params);
+              state = State.TopLevelContent;
+              break;
             case /* ^ */ 94:
-              params.push(currentParam)
-              scrollDown(params)
-              state = State.TopLevelContent
-              break
+              params.push(currentParam);
+              scrollDown(params);
+              state = State.TopLevelContent;
+              break;
             case /* ` */ 96:
-              params.push(currentParam)
-              characterPositionAbsolute(params)
-              state = State.TopLevelContent
-              break
+              params.push(currentParam);
+              characterPositionAbsolute(params);
+              state = State.TopLevelContent;
+              break;
             case /* a */ 97:
-              params.push(currentParam)
-              characterPositionRelative(params)
-              state = State.TopLevelContent
-              break
+              params.push(currentParam);
+              characterPositionRelative(params);
+              state = State.TopLevelContent;
+              break;
             case /* b */ 98:
-              params.push(currentParam)
-              repeatPrecedingGraphicCharacter(params)
-              state = State.TopLevelContent
-              break
+              params.push(currentParam);
+              repeatPrecedingGraphicCharacter(params);
+              state = State.TopLevelContent;
+              break;
             case /* d */ 100:
-              params.push(currentParam)
-              linePositionAbsolute(params)
-              state = State.TopLevelContent
-              break
+              params.push(currentParam);
+              linePositionAbsolute(params);
+              state = State.TopLevelContent;
+              break;
             case /* e */ 101:
-              params.push(currentParam)
-              linePositionRelative(params)
-              state = State.TopLevelContent
-              break
+              params.push(currentParam);
+              linePositionRelative(params);
+              state = State.TopLevelContent;
+              break;
             case /* f */ 102:
-              params.push(currentParam)
-              horizontalAndVerticalPosition(params)
-              state = State.TopLevelContent
-              break
+              params.push(currentParam);
+              horizontalAndVerticalPosition(params);
+              state = State.TopLevelContent;
+              break;
             case /* g */ 103:
-              params.push(currentParam)
-              tabClear(params)
-              state = State.TopLevelContent
-              break
+              params.push(currentParam);
+              tabClear(params);
+              state = State.TopLevelContent;
+              break;
             case /* h */ 104:
-              params.push(currentParam)
-              setMode(params)
-              state = State.TopLevelContent
-              break
+              params.push(currentParam);
+              setMode(params);
+              state = State.TopLevelContent;
+              break;
             case /* l */ 108:
-              params.push(currentParam)
-              resetMode(params)
-              state = State.TopLevelContent
-              break
+              params.push(currentParam);
+              resetMode(params);
+              state = State.TopLevelContent;
+              break;
             case /* m */ 109:
-              params.push(currentParam)
-              setCharAttributes(params)
-              state = State.TopLevelContent
-              break
+              params.push(currentParam);
+              setCharAttributes(params);
+              state = State.TopLevelContent;
+              break;
             default:
-              state = State.TopLevelContent
-              break
+              state = State.TopLevelContent;
+              break;
           }
-          i++
-          break
+          i++;
+          break;
         case State.AfterEscape3AfterSemicolon:
           switch (array[i]) {
             case /* 0 */ 48:
@@ -674,12 +676,12 @@ export const createParse = ({
             case /* 7 */ 55:
             case /* 8 */ 56:
             case /* 9 */ 57:
-              currentParam = array[i] - 48
-              state = State.AfterEscape3
-              break
+              currentParam = array[i] - 48;
+              state = State.AfterEscape3;
+              break;
           }
-          i++
-          break
+          i++;
+          break;
         case State.AfterQuestionMark:
           switch (array[i]) {
             case /* 0 */ 48:
@@ -692,28 +694,28 @@ export const createParse = ({
             case /* 7 */ 55:
             case /* 8 */ 56:
             case /* 9 */ 57:
-              currentParam = array[i] - 48
-              state = State.AfterQuestionMark2
-              break
+              currentParam = array[i] - 48;
+              state = State.AfterQuestionMark2;
+              break;
             case /* J */ 74:
-              eraseInDisplay(params)
-              state = State.TopLevelContent
-              break
+              eraseInDisplay(params);
+              state = State.TopLevelContent;
+              break;
             case /* K */ 75:
-              eraseInLine(params)
-              state = State.TopLevelContent
-              break
+              eraseInLine(params);
+              state = State.TopLevelContent;
+              break;
             case /* h */ 104:
-              privateModeSet(params)
-              state = State.TopLevelContent
-              break
+              privateModeSet(params);
+              state = State.TopLevelContent;
+              break;
             case /* l */ 108:
-              privateModeReset(params)
-              state = State.TopLevelContent
-              break
+              privateModeReset(params);
+              state = State.TopLevelContent;
+              break;
           }
-          i++
-          break
+          i++;
+          break;
         case State.AfterQuestionMark2:
           switch (array[i]) {
             case /* 0 */ 48:
@@ -726,60 +728,60 @@ export const createParse = ({
             case /* 7 */ 55:
             case /* 8 */ 56:
             case /* 9 */ 57:
-              currentParam = currentParam * 10 + array[i] - 48
-              break
+              currentParam = currentParam * 10 + array[i] - 48;
+              break;
             case /* ; */ 59:
-              params.push(currentParam)
-              state = State.AfterQuestionMark
-              break
+              params.push(currentParam);
+              state = State.AfterQuestionMark;
+              break;
             case /* J */ 74:
-              params.push(currentParam)
-              eraseInDisplay(params)
-              state = State.TopLevelContent
-              break
+              params.push(currentParam);
+              eraseInDisplay(params);
+              state = State.TopLevelContent;
+              break;
             case /* K */ 75:
-              params.push(currentParam)
-              eraseInLine(params)
-              state = State.TopLevelContent
-              break
+              params.push(currentParam);
+              eraseInLine(params);
+              state = State.TopLevelContent;
+              break;
             case /* h */ 104:
-              params.push(currentParam)
-              privateModeSet(params)
-              state = State.TopLevelContent
-              break
+              params.push(currentParam);
+              privateModeSet(params);
+              state = State.TopLevelContent;
+              break;
             case /* l */ 108:
-              params.push(currentParam)
-              privateModeReset(params)
-              state = State.TopLevelContent
-              break
+              params.push(currentParam);
+              privateModeReset(params);
+              state = State.TopLevelContent;
+              break;
           }
-          i++
-          break
+          i++;
+          break;
         case State.AfterExclamationMark:
           switch (array[i]) {
             case /* p */ 112:
-              softTerminalReset()
-              state = State.TopLevelContent
-              break
+              softTerminalReset();
+              state = State.TopLevelContent;
+              break;
           }
-          i++
-          break
+          i++;
+          break;
         case State.AfterSpace:
           switch (array[i]) {
             case /* @ */ 64:
-              shiftLeftColumns(params)
-              state = State.TopLevelContent
-              break
+              shiftLeftColumns(params);
+              state = State.TopLevelContent;
+              break;
             case /* q */ 113:
-              setCursorStyle(params)
-              state = State.TopLevelContent
-              break
+              setCursorStyle(params);
+              state = State.TopLevelContent;
+              break;
             case /* t */ 116:
-              state = State.TopLevelContent
-              break
+              state = State.TopLevelContent;
+              break;
           }
-          i++
-          break
+          i++;
+          break;
         case State.Osc:
           switch (array[i]) {
             case /* 0 */ 48:
@@ -792,16 +794,16 @@ export const createParse = ({
             case /* 7 */ 55:
             case /* 8 */ 56:
             case /* 9 */ 57:
-              currentParam = array[i] - 48
-              state = State.Osc2
-              break
+              currentParam = array[i] - 48;
+              state = State.Osc2;
+              break;
             case /* \u0007 */ 7:
-              setTextParameters(params)
-              state = State.TopLevelContent
-              break
+              setTextParameters(params);
+              state = State.TopLevelContent;
+              break;
           }
-          i++
-          break
+          i++;
+          break;
         case State.Osc2:
           switch (array[i]) {
             case /* 0 */ 48:
@@ -814,30 +816,30 @@ export const createParse = ({
             case /* 7 */ 55:
             case /* 8 */ 56:
             case /* 9 */ 57:
-              currentParam = currentParam * 10 + array[i] - 48
-              break
+              currentParam = currentParam * 10 + array[i] - 48;
+              break;
             case /* ; */ 59:
-              params.push(currentParam)
-              state = State.Osc3
-              break
+              params.push(currentParam);
+              state = State.Osc3;
+              break;
           }
-          i++
-          break
+          i++;
+          break;
         case State.Osc3:
           switch (array[i]) {
             case /* \u0007 */ 7:
-              setTextParameters(params)
-              state = State.TopLevelContent
-              break
+              setTextParameters(params);
+              state = State.TopLevelContent;
+              break;
             default:
-              params.push(array[i])
+              params.push(array[i]);
           }
-          i++
+          i++;
       }
     }
-  }
-  return parse
-}
+  };
+  return parse;
+};
 
 // const demo = () => {
 //   const input = `~`
