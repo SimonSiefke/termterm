@@ -85,6 +85,9 @@ export const createParse = ({
   // let printStartIndex = -1
 
   const parse = (array) => {
+    if (!(array instanceof Uint8Array)) {
+      throw new Error("invalid data, must be of type Uint8Array");
+    }
     let state = State.TopLevelContent;
     let i = 0;
     let currentParam;
@@ -842,23 +845,26 @@ export const createParse = ({
 };
 
 // const demo = () => {
-//   const input = `~`
+//   const input = `bash: /home/simon/.bash_functions: line 388: syntax error near unexpected token \`elif'\r\nbash: /home/simon/.bash_functions: line 388: \`  elif [[ $PWD == *\"work/windwaerts-website\"* ]]; then'\r\n\u001b[H\u001b[2J\u001b[3J`;
 //   createParse({
-//     cursorDown: () => console.log('cursor down'),
-//     cursorNextLine: () => console.log('cursor next line'),
-//     cursorCharacterAbsolute: () => console.log('cursor character absolute'),
-//     setCharAttributes: (params) => console.log('set char attributes', params),
-//     privateModeSet: (params) => console.log('private mode set', params),
-//     setMode: (params) => console.log('setMode', params),
-//     softTerminalReset: () => console.log('soft terminal reset'),
-//     setCursorStyle: (params) => console.log('set cursor style', params),
-//     restoreCursor: (params) => console.log('restore cursor', params),
-//     shiftLeftColumns: (params) => console.log('shiftLeftColumns', params),
-//     print: (params) => console.log('print', params),
-//     lineFeed: () => console.log('lineFeed'),
-//     bell: () => console.log('bell'),
-//     setTextParameters: (params) => console.log('set text parameters', params),
-//   })(new Uint8Array(Buffer.from(input, 'utf-8')))
-// }
+//     cursorDown: () => console.log("cursor down"),
+//     cursorNextLine: () => console.log("cursor next line"),
+//     cursorCharacterAbsolute: () => console.log("cursor character absolute"),
+//     setCharAttributes: (params) => console.log("set char attributes", params),
+//     privateModeSet: (params) => console.log("private mode set", params),
+//     setMode: (params) => console.log("setMode", params),
+//     softTerminalReset: () => console.log("soft terminal reset"),
+//     setCursorStyle: (params) => console.log("set cursor style", params),
+//     restoreCursor: (params) => console.log("restore cursor", params),
+//     shiftLeftColumns: (params) => console.log("shiftLeftColumns", params),
+//     print: (params) => console.log("print", params),
+//     lineFeed: () => console.log("lineFeed"),
+//     bell: () => console.log("bell"),
+//     setTextParameters: (params) => console.log("set text parameters", params),
+//     carriageReturn: () => [],
+//     cursorPosition: () => {},
+//     eraseInDisplay: () => {},
+//   })(new Uint8Array(Buffer.from(input, "utf-8")));
+// };
 
-// demo()
+// demo();
