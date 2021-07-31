@@ -3,7 +3,7 @@ import fs from "fs";
 import http from "http";
 import { dirname } from "path";
 import { fileURLToPath } from "url";
-import WebSocket from "ws";
+import { WebSocketServer } from "ws";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -40,14 +40,15 @@ const server = http.createServer((req, res) => {
   }
 });
 
-const wss = new WebSocket.Server({ server });
+const wss = new WebSocketServer({ server });
 
 wss.on("connection", (socket) => {
+  console.log("got con");
   socket.on("message", (message) => {
-    if (typeof message !== "string") {
+    if (!Buffer.isBuffer(message)) {
       return;
     }
-    const [commandId, ...args] = JSON.parse(message);
+    const [commandId, ...args] = JSON.parse(message.toString());
     switch (commandId) {
       case 101:
         Terminal.create(socket, ...args);

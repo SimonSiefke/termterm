@@ -10,6 +10,9 @@
   "license": "MIT",
   "dependencies": {
     "fork-pty": "^0.0.15",
-    "ws": "^7.4.5"
+    "ws": "^8.0.0"
+  },
+  "devDependencies": {
+    "@types/ws": "^7.4.7"
   }
 }
