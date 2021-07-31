@@ -34,6 +34,11 @@ const Terminal = {
 const server = http.createServer((req, res) => {
   if (req.method === "GET" && req.url === "/") {
     fs.createReadStream(`${__dirname}/index.html`).pipe(res);
+  } else if (req.method === "GET" && req.url.startsWith("/src")) {
+    res.writeHead(200, {
+      "Content-Type": "text/javascript",
+    });
+    fs.createReadStream(`${__dirname}/..${req.url}`).pipe(res);
   } else {
     res.statusCode = 404;
     res.end("not found");

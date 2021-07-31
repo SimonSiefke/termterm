@@ -9,7 +9,7 @@ const CHAR_HEIGHT = 15;
 const BACKGROUND = "#000000";
 const FOREGROUND = "#ffffff";
 
-const COLS = 60;
+const COLS = 80;
 const ROWS = 25;
 const BUFFER_LINES = 200;
 
@@ -92,10 +92,11 @@ export const createTerminal = (
 
   const textDecoder = new TextDecoder();
 
-  // self.printLines = () =>
-  //   lines.map((line, y) =>
-  //     textDecoder.decode(line.subarray(0, offsets[y] + 1))
+  // self.printLines = () => {
+  //   console.log(
+  //     lines.map((line, y) => textDecoder.decode(line.subarray(0, offsets[y])))
   //   );
+  // };
 
   const dirtyMark = (y) => {
     // console.log('dirty' + y)
@@ -180,6 +181,14 @@ export const createTerminal = (
       cursorXRelative += end - start;
       offsets[y] = COLS + cursorXRelative;
       dirtyMark(y);
+
+      if (x >= COLS - 1) {
+        // cursorYRelative++;
+        // console.log("wrap");
+        callbackFns.lineFeed();
+      }
+      // console.log("PRINT", { y, x, COLS, cursorXRelative, cursorYRelative });
+      // self.printLines();
       // offsets[y] += end - start
       // cursorXRelative = -COLS + offsets[y]
     },

@@ -1282,6 +1282,12 @@ test("text - hello world!", () => {
   expect(operations(`hello world!`)).toEqual([["print"]]);
 });
 
+test("text with new line", () => {
+  expect(
+    operations(new TextDecoder().decode(new Uint8Array([97, 32, 13])))
+  ).toEqual([["print"], ["carriageReturn"]]);
+});
+
 test("text - prompt", () => {
   expect(
     operations(
