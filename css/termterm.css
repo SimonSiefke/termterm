@@ -1,26 +1,26 @@
 body {
   margin: 0;
 }
-#Terminal {
+.Terminal {
   position: relative;
   contain: strict;
   width: 780px;
   height: 625px;
   background: black;
 }
-#CanvasText,
-#CanvasCursor {
+.TerminalCanvasText,
+.TerminalCanvasCursor {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
 }
-#CanvasCursor {
+.TerminalCanvasCursor {
   opacity: 0.5;
 }
 
-#TerminalTextArea {
+.TerminalTextArea {
   position: absolute;
   top: 0;
   left: 0;

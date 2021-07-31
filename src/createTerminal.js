@@ -40,11 +40,11 @@ export const createTerminal = (
     textarea.focus();
   };
   const canvasText = document.createElement("canvas");
-  canvasText.id = "CanvasText";
+  canvasText.className = "TerminalCanvasText";
   const canvasCursor = document.createElement("canvas");
-  canvasCursor.id = "CanvasCursor";
+  canvasCursor.className = "TerminalCanvasCursor";
   const textarea = document.createElement("textarea");
-  textarea.id = "TerminalTextArea";
+  textarea.className = "TerminalTextArea";
   root.append(textarea, canvasText, canvasCursor);
   textarea.onkeydown = handleKeyDown;
   textarea.addEventListener("beforeinput", handleBeforeInput);
