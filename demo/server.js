@@ -45,9 +45,6 @@ const wss = new WebSocketServer({ server });
 wss.on("connection", (socket) => {
   console.log("got con");
   socket.on("message", (message) => {
-    if (!Buffer.isBuffer(message)) {
-      return;
-    }
     const [commandId, ...args] = JSON.parse(message.toString());
     switch (commandId) {
       case 101:
