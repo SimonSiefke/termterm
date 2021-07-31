@@ -254,3 +254,5 @@ a2c2ed791961
 <!-- TODO cd ~ not showing -->
 
 <!-- TODO make demo simpler if possible -->
+
+<!-- TODO add browser only mode to make it easier to try out -->
