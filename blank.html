@@ -15,16 +15,17 @@
     <h1>hello world</h1>
     <div id="Terminal"></div>
     <script type="module">
-      import { createTerminal } from './src/createTerminal.js'
+      import { createTerminal } from "./src/createTerminal.js";
       const handleInput = (transformedKey) => {
-        console.log(transformedKey)
-      }
-      const root = document.getElementById('Terminal')
+        console.log(transformedKey);
+      };
+      const root = document.getElementById("Terminal");
       const terminal = createTerminal(root, {
         handleInput,
-      })
+      });
+      terminal.writeText(`[K[0;35msimon[0;32m (master *)[0;34m playground $ [0m`);
       // @ts-ignore
-      self.terminal = terminal
+      self.terminal = terminal;
     </script>
   </body>
 </html>

@@ -1286,9 +1286,22 @@ test("text - hello world!", () => {
 test("text - prompt", () => {
   expect(
     operations(
-      `\u001b[0;35msimon\u001b[0;32m (master *)\u001b[0;34m termterm $ \u001b[0m`
+      `\u001b[0;35mtest-user\u001b[0;32m (master *)\u001b[0;34m termterm $ \u001b[0m`
     )
   ).toEqual([
+    ["setCharAttributes", [0, 35]],
+    ["print"],
+    ["setCharAttributes", [0, 32]],
+    ["print"],
+    ["setCharAttributes", [0, 34]],
+    ["print"],
+    ["setCharAttributes", [0]],
+  ]);
+});
+
+test("text - prompt 2", () => {
+  expect(operations(`[K[0;35mtest-user[0;32m (master *)[0;34m playground $ [0m`)).toEqual([
+    ["eraseInLine", []],
     ["setCharAttributes", [0, 35]],
     ["print"],
     ["setCharAttributes", [0, 32]],

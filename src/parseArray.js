@@ -845,7 +845,7 @@ export const createParse = ({
 };
 
 // const demo = () => {
-//   const input = `bash: /home/simon/.bash_functions: line 388: syntax error near unexpected token \`elif'\r\nbash: /home/simon/.bash_functions: line 388: \`  elif [[ $PWD == *\"work/windwaerts-website\"* ]]; then'\r\n\u001b[H\u001b[2J\u001b[3J`;
+//   const input = `[K[0;35msimon[0;32m (master *)[0;34m playground $ [0m`;
 //   createParse({
 //     cursorDown: () => console.log("cursor down"),
 //     cursorNextLine: () => console.log("cursor next line"),
@@ -864,6 +864,7 @@ export const createParse = ({
 //     carriageReturn: () => [],
 //     cursorPosition: () => {},
 //     eraseInDisplay: () => {},
+//     eraseInLine: () => {},
 //   })(new Uint8Array(Buffer.from(input, "utf-8")));
 // };
 
