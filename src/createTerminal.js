@@ -1,6 +1,6 @@
 import { createDrawCursor } from "./drawCursor.js";
 import { createDrawLines } from "./drawLines.js";
-import { createParse } from "./parseArray.js";
+import { parse } from "./parseArray.js";
 import { transformKey } from "./handleKeyDown.js";
 
 const CHAR_WIDTH = 13;
@@ -69,22 +69,22 @@ export const createTerminal = (
     end: 0,
   };
 
-  self.stats = () => ({
-    cursorYRelative,
-    cursorXRelative,
-    x: COLS + cursorXRelative,
-    y: bufferYEnd + cursorYRelative,
-  });
+  // self.stats = () => ({
+  //   cursorYRelative,
+  //   cursorXRelative,
+  //   x: COLS + cursorXRelative,
+  //   y: bufferYEnd + cursorYRelative,
+  // });
 
   const lines = [];
-  self.lines = lines;
+  // self.lines = lines;
 
   const offsets = new Uint8Array(BUFFER_LINES);
 
-  self.offsets = offsets;
+  // self.offsets = offsets;
   let attributes = {};
 
-  self.attributes = attributes;
+  // self.attributes = attributes;
 
   for (let y = 0; y < BUFFER_LINES; y++) {
     lines.push(new Uint8Array(300));
@@ -92,10 +92,10 @@ export const createTerminal = (
 
   const textDecoder = new TextDecoder();
 
-  self.printLines = () =>
-    lines.map((line, y) =>
-      textDecoder.decode(line.subarray(0, offsets[y] + 1))
-    );
+  // self.printLines = () =>
+  //   lines.map((line, y) =>
+  //     textDecoder.decode(line.subarray(0, offsets[y] + 1))
+  //   );
 
   const dirtyMark = (y) => {
     // console.log('dirty' + y)
@@ -255,7 +255,7 @@ export const createTerminal = (
     insertBlankCharacters() {},
   };
 
-  const parse = createParse(callbackFns);
+  // const parse = createParse(callbackFns);
   const drawLines = createDrawLines(
     canvasText,
     lines,
@@ -271,7 +271,7 @@ export const createTerminal = (
 
   let scheduled = false;
 
-  self.drawLines = () => drawLines(dirty.start, dirty.end + 1);
+  // self.drawLines = () => drawLines(dirty.start, dirty.end + 1);
 
   const handleAnimationFrame = () => {
     // console.log(dirty)
@@ -283,7 +283,7 @@ export const createTerminal = (
     dirtyClear();
   };
   const write = (array) => {
-    parse(array);
+    parse(array, callbackFns);
     // if (lines.length > 1_000) {
     //   lines.length = 1_000
     // }

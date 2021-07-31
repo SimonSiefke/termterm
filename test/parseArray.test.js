@@ -5,7 +5,7 @@
 
 import { jest } from "@jest/globals";
 import { StringDecoder } from "string_decoder";
-import { createParse } from "../src/parseArray.js";
+import { parse } from "../src/parseArray.js";
 
 const encodeText = (input) => {
   return new Uint8Array(Buffer.from(input, "utf-8"));
@@ -18,7 +18,7 @@ const decodeText = (text) => {
 
 const operations = (input) => {
   const calls = [];
-  const terminal = {
+  const callbackFunctions = {
     index() {
       calls.push(["index"]);
     },
@@ -185,9 +185,8 @@ const operations = (input) => {
       calls.push(["fullReset"]);
     },
   };
-  const parse = createParse(terminal);
   const array = encodeText(input);
-  parse(array);
+  parse(array, callbackFunctions);
   return calls;
 };
 

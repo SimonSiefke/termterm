@@ -18,7 +18,7 @@
     <h1>Terminal Demo</h1>
     <div id="Terminal"></div>
     <script type="module">
-      import { createTerminal } from 'https://unpkg.com/termterm@0.0.16/src/createTerminal.js'
+      import { createTerminal } from "https://unpkg.com/termterm@0.0.16/src/createTerminal.js";
 
       // commands
       const commands = Object.create(null);
@@ -32,10 +32,10 @@
       };
 
       // websocket
-      const protocol = location.protocol === "https:" ? "wss://" : "ws://";
-      const hostname = location.hostname;
-      const port = location.port;
-      const webSocket = new WebSocket(`${protocol}${hostname}:${port}`);
+      // const protocol = location.protocol === "https:" ? "wss://" : "ws://";
+      // const hostname = location.hostname;
+      // const port = location.port;
+      const webSocket = new WebSocket(`ws://localhost:3000`);
 
       webSocket.onmessage = ({ data }) => {
         const [commandId, ...args] = JSON.parse(data);
