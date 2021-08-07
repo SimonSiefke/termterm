@@ -15,7 +15,6 @@ export const createDrawCursor = (canvas) => {
   let previousCursorStyle = -1;
 
   const drawCursor = (x, y, cursorVisible, cursorStyle) => {
-    console.log({ cursorVisible });
     if (cursorVisible) {
       if (
         previousX === x &&
