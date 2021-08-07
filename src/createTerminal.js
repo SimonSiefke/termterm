@@ -31,13 +31,17 @@ export const createTerminal = (
   };
   const blur = () => {
     focused = false;
+    cursorStyle = /* blur */ 4;
+    requestAnimationFrame(render);
   };
   const focus = () => {
     if (focused) {
       return;
     }
     focused = true;
+    cursorStyle = /* block */ 2;
     textarea.focus();
+    requestAnimationFrame(render);
   };
   const canvasText = document.createElement("canvas");
   canvasText.className = "TerminalCanvasText";
@@ -64,6 +68,7 @@ export const createTerminal = (
   let foreground = "#ffffff";
   let background = "#000000";
   let cursorVisible = true;
+  let cursorStyle = /* block */ 2;
   const dirty = {
     start: 0,
     end: 0,
@@ -282,12 +287,13 @@ export const createTerminal = (
 
   // self.drawLines = () => drawLines(dirty.start, dirty.end + 1);
 
-  const handleAnimationFrame = () => {
+  const render = () => {
     // console.log(dirty)
     drawLines(dirty.start, dirty.end + 1, bufferYEnd);
     const y = ROWS + cursorYRelative;
     const x = COLS + cursorXRelative;
-    drawCursor(x, y, cursorVisible);
+    // TODO without closure
+    drawCursor(x, y, cursorVisible, cursorStyle);
     scheduled = false;
     dirtyClear();
   };
@@ -298,7 +304,7 @@ export const createTerminal = (
     // }
     if (!scheduled) {
       scheduled = true;
-      requestAnimationFrame(handleAnimationFrame);
+      requestAnimationFrame(render);
     }
   };
 
