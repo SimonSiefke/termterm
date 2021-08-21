@@ -115,22 +115,6 @@ export const createDrawLines = (
   const rnd = () => Math.floor(Math.random() * 16777215).toString(16)
 
   const clearLines = (x, y, width, height) => {
-    // ctx.fillStyle = `#${rnd()}`
-    // console.log(rnd())
-    // ctx.fillRect(0, 0, 780, 625)
-    // console.log({ x, y, width, height })
-    // console.log([
-    //   x * CHAR_WIDTH,
-    //   y * CHAR_HEIGHT,
-    //   width * CHAR_WIDTH,
-    //   height * CHAR_HEIGHT,
-    // ])
-    // ctx.clearRect(
-    //   x * CHAR_WIDTH,
-    //   y * CHAR_HEIGHT,
-    //   width * CHAR_WIDTH,
-    //   height * CHAR_HEIGHT,
-    // )
     // ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
     ctx.fillRect(
       x * CHAR_WIDTH,
