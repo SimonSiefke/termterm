@@ -47,9 +47,12 @@ export const createTerminal = (
   canvasText.className = "TerminalCanvasText";
   const canvasCursor = document.createElement("canvas");
   canvasCursor.className = "TerminalCanvasCursor";
+  const $Layers = document.createElement("div");
+  $Layers.className = "Layers";
   const textarea = document.createElement("textarea");
   textarea.className = "TerminalTextArea";
-  root.append(textarea, canvasText, canvasCursor);
+  $Layers.append(canvasText, canvasCursor);
+  root.append(textarea, $Layers);
   textarea.onkeydown = handleKeyDown;
   textarea.addEventListener("beforeinput", handleBeforeInput);
   root.onmousedown = (event) => {
@@ -320,7 +323,7 @@ export const createTerminal = (
     focus,
     pasteText,
     writeText: pasteText,
-    // TODO should this be exposed (only used for testing)
+    // TODO should this be exposed (only used for testing) maybe with _ prefix (internal)
     lines,
   };
 };

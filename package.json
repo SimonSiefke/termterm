@@ -14,7 +14,8 @@
     "benchmark:parseArray": "node public/lib/parseArray.benchmark.js",
     "benchmark:handleKeyDown": "node public/lib/handleKeyDown.benchmark.js",
     "bundle": "npx microbundle public/lib/parseArray.js -f modern -o dist",
-    "bundle-and-benchmark": "npm run bundle && npm run benchmark:parseArray"
+    "bundle-and-benchmark": "npm run bundle && npm run benchmark:parseArray",
+    "postinstall": "cd demo && npm ci"
   },
   "keywords": [],
   "author": "",
@@ -22,7 +23,8 @@
   "type": "module",
   "devDependencies": {
     "@types/jest": "^26.0.23",
-    "jest": "^27.0.4"
+    "jest": "^27.0.4",
+    "nodemon": "^2.0.12"
   },
   "jest": {
     "testPathIgnorePatterns": [
