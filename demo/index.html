@@ -73,7 +73,9 @@
       };
 
       const terminalWrite = (id, data) => {
-        terminals[id].write(new Uint8Array(data.data));
+        console.log({ data });
+        const encoded = new TextEncoder().encode(data);
+        terminals[id].write(encoded);
       };
 
       const terminalDispose = () => {

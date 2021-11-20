@@ -21,7 +21,7 @@ const State = {
 
 const noop = () => {};
 
-export const parse = (
+export const parseArray = (
   array,
   {
     eraseInDisplay,

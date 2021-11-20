@@ -5,7 +5,7 @@
 
 import { jest } from "@jest/globals";
 import { StringDecoder } from "string_decoder";
-import { parse } from "../src/parseArray.js";
+import * as ParseArray from "../src/parts/ParseArray/ParseArray.js";
 
 const encodeText = (input) => {
   return new Uint8Array(Buffer.from(input, "utf-8"));
@@ -186,7 +186,7 @@ const operations = (input) => {
     },
   };
   const array = encodeText(input);
-  parse(array, callbackFunctions);
+  ParseArray.parseArray(array, callbackFunctions);
   return calls;
 };
 

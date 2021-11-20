@@ -9,7 +9,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "fork-pty": "^0.0.15",
+    "node-pty": "^0.10.1",
     "ws": "^8.0.0"
   },
   "devDependencies": {

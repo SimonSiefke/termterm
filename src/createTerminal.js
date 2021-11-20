@@ -1,7 +1,7 @@
 import { createDrawCursor } from "./drawCursor.js";
 import { createDrawLines } from "./drawLines.js";
-import { parse } from "./parseArray.js";
-import { transformKey } from "./handleKeyDown.js";
+import * as ParseArray from "./parts/ParseArray/ParseArray.js";
+import * as TransformKey from "./parts/TransformKey/TransformKey.js";
 
 const CHAR_WIDTH = 13;
 const CHAR_HEIGHT = 15;
@@ -17,11 +17,11 @@ const noop = () => {};
 
 export const createTerminal = (
   root,
-  { handleInput, bell = noop, setWindowTitle = noop }
+  { handleInput, bell = noop, setWindowTitle = noop, handleFocus = noop }
 ) => {
   let focused = false;
   const handleKeyDown = (event) => {
-    const transformedKey = transformKey(event);
+    const transformedKey = TransformKey.transformKey(event);
     if (transformedKey) {
       handleInput(transformedKey);
     }
@@ -35,6 +35,7 @@ export const createTerminal = (
     requestAnimationFrame(render);
   };
   const focus = () => {
+    handleFocus();
     if (focused) {
       return;
     }
@@ -301,7 +302,7 @@ export const createTerminal = (
     dirtyClear();
   };
   const write = (array) => {
-    parse(array, callbackFns);
+    ParseArray.parseArray(array, callbackFns);
     // if (lines.length > 1_000) {
     //   lines.length = 1_000
     // }

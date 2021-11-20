@@ -1,4 +1,8 @@
-import { transformKey } from "../src/handleKeyDown.js";
+import * as TransformKey from "../src/parts/TransformKey/TransformKey.js";
+
+const transformKey = (event) => {
+  return TransformKey.transformKey(event);
+};
 
 test("key 33", () => {
   expect(transformKey({ key: "!", shiftKey: true })).toBe("!");
@@ -542,7 +546,11 @@ test("key - Ctrl+ArrowDown", () => {
 
 test("key - Ctrl+Shift+ArrowDown", () => {
   expect(
-    transformKey({ key: "ArrowDown", ctrlKey: true, shiftKey: true })
+    transformKey({
+      key: "ArrowDown",
+      ctrlKey: true,
+      shiftKey: true,
+    })
   ).toBe("\u001b[1;6B");
 });
 
@@ -558,7 +566,11 @@ test("key - Ctrl+ArrowRight", () => {
 
 test("key - Ctrl+Shift+ArrowRight", () => {
   expect(
-    transformKey({ key: "ArrowRight", ctrlKey: true, shiftKey: true })
+    transformKey({
+      key: "ArrowRight",
+      ctrlKey: true,
+      shiftKey: true,
+    })
   ).toBe("\u001b[1;6C");
 });
 
@@ -572,7 +584,11 @@ test("key - Ctrl+ArrowLeft", () => {
 
 test("key - Ctrl+Shift+ArrowLeft", () => {
   expect(
-    transformKey({ key: "ArrowLeft", ctrlKey: true, shiftKey: true })
+    transformKey({
+      key: "ArrowLeft",
+      ctrlKey: true,
+      shiftKey: true,
+    })
   ).toBe("\u001b[1;6D");
 });
 
@@ -992,7 +1008,12 @@ test("key Ctrl+Alt+a", () => {
 
 test("key Ctrl+Alt+A", () => {
   expect(
-    transformKey({ key: "A", ctrlKey: true, altKey: true, shiftKey: true })
+    transformKey({
+      key: "A",
+      ctrlKey: true,
+      altKey: true,
+      shiftKey: true,
+    })
   ).toBe("\u001b\u0001");
 });
 

@@ -1,4 +1,4 @@
-import { forkPtyAndExecvp } from "fork-pty";
+import { spawn } from "node-pty";
 import fs from "fs";
 import http from "http";
 import { dirname } from "path";
@@ -10,7 +10,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const Terminal = {
   terminals: Object.create(null),
   create(socket, id) {
-    const { ptySocket } = forkPtyAndExecvp("bash", ["bash", "-i"]);
+    const ptySocket = spawn("bash", ["-i"], {});
     this.terminals[id] = ptySocket;
     const handleData = (data) => {
       socket.send(
