@@ -1,4 +1,8 @@
+/**
+ * @jest-environment jsdom
+ */
 import * as Terminal from "../src/parts/Terminal/Terminal.js";
+import { jest } from "@jest/globals";
 
 const createTerminal = () => {
   const $Element = document.createElement("div");
@@ -30,7 +34,7 @@ test("carriageReturn", () => {
   const state = createTerminal();
   state.cursorXRelative = 10;
   Terminal.carriageReturn(state);
-  expect(state.cursorXRelative).toBe(-10);
+  expect(state.cursorXRelative).toBe(-80);
 });
 
 test("setWindowTitle", () => {});
