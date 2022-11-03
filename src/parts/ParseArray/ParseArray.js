@@ -96,9 +96,10 @@ export const parseArray = (
   let params = [];
   let printStartIndex = -1;
   while (i < array.length) {
+    const value = array[i];
     switch (state) {
       case State.TopLevelContent:
-        middle: switch (array[i]) {
+        middle: switch (value) {
           case 1:
           case 2:
           case 3:
@@ -295,7 +296,7 @@ export const parseArray = (
         }
         break;
       case State.Escaped:
-        switch (array[i]) {
+        switch (value) {
           case /* ( */ 40:
             state = State.Charset;
             break;
@@ -341,7 +342,7 @@ export const parseArray = (
         i++;
         break;
       case State.Csi:
-        switch (array[i]) {
+        switch (value) {
           case /*   */ 32:
             state = State.AfterSpace;
             break;
@@ -358,7 +359,7 @@ export const parseArray = (
           case /* 7 */ 55:
           case /* 8 */ 56:
           case /* 9 */ 57:
-            currentParam = array[i] - 48;
+            currentParam = value - 48;
             state = State.AfterEscape3;
             break;
           case /* ? */ 63:
@@ -492,7 +493,7 @@ export const parseArray = (
         i++;
         break;
       case State.AfterEscape3:
-        switch (array[i]) {
+        switch (value) {
           case /*   */ 32:
             params.push(currentParam);
             state = State.AfterSpace;
@@ -511,7 +512,7 @@ export const parseArray = (
           case /* 7 */ 55:
           case /* 8 */ 56:
           case /* 9 */ 57:
-            currentParam = currentParam * 10 + array[i] - 48;
+            currentParam = currentParam * 10 + value - 48;
             break;
           case /* @ */ 64:
             params.push(currentParam);
@@ -670,7 +671,7 @@ export const parseArray = (
         i++;
         break;
       case State.AfterEscape3AfterSemicolon:
-        switch (array[i]) {
+        switch (value) {
           case /* 0 */ 48:
           case /* 1 */ 49:
           case /* 2 */ 50:
@@ -681,14 +682,14 @@ export const parseArray = (
           case /* 7 */ 55:
           case /* 8 */ 56:
           case /* 9 */ 57:
-            currentParam = array[i] - 48;
+            currentParam = value - 48;
             state = State.AfterEscape3;
             break;
         }
         i++;
         break;
       case State.AfterQuestionMark:
-        switch (array[i]) {
+        switch (value) {
           case /* 0 */ 48:
           case /* 1 */ 49:
           case /* 2 */ 50:
@@ -699,7 +700,7 @@ export const parseArray = (
           case /* 7 */ 55:
           case /* 8 */ 56:
           case /* 9 */ 57:
-            currentParam = array[i] - 48;
+            currentParam = value - 48;
             state = State.AfterQuestionMark2;
             break;
           case /* J */ 74:
@@ -722,7 +723,7 @@ export const parseArray = (
         i++;
         break;
       case State.AfterQuestionMark2:
-        switch (array[i]) {
+        switch (value) {
           case /* 0 */ 48:
           case /* 1 */ 49:
           case /* 2 */ 50:
@@ -733,7 +734,7 @@ export const parseArray = (
           case /* 7 */ 55:
           case /* 8 */ 56:
           case /* 9 */ 57:
-            currentParam = currentParam * 10 + array[i] - 48;
+            currentParam = currentParam * 10 + value - 48;
             break;
           case /* ; */ 59:
             params.push(currentParam);
@@ -763,7 +764,7 @@ export const parseArray = (
         i++;
         break;
       case State.AfterExclamationMark:
-        switch (array[i]) {
+        switch (value) {
           case /* p */ 112:
             softTerminalReset();
             state = State.TopLevelContent;
@@ -772,7 +773,7 @@ export const parseArray = (
         i++;
         break;
       case State.AfterSpace:
-        switch (array[i]) {
+        switch (value) {
           case /* @ */ 64:
             shiftLeftColumns(params);
             state = State.TopLevelContent;
@@ -788,7 +789,7 @@ export const parseArray = (
         i++;
         break;
       case State.Osc:
-        switch (array[i]) {
+        switch (value) {
           case /* 0 */ 48:
           case /* 1 */ 49:
           case /* 2 */ 50:
@@ -799,7 +800,7 @@ export const parseArray = (
           case /* 7 */ 55:
           case /* 8 */ 56:
           case /* 9 */ 57:
-            currentParam = array[i] - 48;
+            currentParam = value - 48;
             state = State.Osc2;
             break;
           case /* \u0007 */ 7:
@@ -810,7 +811,7 @@ export const parseArray = (
         i++;
         break;
       case State.Osc2:
-        switch (array[i]) {
+        switch (value) {
           case /* 0 */ 48:
           case /* 1 */ 49:
           case /* 2 */ 50:
@@ -821,7 +822,7 @@ export const parseArray = (
           case /* 7 */ 55:
           case /* 8 */ 56:
           case /* 9 */ 57:
-            currentParam = currentParam * 10 + array[i] - 48;
+            currentParam = currentParam * 10 + value - 48;
             break;
           case /* ; */ 59:
             params.push(currentParam);
@@ -831,13 +832,13 @@ export const parseArray = (
         i++;
         break;
       case State.Osc3:
-        switch (array[i]) {
+        switch (value) {
           case /* \u0007 */ 7:
             setTextParameters(params);
             state = State.TopLevelContent;
             break;
           default:
-            params.push(array[i]);
+            params.push(value);
         }
         i++;
     }
