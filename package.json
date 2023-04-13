@@ -22,10 +22,10 @@
   "license": "MIT",
   "type": "module",
   "devDependencies": {
-    "@types/jest": "^29.2.1",
-    "jest": "^29.2.2",
-    "jest-environment-jsdom": "^29.2.2",
-    "nodemon": "^2.0.20"
+    "@types/jest": "^29.5.0",
+    "jest": "^29.5.0",
+    "jest-environment-jsdom": "^29.5.0",
+    "nodemon": "^2.0.22"
   },
   "jest": {
     "testPathIgnorePatterns": [
