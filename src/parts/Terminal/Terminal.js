@@ -17,6 +17,7 @@ export const create = ({ $Element, handleInput, handleBell }) => {
   $Layers.className = "Layers";
   const $TextArea = document.createElement("textarea");
   $TextArea.className = "TerminalTextArea";
+  $TextArea.name = "terminal-input";
   $Layers.append($CanvasText, $CanvasCursor);
   $Element.append($TextArea, $Layers);
 
