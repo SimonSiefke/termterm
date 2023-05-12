@@ -52,6 +52,7 @@ export const createTerminal = (
   $Layers.className = "Layers";
   const textarea = document.createElement("textarea");
   textarea.className = "TerminalTextArea";
+  textarea.name = "terminal-input";
   $Layers.append(canvasText, canvasCursor);
   root.append(textarea, $Layers);
   textarea.onkeydown = handleKeyDown;
