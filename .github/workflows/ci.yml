@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  build:
+  ci:
     strategy:
       fail-fast: true
       matrix:
