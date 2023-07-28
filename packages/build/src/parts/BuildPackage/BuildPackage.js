@@ -1,6 +1,7 @@
 import { cp, readFile, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { root } from "../Root/Root.js";
+import * as Tag from "../Tag/Tag.js";
 
 const library = join(root, "packages", "library");
 
@@ -16,7 +17,9 @@ await cp(join(root, "LICENSE"), join(dist, "LICENSE"));
 const pkgContent = await readFile(join(library, "package.json"), "utf8");
 const pkg = JSON.parse(pkgContent);
 
-pkg.version = process.env.RG_VERSION || "0.0.0-dev";
+const version = Tag.getGitTag();
+
+pkg.version = version;
 delete pkg.scripts;
 delete pkg.jest;
 delete pkg.files;

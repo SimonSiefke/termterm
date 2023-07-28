@@ -1,7 +1,5 @@
 import { cp, readFile, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
-import { dirname } from "node:path";
-import { fileURLToPath } from "node:url";
 import { root } from "../Root/Root.js";
 
 const library = join(root, "packages", "library");
