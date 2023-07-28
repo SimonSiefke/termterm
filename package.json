@@ -18,6 +18,7 @@
   "type": "module",
   "devDependencies": {
     "@lerna/legacy-package-management": "^7.1.4",
+    "@types/node": "^20.4.5",
     "lerna": "^7.1.4",
     "nodemon": "^3.0.1"
   }
