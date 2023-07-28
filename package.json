@@ -8,14 +8,10 @@
     "css"
   ],
   "scripts": {
-    "test": "lerna run test",
-    "test:watch": "cd packages/library && npm run test:watch",
+    "postinstall": "lerna bootstrap --ci",
     "dev": "nodemon packages/demo/server.js",
-    "benchmark:parseArray": "node public/lib/parseArray.benchmark.js",
-    "benchmark:handleKeyDown": "node public/lib/handleKeyDown.benchmark.js",
-    "bundle": "npx microbundle public/lib/parseArray.js -f modern -o dist",
-    "bundle-and-benchmark": "npm run bundle && npm run benchmark:parseArray",
-    "postinstall": "lerna bootstrap --ci"
+    "test": "lerna run test",
+    "test:watch": "cd packages/library && npm run test:watch"
   },
   "author": "",
   "license": "MIT",
