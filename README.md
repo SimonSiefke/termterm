@@ -8,7 +8,7 @@ A Terminal Emulator for the Web.
 git clone git@github.com:SimonSiefke/termterm.git &&
 cd termterm/demo &&
 npm ci &&
-node server.js
+npm run dev
 ```
 
 ## Credits
