@@ -14,7 +14,7 @@ export const create = ({ $Element, handleInput, handleBell }) => {
   const $CanvasCursor = document.createElement("canvas");
   $CanvasCursor.className = "TerminalCanvasCursor";
   const $Layers = document.createElement("div");
-  $Layers.className = "Layers";
+  $Layers.className = "TerminalLayers";
   const $TextArea = document.createElement("textarea");
   $TextArea.className = "TerminalTextArea";
   $TextArea.name = "terminal-input";
