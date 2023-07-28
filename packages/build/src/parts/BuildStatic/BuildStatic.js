@@ -9,7 +9,10 @@ const dist = join(root, "dist-static");
 
 await rm(dist, { recursive: true, force: true });
 
-const pathPrefix = process.env.PATH_PREFIX || "";
+let pathPrefix = process.env.PATH_PREFIX || "/";
+if (pathPrefix === "auto") {
+  pathPrefix = "/termterm";
+}
 
 await cp(join(library, "src"), join(dist, "src"), { recursive: true });
 await cp(join(library, "css"), join(dist, "css"), { recursive: true });
@@ -25,10 +28,10 @@ const replace = async ({ path, occurrence, replacement }) => {
 await replace({
   path: join(dist, "index.html"),
   occurrence: `/css/termterm.css`,
-  replacement: `${pathPrefix}/css/termterm.css`,
+  replacement: `${pathPrefix}css/termterm.css`,
 });
 await replace({
   path: join(dist, "index.js"),
   occurrence: `/src/createTerminal.js  `,
-  replacement: `${pathPrefix}/src/createTerminal.js`,
+  replacement: `${pathPrefix}src/createTerminal.js`,
 });

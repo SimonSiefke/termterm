@@ -61,7 +61,8 @@ jobs:
       - run: npm test
       - run: node scripts/build.js
       - run: node scripts/build-static.js
-
+        env:
+          PATH_PREFIX: auto
       - run: npm publish --access public
         if: matrix.os == 'ubuntu-22.04'
         working-directory: ./dist
