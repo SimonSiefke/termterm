@@ -1,25 +1,4 @@
-const State = {
-  TopLevelContent: 1,
-  Escaped: 2,
-  Csi: 3,
-  AfterEscape3: 4,
-  Charset: 5,
-  AfterEscape3AfterSemicolon: 6,
-  // CsiAfterQuestionMark1: 7,
-  // CsiAfterQuestionMark2: 10,
-  Osc: 8,
-  Dcs: 9,
-  AfterQuestionMark: 10,
-  AfterQuestionMark2: 11,
-  AfterExclamationMark: 12,
-  AfterExclamationMark2: 13,
-  AfterSpace: 14,
-  AfterSpace2: 15,
-  Osc2: 16,
-  Osc3: 17,
-};
-
-const noop = () => {};
+import * as State from "../ParserState/ParserState.js";
 
 export const parseArray = (
   array,
