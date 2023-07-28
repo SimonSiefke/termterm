@@ -30,5 +30,6 @@ jobs:
       - name: npm ci
         run: npm ci
         if: steps.npm-cache.outputs.cache-hit != 'true'
-      - name: test
-        run: npm test
+      - run: npm test
+      - run: node scripts/build.js
+      - run: node scripts/build-static.js
