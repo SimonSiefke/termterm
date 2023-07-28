@@ -5,7 +5,7 @@ import { root } from "../Root/Root.js";
 const library = join(root, "packages", "library");
 const demo = join(root, "packages", "demo");
 
-const dist = join(root, "dist");
+const dist = join(root, "dist-static");
 
 await rm(dist, { recursive: true, force: true });
 

@@ -60,6 +60,8 @@ jobs:
         if: steps.npm-cache.outputs.cache-hit != 'true'
       - run: npm test
       - run: node scripts/build.js
+      - run: node scripts/build-static.js
+
       - run: npm publish --access public
         if: matrix.os == 'ubuntu-22.04'
         working-directory: ./dist

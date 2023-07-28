@@ -36,8 +36,9 @@ jobs:
       - name: npm ci
         run: npm ci
         if: steps.npm-cache.outputs.cache-hit != 'true'
-      - name: test
-        run: npm test
+      - run: npm test
+      - run: node scripts/build.js
+      - run: node scripts/build-static.js
       - name: Upload artifact
         if: matrix.os == 'ubuntu-22.04'
         uses: actions/upload-pages-artifact@v2
