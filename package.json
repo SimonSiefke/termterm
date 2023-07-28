@@ -8,8 +8,8 @@
     "css"
   ],
   "scripts": {
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest",
-    "test:watch": "NODE_OPTIONS=--experimental-vm-modules jest --watch",
+    "test": "node --unhandled-rejections=warn --experimental-vm-modules ./node_modules/jest/bin/jest.js --detectOpenHandles --forceExit",
+    "test:watch": "node --unhandled-rejections=warn --experimental-vm-modules ./node_modules/jest/bin/jest.js --watch",
     "dev": "nodemon demo/server.js",
     "benchmark:parseArray": "node public/lib/parseArray.benchmark.js",
     "benchmark:handleKeyDown": "node public/lib/handleKeyDown.benchmark.js",
@@ -30,6 +30,9 @@
   "jest": {
     "testPathIgnorePatterns": [
       "e2e"
+    ],
+    "modulePathIgnorePatterns": [
+      "<rootDir>/dist/"
     ]
   }
 }

@@ -6,8 +6,12 @@ on:
       - main
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  pr:
+    strategy:
+      fail-fast: true
+      matrix:
+        os: [windows-2022, macos-12, ubuntu-22.04]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
