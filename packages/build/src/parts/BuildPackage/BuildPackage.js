@@ -17,7 +17,7 @@ await cp(join(root, "LICENSE"), join(dist, "LICENSE"));
 const pkgContent = await readFile(join(library, "package.json"), "utf8");
 const pkg = JSON.parse(pkgContent);
 
-const version = Tag.getGitTag();
+const version = await Tag.getGitTag();
 
 pkg.version = version;
 delete pkg.scripts;
