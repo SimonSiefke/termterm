@@ -17,7 +17,9 @@
     "bundle-and-benchmark": "npm run bundle && npm run benchmark:parseArray",
     "postinstall": "cd demo && npm ci"
   },
-  "keywords": [],
+  "keywords": [
+    "terminal"
+  ],
   "author": "",
   "license": "MIT",
   "type": "module",
