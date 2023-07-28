@@ -32,3 +32,19 @@ jobs:
         if: steps.npm-cache.outputs.cache-hit != 'true'
       - name: test
         run: npm test
+      - name: Upload artifact
+        if: matrix.os == 'ubuntu-22.04'
+        uses: actions/upload-pages-artifact@v2
+        with:
+          path: ./dist-static
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-22.04
+    needs: ci
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2
