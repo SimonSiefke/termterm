@@ -6,9 +6,6 @@ import * as TransformKey from "./parts/TransformKey/TransformKey.js";
 const CHAR_WIDTH = 13;
 const CHAR_HEIGHT = 15;
 
-const BACKGROUND = "#000000";
-const FOREGROUND = "#ffffff";
-
 const COLS = 80;
 const ROWS = 25;
 const BUFFER_LINES = 200;
@@ -17,7 +14,14 @@ const noop = () => {};
 
 export const createTerminal = (
   root,
-  { handleInput, bell = noop, setWindowTitle = noop, handleFocus = noop }
+  {
+    background = "#000000",
+    foreground = "#ffffff",
+    handleInput,
+    bell = noop,
+    setWindowTitle = noop,
+    handleFocus = noop,
+  }
 ) => {
   let focused = false;
   const handleKeyDown = (event) => {
@@ -70,8 +74,8 @@ export const createTerminal = (
   let bufferYEnd = ROWS;
   let cursorYRelative = -ROWS;
   let cursorXRelative = -COLS;
-  let foreground = "#ffffff";
-  let background = "#000000";
+  let cellForeground = "#ffffff";
+  let cellBackground = "#000000";
   let cursorVisible = true;
   let cursorStyle = /* block */ 2;
   const dirty = {
@@ -141,22 +145,22 @@ export const createTerminal = (
     },
     setCharAttributes(params) {
       if (params[1] === 7) {
-        [foreground, background] = [background, foreground];
+        [cellForeground, cellBackground] = [cellBackground, cellForeground];
       } else if (params[1] === 35) {
-        foreground = "#8000ff";
+        cellForeground = "#8000ff";
       } else if (params[1] === 32) {
-        foreground = "#09f900";
+        cellForeground = "#09f900";
       } else if (params[1] === 34) {
-        foreground = "#0090ff";
+        cellForeground = "#0090ff";
       } else {
-        foreground = FOREGROUND;
-        background = BACKGROUND;
+        cellForeground = foreground;
+        cellBackground = background;
       }
       const y = bufferYEnd + cursorYRelative;
       attributes[y] = attributes[y] || {};
       attributes[y][offsets[y]] = {
-        foreground,
-        background,
+        foreground: cellForeground,
+        background: cellBackground,
       };
     },
     cursorUp() {
@@ -210,8 +214,8 @@ export const createTerminal = (
       } else {
         cursorYRelative++;
       }
-      foreground = FOREGROUND;
-      background = BACKGROUND;
+      cellForeground = foreground;
+      cellBackground = background;
     },
     carriageReturn() {
       cursorXRelative = -COLS;
@@ -283,7 +287,8 @@ export const createTerminal = (
     attributes,
     ROWS,
     COLS,
-    dirty
+    background,
+    foreground
   );
 
   const drawCursor = createDrawCursor(canvasCursor);

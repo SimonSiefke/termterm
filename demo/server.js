@@ -53,7 +53,6 @@ const server = http.createServer((req, res) => {
 const wss = new WebSocketServer({ server });
 
 wss.on("connection", (socket) => {
-  console.log("got con");
   socket.on("message", (message) => {
     const [commandId, ...args] = JSON.parse(message.toString());
     switch (commandId) {
