@@ -1,7 +1,6 @@
 tasks:
-  - before: cd demo
-    init: npm ci
-    command: node server.js
+  - init: npm ci
+    command: npm run dev
 ports:
   - port: 3000
     onOpen: open-preview
