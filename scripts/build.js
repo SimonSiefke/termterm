@@ -14,6 +14,8 @@ await rm(dist, { recursive: true, force: true });
 
 await cp(join(library, "src"), join(dist, "src"), { recursive: true });
 await cp(join(library, "css"), join(dist, "css"), { recursive: true });
+await cp(join(root, "README.md"), join(dist, "README.md"));
+await cp(join(root, "LICENSE"), join(dist, "LICENSE"));
 
 const pkgContent = await readFile(join(library, "package.json"), "utf8");
 const pkg = JSON.parse(pkgContent);
