@@ -33,3 +33,5 @@ jobs:
       - run: npm test
       - run: node scripts/build.js
       - run: node scripts/build-static.js
+        env:
+          PATH_PREFIX: auto
