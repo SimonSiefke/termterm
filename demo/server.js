@@ -1,11 +1,17 @@
-import { spawn } from "node-pty";
-import fs from "fs";
+import express from "express";
 import http from "http";
-import { dirname } from "path";
+import { spawn } from "node-pty";
+import { dirname, join } from "path";
 import { fileURLToPath } from "url";
 import { WebSocketServer } from "ws";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
+const root = join(__dirname, "..");
+
+const app = express();
+
+app.use(express.static(__dirname));
+app.use(express.static(root));
 
 const Terminal = {
   terminals: Object.create(null),
@@ -31,24 +37,7 @@ const Terminal = {
   },
 };
 
-const server = http.createServer((req, res) => {
-  if (req.method === "GET" && req.url === "/") {
-    fs.createReadStream(`${__dirname}/index.html`).pipe(res);
-  } else if (req.method === "GET" && req.url.startsWith("/src")) {
-    res.writeHead(200, {
-      "Content-Type": "text/javascript",
-    });
-    fs.createReadStream(`${__dirname}/..${req.url}`).pipe(res);
-  } else if (req.method === "GET" && req.url.startsWith("/css")) {
-    res.writeHead(200, {
-      "Content-Type": "text/css",
-    });
-    fs.createReadStream(`${__dirname}/..${req.url}`).pipe(res);
-  } else {
-    res.statusCode = 404;
-    res.end("not found");
-  }
-});
+const server = http.createServer(app);
 
 const wss = new WebSocketServer({ server });
 
@@ -71,4 +60,8 @@ wss.on("connection", (socket) => {
   });
 });
 
-server.listen(3000, () => console.log(`listening on http://localhost:3000`));
+const handleListening = () => {
+  console.log(`listening on http://localhost:3000`);
+};
+
+server.listen(3000, handleListening);
