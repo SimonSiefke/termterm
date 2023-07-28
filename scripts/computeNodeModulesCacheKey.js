@@ -8,6 +8,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
 
 const locations = [
+  "lerna.json",
   "package-lock.json",
   ".github/workflows/ci.yml",
   ".github/workflows/pr.yml",
