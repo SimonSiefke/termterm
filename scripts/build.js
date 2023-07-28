@@ -6,15 +6,16 @@ import { fileURLToPath } from "node:url";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const root = join(__dirname, "..");
+const library = join(root, "packages", "library");
 
 const dist = join(root, "dist");
 
 await rm(dist, { recursive: true, force: true });
 
-await cp(join(root, "src"), join(dist, "src"), { recursive: true });
-await cp(join(root, "css"), join(dist, "css"), { recursive: true });
+await cp(join(library, "src"), join(dist, "src"), { recursive: true });
+await cp(join(library, "css"), join(dist, "css"), { recursive: true });
 
-const pkgContent = await readFile(join(root, "package.json"), "utf8");
+const pkgContent = await readFile(join(library, "package.json"), "utf8");
 const pkg = JSON.parse(pkgContent);
 
 pkg.version = process.env.RG_VERSION || "0.0.0-dev";

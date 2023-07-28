@@ -6,12 +6,14 @@ import { fileURLToPath } from "url";
 import { WebSocketServer } from "ws";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const root = join(__dirname, "..");
+const root = join(__dirname, "..", "..");
+const library = join(root, "packages", "library");
 
 const app = express();
 
 app.use(express.static(__dirname));
 app.use(express.static(root));
+app.use(express.static(library));
 
 const Terminal = {
   terminals: Object.create(null),

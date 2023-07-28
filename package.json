@@ -1,6 +1,6 @@
 {
-  "name": "termterm",
-  "version": "0.0.23",
+  "name": "termterm-monorepo",
+  "version": "0.0.0-dev",
   "description": "",
   "main": "src/createTerminal.js",
   "files": [
@@ -8,35 +8,21 @@
     "css"
   ],
   "scripts": {
-    "test": "node --unhandled-rejections=warn --experimental-vm-modules ./node_modules/jest/bin/jest.js --detectOpenHandles --forceExit",
-    "test:watch": "node --unhandled-rejections=warn --experimental-vm-modules ./node_modules/jest/bin/jest.js --watch",
-    "dev": "nodemon demo/server.js",
+    "test": "lerna run test",
+    "test:watch": "cd packages/library && npm run test:watch",
+    "dev": "nodemon packages/demo/server.js",
     "benchmark:parseArray": "node public/lib/parseArray.benchmark.js",
     "benchmark:handleKeyDown": "node public/lib/handleKeyDown.benchmark.js",
     "bundle": "npx microbundle public/lib/parseArray.js -f modern -o dist",
     "bundle-and-benchmark": "npm run bundle && npm run benchmark:parseArray",
-    "postinstall": "cd demo && npm ci"
+    "postinstall": "lerna bootstrap --ci"
   },
-  "keywords": [
-    "terminal"
-  ],
   "author": "",
   "license": "MIT",
   "type": "module",
   "devDependencies": {
     "@lerna/legacy-package-management": "^7.1.4",
-    "@types/jest": "^29.5.3",
-    "jest": "^29.6.2",
-    "jest-environment-jsdom": "^29.6.2",
     "lerna": "^7.1.4",
     "nodemon": "^3.0.1"
-  },
-  "jest": {
-    "testPathIgnorePatterns": [
-      "e2e"
-    ],
-    "modulePathIgnorePatterns": [
-      "<rootDir>/dist/"
-    ]
   }
 }
