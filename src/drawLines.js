@@ -1,37 +1,6 @@
-const CHAR_WIDTH = 12;
-const CHAR_HEIGHT = 15;
-
-const supportsOffscreenCanvas = (() => {
-  try {
-    const canvas = new OffscreenCanvas(CHAR_WIDTH, CHAR_HEIGHT);
-    canvas.getContext("2d");
-    return true;
-  } catch {
-    return false;
-  }
-})();
-
-const supportsTransferToImageBitMap = (() => {
-  try {
-    supportsOffscreenCanvas
-      ? (() => {
-          const canvas = new OffscreenCanvas(CHAR_WIDTH, CHAR_HEIGHT);
-          canvas.getContext("2d");
-          canvas.transferToImageBitmap();
-        })()
-      : (() => {
-          const canvas = document.createElement("canvas");
-          canvas.width = CHAR_WIDTH;
-          canvas.height = CHAR_HEIGHT;
-          canvas.transferToImageBitmap();
-        })();
-    return true;
-  } catch {
-    return false;
-  }
-})();
-
-self.supportsTransferToImageBitMap = supportsTransferToImageBitMap;
+import { CHAR_HEIGHT, CHAR_WIDTH } from "./parts/CharSize/CharSize.js";
+import { supportsOffscreenCanvas } from "./parts/SupportsOffscreenCanvas/SupportsOffscreenCanvas.js";
+import { supportsTransferToImageBitMap } from "./parts/SupportsTransferToImageBitMap/SupportsTransferToImageBitMap.js";
 
 const tmpCanvas = supportsOffscreenCanvas
   ? new OffscreenCanvas(CHAR_WIDTH, CHAR_HEIGHT)
@@ -72,7 +41,6 @@ export const createDrawLines = (
     }
     const cacheKey = `${char}${background}${foreground}`;
     if (!(cacheKey in bitmapCache)) {
-      console.log({ background });
       tmpCtx.fillStyle = background;
       tmpCtx.fillRect(0, 0, CHAR_WIDTH, CHAR_HEIGHT);
       tmpCtx.font = `${CHAR_HEIGHT}px monospace`;
