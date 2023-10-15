@@ -11,7 +11,7 @@ await rm(dist, { recursive: true, force: true });
 
 let pathPrefix = process.env.PATH_PREFIX || "/";
 if (pathPrefix === "auto") {
-  pathPrefix = "/termterm";
+  pathPrefix = "/termterm/";
 }
 
 await cp(join(library, "src"), join(dist, "src"), { recursive: true });
@@ -21,6 +21,9 @@ await cp(join(demo, "docs", "index.js"), join(dist, "index.js"));
 
 const replace = async ({ path, occurrence, replacement }) => {
   const oldContent = await readFile(path, "utf8");
+  if (!oldContent.includes(occurrence)) {
+    throw new Error(`occurrence not found ${occurrence}`);
+  }
   const newContent = oldContent.replace(occurrence, replacement);
   await writeFile(path, newContent);
 };
@@ -32,6 +35,6 @@ await replace({
 });
 await replace({
   path: join(dist, "index.js"),
-  occurrence: `/src/createTerminal.js  `,
+  occurrence: `/src/createTerminal.js`,
   replacement: `${pathPrefix}src/createTerminal.js`,
 });
