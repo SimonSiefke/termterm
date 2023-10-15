@@ -17,9 +17,9 @@
   "license": "MIT",
   "type": "module",
   "devDependencies": {
-    "@lerna/legacy-package-management": "^7.1.4",
-    "@types/node": "^20.4.5",
-    "lerna": "^7.1.4",
+    "@lerna/legacy-package-management": "^7.3.1",
+    "@types/node": "^20.8.6",
+    "lerna": "^7.3.1",
     "nodemon": "^3.0.1"
   }
 }
