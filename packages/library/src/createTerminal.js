@@ -29,6 +29,9 @@ export const createTerminal = (
     if (transformedKey) {
       handleInput(transformedKey);
     }
+    if (event.key === "Tab") {
+      event.preventDefault();
+    }
   };
   const handleBeforeInput = (event) => {
     event.preventDefault();
