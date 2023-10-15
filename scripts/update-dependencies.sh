@@ -26,7 +26,11 @@ function updateDependencies {
   fi
 }
 
-updateDependencies
+updateDependencies &&
+cd packages/build && updateDependencies && cd ../../ &&
+cd packages/demo && updateDependencies && cd ../../ &&
+cd packages/e2e && updateDependencies && cd ../../ &&
+cd packages/library && updateDependencies && cd ../../ &&
 
 echo "Great Success!"
 
