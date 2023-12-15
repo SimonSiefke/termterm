@@ -8,12 +8,14 @@ import { WebSocketServer } from "ws";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..", "..");
 const library = join(root, "packages", "library");
+const publicFolder = join(root, "packages", "demo", "public");
 
 const app = express();
 
 app.use(express.static(__dirname));
 app.use(express.static(root));
 app.use(express.static(library));
+app.use(express.static(publicFolder));
 
 const Terminal = {
   terminals: Object.create(null),
