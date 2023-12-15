@@ -14,11 +14,12 @@ const noop = () => {};
 
 export const createOffscreenTerminalDom = (
   root,
-  { focus = noop, handleKeyDown = noop }
+  { handleMouseDown = noop, handleKeyDown = noop, handleBlur = noop }
 ) => {
   root.onmousedown = (event) => {
     event.preventDefault();
-    focus();
+    textarea.focus();
+    handleMouseDown();
   };
   const canvasText = document.createElement("canvas");
   canvasText.className = "TerminalCanvasText";
@@ -31,16 +32,22 @@ export const createOffscreenTerminalDom = (
   textarea.name = "terminal-input";
   $Layers.append(canvasText, canvasCursor);
   root.append(textarea, $Layers);
-  textarea.onkeydown = handleKeyDown;
+  const wrappedKeyDown = (event) => {
+    // @ts-ignore
+    handleKeyDown({
+      key: event.key,
+      shiftKey: event.shiftKey,
+      altKey: event.altKey,
+      ctrlKey: event.ctrlKey,
+      metaKey: event.metaKey,
+    });
+  };
+  textarea.onkeydown = wrappedKeyDown;
   const handleBeforeInput = (event) => {
     event.preventDefault();
   };
   textarea.addEventListener("beforeinput", handleBeforeInput);
-  root.onmousedown = (event) => {
-    event.preventDefault();
-    focus();
-  };
-  textarea.onblur = blur;
+  textarea.onblur = handleBlur;
   const offscreenCanvasText = canvasText.transferControlToOffscreen();
   const offscreenCanvasCursor = canvasCursor.transferControlToOffscreen();
 
@@ -357,5 +364,6 @@ export const createOffscreenTerminal = ({
     lines,
     handleKeyDown,
     handleBlur,
+    handleMouseDown: focus,
   };
 };

@@ -13,10 +13,6 @@ const executeCommand = (commandId, ...args) => {
   commands[commandId](...args);
 };
 
-// websocket
-// const protocol = location.protocol === "https:" ? "wss://" : "ws://";
-// const hostname = location.hostname;
-// const port = location.port;
 const webSocket = new WebSocket(`ws://localhost:3000`);
 
 webSocket.onmessage = ({ data }) => {
@@ -55,16 +51,50 @@ const createTerminal = ({ offscreenCanvasCursor, offscreenCanvasText }) => {
   const terminal = createOffscreenTerminal({
     canvasCursor: offscreenCanvasCursor,
     canvasText: offscreenCanvasText,
+    handleInput(transformedKey) {
+      webSocketSend([
+        /* terminalWrite */ 102,
+        /* id */ id,
+        /* key */ transformedKey,
+      ]);
+    },
+    focusTextArea() {
+      postMessage({
+        jsonrpc: "2.0",
+        method: "focusTextArea",
+        params: {},
+      });
+    },
   });
   terminals[id] = terminal;
   webSocketSend([/* terminalCreate */ 101, /* id */ id]);
-  console.log({ offscreenCanvasCursor, offscreenCanvasText });
+};
+
+const handleKeyDown = ({ event }) => {
+  const terminal = terminals[id];
+  terminal.handleKeyDown(event);
+};
+
+const handleBlur = () => {
+  const terminal = terminals[id];
+  terminal.handleBlur();
+};
+
+const handleMouseDown = () => {
+  const terminal = terminals[id];
+  terminal.handleMouseDown();
 };
 
 const handleMessage = (event) => {
   const message = event.data;
   if (message.method === "createTerminal") {
     createTerminal(message.params);
+  } else if (message.method === "handleKeyDown") {
+    handleKeyDown(message.params);
+  } else if (message.method === "handleMouseDown") {
+    handleMouseDown();
+  } else if (message.method === "handleBlur") {
+    handleBlur();
   } else {
     throw new Error(`unexpected message`);
   }
