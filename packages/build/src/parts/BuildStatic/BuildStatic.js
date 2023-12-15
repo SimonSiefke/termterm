@@ -16,8 +16,8 @@ if (pathPrefix === "auto") {
 
 await cp(join(library, "src"), join(dist, "src"), { recursive: true });
 await cp(join(library, "css"), join(dist, "css"), { recursive: true });
-await cp(join(demo, "docs", "index.html"), join(dist, "index.html"));
-await cp(join(demo, "docs", "index.js"), join(dist, "index.js"));
+await cp(join(demo, "public", "docs", "index.html"), join(dist, "index.html"));
+await cp(join(demo, "public", "docs", "index.js"), join(dist, "index.js"));
 
 const replace = async ({ path, occurrence, replacement }) => {
   const oldContent = await readFile(path, "utf8");
