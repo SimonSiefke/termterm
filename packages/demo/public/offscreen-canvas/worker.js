@@ -40,7 +40,6 @@ const webSocketSend = (data) => {
 const terminals = Object.create(null);
 
 const terminalWrite = (id, data) => {
-  console.log({ data });
   const encoded = new TextEncoder().encode(data);
   terminals[id].write(encoded);
 };
