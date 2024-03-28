@@ -6,6 +6,9 @@ import * as Root from "../Root/Root.js";
 const locations = [
   "lerna.json",
   "package-lock.json",
+  "packages/build/package-lock.json",
+  "packages/demo/package-lock.json",
+  "packages/library/package-lock.json",
   ".github/workflows/ci.yml",
   ".github/workflows/pr.yml",
   ".github/workflows/release.yml",
