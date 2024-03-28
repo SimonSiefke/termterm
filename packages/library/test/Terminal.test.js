@@ -1,8 +1,8 @@
 /**
  * @jest-environment jsdom
  */
+import { expect, jest, test } from "@jest/globals";
 import * as Terminal from "../src/parts/Terminal/Terminal.js";
-import { jest } from "@jest/globals";
 
 const createTerminal = () => {
   const $Element = document.createElement("div");

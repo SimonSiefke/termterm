@@ -3,7 +3,7 @@
  * http://invisible-island.net/xterm/ctlseqs/ctlseqs.html
  */
 
-import { jest } from "@jest/globals";
+import { expect, jest, test } from "@jest/globals";
 import { StringDecoder } from "string_decoder";
 import * as ParseArray from "../src/parts/ParseArray/ParseArray.js";
 
