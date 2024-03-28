@@ -14,16 +14,20 @@ const noop = () => {};
 
 export const createOffscreenTerminalDom = (
   root,
-  { handleMouseDown = noop, handleKeyDown = noop, handleBlur = noop }
+  {
+    handleMouseDown = noop,
+    handleKeyDown = noop,
+    handleBlur = noop,
+    canvasText = document.createElement("canvas"),
+    canvasCursor = document.createElement("canvas"),
+  }
 ) => {
   root.onmousedown = (event) => {
     event.preventDefault();
     textarea.focus();
     handleMouseDown();
   };
-  const canvasText = document.createElement("canvas");
   canvasText.className = "TerminalCanvasText";
-  const canvasCursor = document.createElement("canvas");
   canvasCursor.className = "TerminalCanvasCursor";
   const $Layers = document.createElement("div");
   $Layers.className = "TerminalLayers";
