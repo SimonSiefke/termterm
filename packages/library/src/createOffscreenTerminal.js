@@ -52,21 +52,22 @@ export const createOffscreenTerminalDom = (
   };
   textarea.addEventListener("beforeinput", handleBeforeInput);
   textarea.onblur = handleBlur;
-  const offscreenCanvasText =
-    canvasText instanceof OffscreenCanvas
-      ? canvasText
-      : canvasText.transferControlToOffscreen();
-  const offscreenCanvasCursor =
-    canvasCursor instanceof OffscreenCanvas
-      ? canvasCursor
-      : canvasCursor.transferControlToOffscreen();
-
   const focusTextArea = () => {
     textarea.focus();
   };
   return {
-    offscreenCanvasCursor,
-    offscreenCanvasText,
+    /**
+     * @deprecated
+     */
+    get offscreenCanvasCursor() {
+      return canvasCursor.transferControlToOffscreen();
+    },
+    /**
+     * @deprecated
+     */
+    get offscreenCanvasText() {
+      return canvasText.transferControlToOffscreen();
+    },
     focusTextArea,
   };
 };
