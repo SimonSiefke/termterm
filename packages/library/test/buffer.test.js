@@ -1,6 +1,7 @@
 // tests based on https://github.com/xtermjs/xterm.js/blob/master/src/common/buffer/Buffer.test.ts
 // by xterm.js authors (LICENSE MIT)
 
+import { expect, test } from "@jest/globals";
 import * as Buffer from "../src/parts/Buffer.js";
 
 // TODO test buffer resizing (e.g. when resize the text in the rows should adjust)
