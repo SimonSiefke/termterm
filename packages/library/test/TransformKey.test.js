@@ -1,3 +1,4 @@
+import { expect, test } from "@jest/globals";
 import * as TransformKey from "../src/parts/TransformKey/TransformKey.js";
 
 const transformKey = (event) => {
