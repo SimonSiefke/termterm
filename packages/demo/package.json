@@ -10,8 +10,8 @@
   "license": "MIT",
   "dependencies": {
     "express": "^5.1.0",
-    "node-pty": "^1.0.0",
-    "ws": "^8.18.3"
+    "node-pty": "^1.1.0-beta34"
+,    "ws": "^8.18.3"
   },
   "devDependencies": {
     "@types/express": "^5.0.5",
