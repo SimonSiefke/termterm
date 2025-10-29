@@ -46,11 +46,11 @@ export const createDrawLines = (
       tmpCtx.font = `${CHAR_HEIGHT}px monospace`;
       tmpCtx.fillStyle = foreground;
       tmpCtx.fillText(char, 0, CHAR_HEIGHT);
-      bitmapCache[cacheKey] = supportsTransferToImageBitMap
+      bitmapCache[cacheKey] = supportsTransferToImageBitMap()
         ? tmpCanvas.transferToImageBitmap()
         : tmpCtx.getImageData(0, 0, CHAR_WIDTH, CHAR_HEIGHT);
     }
-    supportsTransferToImageBitMap
+    supportsTransferToImageBitMap()
       ? ctx.drawImage(bitmapCache[cacheKey], x * CHAR_WIDTH, y * CHAR_HEIGHT)
       : ctx.putImageData(
           bitmapCache[cacheKey],
