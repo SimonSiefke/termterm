@@ -69,5 +69,3 @@ jobs:
       - run: npm publish --access public
         if: matrix.os == 'ubuntu-22.04'
         working-directory: ./dist
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
